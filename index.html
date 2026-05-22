@@ -750,21 +750,56 @@
             }
         }
 
-        exportCsvBtn.addEventListener('click', () => {
-            const asistentesDelMes = listAttendees.filter(att => att.mes === meetingMonth);
-            if (asistentesDelMes.length === 0) { showToast(`No hay registros en ${meetingMonth}.`); return; }
+       exportCsvBtn.addEventListener('click', () => {
 
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-            csvContent += `ASISTENCIA JAC SAN MIGUEL - REUNIÓN DEL MES DE: ${meetingMonth.toUpperCase()}\n`;
-            csvContent += `Nombre de la asamblea: ${meetingName}\nTotal socios: ${totalSocios}\n\n`;
-            csvContent += "Nombre del Socio,Cédula,Hora de Registro,Fecha\n";
+    const asistentesDelMes = listAttendees.filter(
+        att => att.mes === meetingMonth
+    );
 
-            asistentesDelMes.forEach(att => csvContent += `"${att.nombre}","${att.cedula}","${att.hora}","${att.fecha}"\n`);
+    if (asistentesDelMes.length === 0) {
 
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Asistencia_JAC_${meetingMonth}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast("Reporte descargado.");
+        showToast(`No hay registros en ${meetingMonth}.`);
+
+        return;
+
+    }
+
+    const datosExcel = [];
+
+    asistentesDelMes.forEach(att => {
+
+        datosExcel.push({
+
+            "Nombre del Socio": att.nombre,
+
+            "Cédula": att.cedula,
+
+            "Hora de Registro": att.hora,
+
+            "Fecha": att.fecha
+
         });
+
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Asistencia"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        `Asistencia_JAC_${meetingMonth}.xlsx`
+    );
+
+    showToast("Reporte Excel descargado");
+
+});
 
         function showToast(message) {
             const toast = document.getElementById('toast');
