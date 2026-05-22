@@ -798,9 +798,22 @@ importRosterFile.addEventListener('change', function(event) {
 
         jsonData.forEach(row => {
 
-            const nombre = (row["Nombre Completo"] || "").toString().trim();
+            const nombre = (
+    row["Nombre Completo"] ||
+    row["Nombre"] ||
+    row["NOMBRE"] ||
+    row["nombre"] ||
+    ""
+).toString().trim();
 
-            const cedula = (row["Cédula"] || "").toString().trim();
+const cedula = (
+    row["Cédula"] ||
+    row["Cedula"] ||
+    row["CEDULA"] ||
+    row["cedula"] ||
+    row["CC"] ||
+    ""
+).toString().trim();
 
             if (!nombre || !cedula) return;
 
