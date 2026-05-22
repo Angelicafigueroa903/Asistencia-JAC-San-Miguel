@@ -3,176 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistencia JAC San Miguel - Modo Offline</title>
+    <title>JAC San Miguel - Control Offline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
 </head>
-<body class="h-full text-slate-800 flex flex-col antialiased select-none">
+<body class="h-full">
+    <nav class="bg-emerald-600 p-4 text-white flex gap-4 justify-center">
+        <button onclick="showSection('asistencia')" class="font-bold">Asistencia</button>
+        <button onclick="showSection('directorio')" class="font-bold">Directorio</button>
+        <button onclick="showSection('config')" class="font-bold">Ajustes</button>
+    </nav>
 
-    <header class="bg-emerald-600 text-white shadow-md shrink-0">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-700 rounded-xl shadow-inner">
-                    <i data-lucide="users" class="w-7 h-7 text-emerald-100"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight">JAC San Miguel</h1>
-                    <p class="text-xs text-emerald-100 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                        Sistema de Control Local 100% Offline
-                    </p>
-                </div>
-            </div>
-            <nav class="flex bg-emerald-700/50 p-1 rounded-xl">
-                <button onclick="switchTab('asistencia')" id="tab-asistencia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-750 shadow-sm flex items-center gap-1.5">
-                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Asistencia
-                </button>
-                <button onclick="switchTab('directorio')" id="tab-directorio" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
-                    <i data-lucide="contact-2" class="w-3.5 h-3.5"></i> Directorio
-                </button>
-                <button onclick="switchTab('config')" id="tab-config" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
-                    <i data-lucide="settings" class="w-3.5 h-3.5"></i> Ajustes
-                </button>
-            </nav>
-        </div>
-    </header>
+    <main class="p-6 max-w-4xl mx-auto">
+        <section id="asistencia" class="space-y-4">
+            <h2 class="text-xl font-bold">Control de Asistencia</h2>
+            <div id="rosterList" class="bg-white p-4 rounded shadow"></div>
+        </section>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:py-6 overflow-y-auto">
-        <!-- PESTAÑA ASISTENCIA -->
-        <div id="section-asistencia" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div id="quorumCard" class="md:col-span-2 p-5 rounded-2xl border shadow-sm bg-white border-slate-100">
-                    <div class="flex justify-between items-start mb-2">
-                        <div><p class="text-[10px] font-bold text-slate-400 uppercase">Verificación de Quórum</p><h3 id="quorumStatusText" class="text-xl font-black mt-0.5">Calculando...</h3></div>
-                        <span id="quorumIcon" class="p-2 rounded-xl"><i data-lucide="shield-alert" class="w-5 h-5"></i></span>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2.5 mb-1.5"><div id="quorumProgressBar" class="h-full bg-slate-300 transition-all duration-500" style="width: 0%"></div></div>
-                    <p class="text-[11px] text-slate-500 font-medium" id="quorumHelperText">Cargando...</p>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl"><i data-lucide="user-check" class="w-5 h-5"></i></div>
-                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Socios Presentes</p><h4 class="text-2xl font-black" id="presentCountText">0</h4></div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                    <div class="p-3 bg-purple-50 text-purple-600 rounded-xl"><i data-lucide="book-open" class="w-5 h-5"></i></div>
-                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Habilitados</p><h4 class="text-2xl font-black" id="totalSociosText">0</h4></div>
-                </div>
-            </div>
+        <section id="directorio" class="hidden space-y-4">
+            <h2 class="text-xl font-bold">Directorio de Socios</h2>
             
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
-                    <h2 class="text-base font-bold text-slate-800 mb-4">Marcar Asistencia Rápida</h2>
-                    <input type="text" id="searchRosterInput" placeholder="Buscar socio..." class="w-full mb-3 px-3 py-2 text-xs rounded-lg border border-slate-200">
-                    <div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50 p-2 custom-scrollbar" id="rosterListContainer"></div>
-                </div>
-                <div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
-                    <h2 class="text-base font-bold text-slate-800 mb-4">Socios Registrados</h2>
-                    <div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50 custom-scrollbar">
-                        <table class="w-full text-left text-xs"><tbody id="attendeesList"></tbody></table>
-                    </div>
-                    <button id="exportCsvBtn" class="mt-3 w-full py-2 bg-slate-800 text-white rounded-xl text-xs font-bold">Exportar Reporte (.CSV)</button>
-                </div>
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                <h3 class="font-bold text-blue-800">Carga Masiva de Socios</h3>
+                <p class="text-sm text-blue-600 mb-2">Selecciona tu archivo .csv (Formato: Nombre,Cedula)</p>
+                <input type="file" id="csvFile" accept=".csv" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700">
             </div>
-        </div>
 
-        <!-- PESTAÑA DIRECTORIO -->
-        <div id="section-directorio" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <h2 class="text-lg font-bold mb-4">Directorio de Socios</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-50 p-4 rounded-xl border space-y-3">
-                        <h3 class="text-xs font-bold uppercase">Añadir Socio</h3>
-                        <input type="text" id="rosterNameInput" placeholder="Nombre" class="w-full px-3 py-2 text-xs rounded-lg border">
-                        <input type="number" id="rosterIdInput" placeholder="Cédula" class="w-full px-3 py-2 text-xs rounded-lg border">
-                        <button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold">Guardar</button>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                        <h3 class="text-xs font-bold text-blue-800 uppercase mb-2">Carga Masiva (CSV)</h3>
-                        <p class="text-[10px] text-blue-600 mb-3">Sube archivo con columnas: Nombre,Cedula</p>
-                        <input type="file" id="csvFileInput" accept=".csv" class="w-full text-xs text-slate-600 p-2 bg-white rounded border">
-                    </div>
-                </div>
-                <div class="mt-6 flex-1 border rounded-xl bg-slate-50 p-2 h-[300px] overflow-y-auto custom-scrollbar">
-                    <table class="w-full text-left text-xs"><tbody id="rosterTableBody"></tbody></table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- PESTAÑA CONFIG -->
-        <div id="section-config" class="hidden bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-            <h2 class="text-lg font-bold">Ajustes</h2>
-            <div>
-                <label class="block text-xs font-bold mb-1">Socios Habilitados</label>
-                <div class="flex gap-2">
-                    <input type="number" id="totalSociosInput" class="w-full px-3 py-2 border rounded-lg" value="300">
-                    <button id="updateSociosBtn" class="px-4 bg-emerald-600 text-white rounded-lg text-xs font-bold">Establecer</button>
-                </div>
-            </div>
-            <button onclick="hardResetSystem()" class="text-rose-600 text-xs font-bold">Restablecer Todo de Fábrica</button>
-        </div>
+            <div id="directorioList" class="bg-white p-4 rounded shadow h-96 overflow-y-auto"></div>
+        </section>
+
+        <section id="config" class="hidden">
+            <h2 class="text-xl font-bold">Ajustes</h2>
+            <p>Socios Habilitados: <input type="number" id="totalSocios" value="300" class="border p-1 rounded"></p>
+            <button onclick="localStorage.clear(); location.reload();" class="mt-4 bg-red-600 text-white p-2 rounded">Borrar Todo (Reset)</button>
+        </section>
     </main>
 
     <script>
-        let totalSocios = 300; let roster = []; let listAttendees = [];
-        const rosterTableBody = document.getElementById('rosterTableBody');
-        const csvFileInput = document.getElementById('csvFileInput');
+        let roster = JSON.parse(localStorage.getItem('roster')) || [];
 
-        function saveConfig() {
-            localStorage.setItem('jac_total_offline', totalSocios);
-            localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
-            localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function loadSystemData() {
-            if (localStorage.getItem('jac_total_offline')) totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
-            if (localStorage.getItem('jac_roster_offline')) roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
-            if (localStorage.getItem('jac_attendees_offline')) listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
-            renderRosterManagement();
-        }
-
-        csvFileInput.addEventListener('change', function(e) {
+        document.getElementById('csvFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const lines = e.target.result.split('\n');
                 lines.forEach((line, index) => {
                     if (index === 0) return;
-                    const cols = line.split(',');
-                    if (cols.length >= 2) {
-                        const nombre = cols[0].replace(/"/g, '').trim();
-                        const cedula = cols[1].replace(/"/g, '').trim();
-                        if (cedula && !roster.some(m => m.cedula === cedula)) roster.push({ nombre, cedula });
-                    }
+                    const [nombre, cedula] = line.split(',');
+                    if (nombre && cedula) roster.push({ nombre: nombre.trim(), cedula: cedula.trim() });
                 });
-                saveConfig(); renderRosterManagement();
-                alert("¡Socios cargados!");
+                localStorage.setItem('roster', JSON.stringify(roster));
+                alert('¡Socios cargados correctamente!');
+                renderList();
             };
             reader.readAsText(file);
         });
 
-        function renderRosterManagement() {
-            rosterTableBody.innerHTML = '';
-            roster.forEach(m => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3 font-bold">${m.nombre}</td><td class="p-3 text-slate-500">${m.cedula}</td>`;
-                rosterTableBody.appendChild(tr);
-            });
+        function renderList() {
+            const list = document.getElementById('directorioList');
+            list.innerHTML = roster.map(s => `<div>${s.nombre} - ${s.cedula}</div>`).join('');
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
-            document.getElementById('section-' + tab).classList.remove('hidden');
-        }
-
-        function hardResetSystem() { localStorage.clear(); location.reload(); }
-
-        window.onload = loadSystemData;
+        window.onload = renderList;
     </script>
 </body>
 </html>
