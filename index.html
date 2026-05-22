@@ -784,63 +784,92 @@ importRosterFile.addEventListener('change', function(event) {
 
     reader.onload = function(e) {
 
-        const data = new Uint8Array(e.target.result);
+        try {
 
-        const workbook = XLSX.read(data, { type: 'array' });
+            const data = new Uint8Array(e.target.result);
 
-        const sheetName = workbook.SheetNames[0];
+            const workbook = XLSX.read(data, {
+                type: 'array'
+            });
 
-        const worksheet = workbook.Sheets[sheetName];
+            const sheetName = workbook.SheetNames[0];
 
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+            const worksheet = workbook.Sheets[sheetName];
 
-        let nuevos = 0;
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                defval: ""
+            });
 
-        jsonData.forEach(row => {
+            let nuevos = 0;
 
-            const nombre = (
-    row["Nombre Completo"] ||
-    row["Nombre"] ||
-    row["NOMBRE"] ||
-    row["nombre"] ||
-    ""
-).toString().trim();
+            jsonData.forEach(row => {
 
-const cedula = (
-    row["Cédula"] ||
-    row["Cedula"] ||
-    row["CEDULA"] ||
-    row["cedula"] ||
-    row["CC"] ||
-    ""
-).toString().trim();
+                const keys = Object.keys(row);
 
-            if (!nombre || !cedula) return;
+                let nombre = "";
+                let cedula = "";
 
-            const existe = roster.some(m => m.cedula === cedula);
+                keys.forEach(key => {
 
-            if (!existe) {
+                    const cleanKey = key
+                        .toString()
+                        .trim()
+                        .toLowerCase();
 
-                roster.push({
-                    nombre: nombre,
-                    cedula: cedula
+                    if (
+                        cleanKey.includes("nombre")
+                    ) {
+                        nombre = row[key].toString().trim();
+                    }
+
+                    if (
+                        cleanKey.includes("cedula") ||
+                        cleanKey.includes("cédula") ||
+                        cleanKey === "cc"
+                    ) {
+                        cedula = row[key].toString().trim();
+                    }
+
                 });
 
-                nuevos++;
+                if (!nombre || !cedula) return;
 
-            }
+                const existe = roster.some(
+                    m => m.cedula === cedula
+                );
 
-        });
+                if (!existe) {
 
-        saveConfig();
+                    roster.push({
+                        nombre: nombre,
+                        cedula: cedula
+                    });
 
-        renderRosterManagement();
+                    nuevos++;
 
-        renderRosterPanel();
+                }
 
-        calculateQuorum();
+            });
 
-        showToast(`${nuevos} socios cargados desde Excel.`);
+            saveConfig();
+
+            renderRosterManagement();
+
+            renderRosterPanel();
+
+            calculateQuorum();
+
+            showToast(
+                `${nuevos} socios cargados desde Excel`
+            );
+
+        } catch(error) {
+
+            console.error(error);
+
+            showToast("Error leyendo Excel");
+
+        }
 
     };
 
