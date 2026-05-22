@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia JAC</title>
+    
+    <!-- Tailwind CSS para estilos rápidos y modernos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Librería para generar códigos QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- Configuración de Tailwind para colores personalizados -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos base para asegurar que el contenido ocupe toda la pantalla y fuente limpia */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Ocultar elementos por defecto, los mostraremos con JS según el estado */
+        .hidden { display: none !important; }
+        
+        /* Contenedor principal con sombra suave */
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1;
+            padding: 1rem;
+        }
+        
+        /* Animación suave para la lista de asistentes */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<nav class="bg-brand-600 text-white shadow-md p-4 sticky top-0 z-10">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h1 class="text-xl font-bold">Asistencia JAC</h1>
+        </div>
+        <!-- Botón para alternar vistas (solo para demostración) -->
+        <button id="toggleViewBtn" class="text-sm bg-brand-700 hover:bg-brand-800 px-3 py-1 rounded transition">
+            Cambiar a Vista Socio
+        </button>
+    </div>
+</nav>
+
+<main class="app-container">
+
+    <div id="adminView" class="space-y-6">
+        
+        <!-- Panel de Configuración de la Reunión -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Configuración de la Asamblea</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Nombre de la Reunión</label>
+                    <input type="text" id="meetingName" placeholder="Ej. Asamblea General Ordinaria" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-500 focus:border-brand-500 outline-none transition" value="Asamblea General Mes de Mayo">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Total de Socios Inscritos</label>
+                    <input type="number" id="totalMembers" placeholder="Ej. 120" class="w-full p-2 border border-gray-300 rounded focus:ring-brand-500 focus:border-brand-500 outline-none transition" value="50" min="1">
+                    <p class="text-xs text-gray-500 mt-1">El quórum será el 50% + 1 (la mitad más uno).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel del Código QR -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Escanea para Registrar Asistencia</h2>
+            <p class="text-sm text-gray-500 mb-6">Muestra este código a los socios cuando lleguen.</p>
+            
+            <div class="bg-white p-4 rounded-lg shadow-inner border-2 border-dashed border-gray-200">
+                <div id="qrcode" class="mx-auto"></div>
+            </div>
+            
+            <p class="mt-4 text-xs text-brand-600 font-medium break-all" id="shareUrlDisplay">
+                <!-- La URL se inyectará aquí por JS -->
+            </p>
+        </div>
+
+        <!-- Panel de Estadísticas en Vivo -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                <p class="text-sm text-gray-500 font-medium">Asistentes</p>
+                <p class="text-4xl font-bold text-gray-800 my-2" id="attendeeCountDisplay">0</p>
+                <p class="text-xs text-gray-400" id="quorumTargetDisplay">Meta para quórum: 0</p>
+            </div>
+            <div id="quorumStatusCard" class="bg-red-50 p-4 rounded-xl shadow-sm border border-red-100 text-center flex flex-col justify-center items-center transition-colors duration-300">
+                <p class="text-sm font-medium" id="quorumStatusText">Sin Quórum</p>
+                <svg id="quorumIconCross" class="w-8 h-8 text-red-500 mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <svg id="quorumIconCheck" class="w-8 h-8 text-green-500 mt-2 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+
+        <!-- Lista de Asistentes en Vivo -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-3 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="text-sm font-semibold text-gray-700">Registro de Llegada</h2>
+                <span class="flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+            </div>
+            <ul id="attendeeList" class="divide-y divide-gray-100 max-h-60 overflow-y-auto p-2">
+                <!-- Los asistentes se añadirán aquí dinámicamente -->
+                <li class="p-4 text-center text-gray-400 text-sm" id="emptyStateMsg">
+                    Esperando a que los socios escaneen el código...
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="memberView" class="hidden max-w-md mx-auto mt-10">
+        <div class="bg-white p-8 rounded-2xl shadow-lg text-center border-t-4 border-brand-500">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Registro de Asistencia</h2>
+            <p class="text-gray-600 mb-6" id="memberMeetingNameDisplay">Asamblea General</p>
+            
+            <div id="registrationForm">
+                <div class="mb-5 text-left">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo del Socio</label>
+                    <input type="text" id="memberNameInput" placeholder="Ej. Juan Pérez" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition shadow-sm">
+                </div>
+                
+                <div class="mb-6 text-left">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Número de Documento (Opcional)</label>
+                    <input type="number" id="memberDocInput" placeholder="Cédula" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition shadow-sm">
+                </div>
+
+                <button id="submitAttendanceBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Confirmar mi Asistencia
+                </button>
+            </div>
+
+            <!-- Pantalla de Éxito -->
+            <div id="successMessage" class="hidden py-8">
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">¡Asistencia Registrada!</h3>
+                <p class="text-gray-600">Gracias por asistir a la asamblea. Ya puedes tomar asiento.</p>
+                <button id="backToRegisterBtn" class="mt-6 text-sm text-brand-600 hover:underline">Registrar a otra persona en este dispositivo</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Modal de Mensajes (reemplaza alerts) -->
+<div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl">
+        <h3 class="text-lg font-bold text-gray-900 mb-2" id="modalTitle">Mensaje</h3>
+        <p class="text-gray-600 mb-4" id="modalMessage">Cuerpo del mensaje</p>
+        <div class="flex justify-end">
+            <button id="closeModalBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Importar SDKs de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Configuración del entorno (proveído por el sistema)
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'jac-asistencia-app-123';
+    let firebaseConfig = {};
+    try {
+        firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Un config mock si no hay uno real (para pruebas locales)
+            projectId: "demo-project"
+        };
+    } catch(e) {
+        console.warn("No se pudo cargar la configuración real de Firebase. Usando modo memoria.");
+    }
+
+    // Variables de Estado de la Aplicación
+    let currentMeetingId = 'reunion_actual'; // En una app real, esto podría ser dinámico
+    let totalMembersInJAC = 50;
+    let requiredQuorum = Math.floor(totalMembersInJAC / 2) + 1; // Mitad más uno
+    let attendees = [];
+    let isAdminView = true;
+    let qrCodeInstance = null;
+    let authReady = false;
+    let currentUserId = null;
+
+    // Referencias al DOM - Vista Administrador
+    const adminViewEl = document.getElementById('adminView');
+    const memberViewEl = document.getElementById('memberView');
+    const toggleViewBtn = document.getElementById('toggleViewBtn');
+    
+    const meetingNameInput = document.getElementById('meetingName');
+    const totalMembersInput = document.getElementById('totalMembers');
+    const qrcodeContainer = document.getElementById('qrcode');
+    const shareUrlDisplay = document.getElementById('shareUrlDisplay');
+    
+    const attendeeCountDisplay = document.getElementById('attendeeCountDisplay');
+    const quorumTargetDisplay = document.getElementById('quorumTargetDisplay');
+    const quorumStatusCard = document.getElementById('quorumStatusCard');
+    const quorumStatusText = document.getElementById('quorumStatusText');
+    const quorumIconCross = document.getElementById('quorumIconCross');
+    const quorumIconCheck = document.getElementById('quorumIconCheck');
+    
+    const attendeeListEl = document.getElementById('attendeeList');
+    const emptyStateMsg = document.getElementById('emptyStateMsg');
+
+    // Referencias al DOM - Vista Socio
+    const memberMeetingNameDisplay = document.getElementById('memberMeetingNameDisplay');
+    const memberNameInput = document.getElementById('memberNameInput');
+    const memberDocInput = document.getElementById('memberDocInput');
+    const submitAttendanceBtn = document.getElementById('submitAttendanceBtn');
+    const registrationForm = document.getElementById('registrationForm');
+    const successMessage = document.getElementById('successMessage');
+    const backToRegisterBtn = document.getElementById('backToRegisterBtn');
+
+    // Modal
+    const messageModal = document.getElementById('messageModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Función segura para mostrar alertas sin usar window.alert()
+    function showAlert(title, message) {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        messageModal.classList.remove('hidden');
+    }
+    
+    closeModalBtn.addEventListener('click', () => {
+        messageModal.classList.add('hidden');
+    });
+
+    let app, db, auth;
+    let isMemoryMode = !firebaseConfig.apiKey; // Si no hay apiKey, usamos solo memoria (no guardará al recargar)
+
+    if (!isMemoryMode) {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+    } else {
+        console.log("Corriendo en modo memoria local (sin persistencia en la nube)");
+        authReady = true;
+    }
+
+    // Inicializar la aplicación
+    async function initApp() {
+        if (!isMemoryMode) {
+            try {
+                // Iniciar sesión anónima obligatoria antes de usar Firestore (REGLA 3)
+                const userCredential = await signInAnonymously(auth);
+                currentUserId = userCredential.user.uid;
+                authReady = true;
+                console.log("Autenticado anónimamente:", currentUserId);
+                
+                // Empezar a escuchar cambios en vivo
+                setupLiveListener();
+            } catch (error) {
+                console.error("Error al autenticar:", error);
+                showAlert("Error", "No se pudo conectar a la base de datos.");
+                isMemoryMode = true; // Caer hacia atrás a modo memoria
+            }
+        }
+        
+        updateQRAndLink();
+        updateAdminStats();
+    }
+
+    
+    // Función para recalcular metas cuando el admin cambia el total de socios
+    totalMembersInput.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (val > 0) {
+            totalMembersInJAC = val;
+            requiredQuorum = Math.floor(totalMembersInJAC / 2) + 1; // Mitad más 1
+            updateAdminStats();
+        } else {
+            showAlert("Valor inválido", "El número de socios debe ser mayor a 0.");
+            e.target.value = totalMembersInJAC;
+        }
+    });
+
+    meetingNameInput.addEventListener('input', (e) => {
+        memberMeetingNameDisplay.textContent = e.target.value || "Asamblea General";
+        updateQRAndLink(); // Actualizar link si decidiéramos poner el nombre en la URL
+    });
+
+    // Actualizar la interfaz del administrador con los datos actuales
+    function updateAdminStats() {
+        const count = attendees.length;
+        attendeeCountDisplay.textContent = count;
+        quorumTargetDisplay.textContent = `Meta para quórum: ${requiredQuorum} (50% + 1 de ${totalMembersInJAC})`;
+
+        // Lógica de validación de Quórum
+        if (count >= requiredQuorum) {
+            // HAY QUÓRUM
+            quorumStatusCard.classList.remove('bg-red-50', 'border-red-100');
+            quorumStatusCard.classList.add('bg-green-50', 'border-green-100');
+            
+            quorumStatusText.textContent = "¡Hay Quórum!";
+            quorumStatusText.classList.remove('text-gray-900');
+            quorumStatusText.classList.add('text-green-700', 'font-bold');
+            
+            quorumIconCross.classList.add('hidden');
+            quorumIconCheck.classList.remove('hidden');
+        } else {
+            // NO HAY QUÓRUM
+            quorumStatusCard.classList.remove('bg-green-50', 'border-green-100');
+            quorumStatusCard.classList.add('bg-red-50', 'border-red-100');
+            
+            quorumStatusText.textContent = `Faltan ${requiredQuorum - count} socios para quórum`;
+            quorumStatusText.classList.remove('text-green-700', 'font-bold');
+            quorumStatusText.classList.add('text-red-700');
+            
+            quorumIconCross.classList.remove('hidden');
+            quorumIconCheck.classList.add('hidden');
+        }
+
+        renderAttendeeList();
+    }
+
+    // Renderizar la lista visual de personas que llegaron
+    function renderAttendeeList() {
+        if (attendees.length === 0) {
+            emptyStateMsg.style.display = 'block';
+            attendeeListEl.innerHTML = '';
+            attendeeListEl.appendChild(emptyStateMsg);
+            return;
+        }
+
+        emptyStateMsg.style.display = 'none';
+        attendeeListEl.innerHTML = '';
+
+        // Ordenar alfabéticamente (o por orden de llegada, aquí por llegada que es como viene el array normalmente)
+        attendees.forEach((person, index) => {
+            const li = document.createElement('li');
+            li.className = 'px-6 py-4 flex items-center justify-between fade-in';
+            // Alternar fondos ligeramente para lectura fácil
+            if (index % 2 === 0) li.classList.add('bg-white');
+            else li.classList.add('bg-gray-50');
+
+            const timeString = person.timestamp ? new Date(person.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Ahora';
+
+            li.innerHTML = `
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-sm mr-3">
+                        ${index + 1}
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">${escapeHtml(person.name)}</p>
+                        ${person.document ? `<p class="text-xs text-gray-500">Doc: ${escapeHtml(person.document)}</p>` : ''}
+                    </div>
+                </div>
+                <div class="text-xs text-gray-400">
+                    Llegada: ${timeString}
+                </div>
+            `;
+            attendeeListEl.appendChild(li);
+        });
+    }
+
+    function updateQRAndLink() {
+        // En una app real, la URL apuntaría a tu dominio público.
+        // Aquí construimos una URL falsa que contiene un parámetro para simular escanear
+        const currentUrl = window.location.href.split('?')[0]; 
+        const linkToShare = `${currentUrl}?vista=socio&reunion=${encodeURIComponent(currentMeetingId)}`;
+        
+        shareUrlDisplay.textContent = linkToShare;
+
+        // Limpiar QR anterior
+        qrcodeContainer.innerHTML = '';
+        
+        // Generar nuevo QR
+        if (typeof QRCode !== 'undefined') {
+            qrCodeInstance = new QRCode(qrcodeContainer, {
+                text: linkToShare,
+                width: 200,
+                height: 200,
+                colorDark : "#14532d", // Verde muy oscuro
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+    }
+
+    submitAttendanceBtn.addEventListener('click', async () => {
+        const name = memberNameInput.value.trim();
+        const docNum = memberDocInput.value.trim();
+
+        if (!name) {
+            showAlert("Datos requeridos", "Por favor, ingresa tu nombre completo para registrar la asistencia.");
+            return;
+        }
+
+        // Deshabilitar botón para evitar doble envío
+        submitAttendanceBtn.disabled = true;
+        submitAttendanceBtn.innerHTML = 'Guardando...';
+
+        const newAttendee = {
+            name: name,
+            document: docNum,
+            meetingId: currentMeetingId,
+            timestamp: isMemoryMode ? Date.now() : null // En firebase usaremos serverTimestamp
+        };
+
+        if (isMemoryMode) {
+            // Guardado local (simulación)
+            attendees.push(newAttendee);
+            showSuccessScreen();
+            if (isAdminView) updateAdminStats(); // Si por casualidad lo probamos en la misma vista
+        } else {
+            // Guardado real en Firestore
+            try {
+                // REGLA 1: Usar path estricto para datos públicos (para que el Admin lo vea)
+                const attendeesRef = collection(db, 'artifacts', appId, 'public', 'data', 'attendees');
+                await addDoc(attendeesRef, {
+                    ...newAttendee,
+                    timestamp: serverTimestamp() 
+                });
+                showSuccessScreen();
+            } catch (error) {
+                console.error("Error al guardar asistencia:", error);
+                showAlert("Error de conexión", "No se pudo registrar la asistencia. Intenta de nuevo.");
+            }
+        }
+
+        // Restaurar botón (por si falla o para el próximo)
+        submitAttendanceBtn.disabled = false;
+        submitAttendanceBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Confirmar mi Asistencia
+        `;
+    });
+
+    function showSuccessScreen() {
+        registrationForm.classList.add('hidden');
+        successMessage.classList.remove('hidden');
+        // Limpiar inputs
+        memberNameInput.value = '';
+        memberDocInput.value = '';
+    }
+
+    backToRegisterBtn.addEventListener('click', () => {
+        successMessage.classList.add('hidden');
+        registrationForm.classList.remove('hidden');
+    });
+
+    function setupLiveListener() {
+        if (isMemoryMode) return;
+
+        // REGLA 1: Leer del mismo path público
+        const attendeesRef = collection(db, 'artifacts', appId, 'public', 'data', 'attendees');
+        
+        // REGLA 2: Consulta simple, sin where() complejos para evitar necesidad de índices
+        // Traemos todos los de la colección 'attendees' (asumimos que limpiamos para cada reunión en la vida real)
+        const q = query(attendeesRef);
+
+        // Escuchar cambios en vivo. onSnapshot requiere callback de error
+        onSnapshot(q, (snapshot) => {
+            const newAttendeesList = [];
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                // Filtrar en memoria por la reunión actual
+                if (data.meetingId === currentMeetingId) {
+                    newAttendeesList.push({
+                        id: doc.id,
+                        name: data.name,
+                        document: data.document,
+                        // Manejo seguro del timestamp que puede ser null al principio
+                        timestamp: data.timestamp ? data.timestamp.toMillis() : Date.now()
+                    });
+                }
+            });
+
+            // Ordenar en memoria (por tiempo de llegada)
+            newAttendeesList.sort((a, b) => a.timestamp - b.timestamp);
+
+            attendees = newAttendeesList;
+            
+            // Solo actualizar UI si estamos en vista de admin
+            if (isAdminView) {
+                updateAdminStats();
+            }
+            
+        }, (error) => {
+            console.error("Error al escuchar cambios en vivo:", error);
+        });
+    }
+
+    
+    // Esta función simula lo que pasa cuando alguien escanea el código y entra a la web
+    function toggleView() {
+        isAdminView = !isAdminView;
+        
+        if (isAdminView) {
+            // Cambiar a Admin
+            adminViewEl.classList.remove('hidden');
+            memberViewEl.classList.add('hidden');
+            toggleViewBtn.textContent = 'Simular Escaneo de QR (Vista Socio)';
+            toggleViewBtn.classList.replace('bg-blue-700', 'bg-brand-700');
+            toggleViewBtn.classList.replace('hover:bg-blue-800', 'hover:bg-brand-800');
+            document.querySelector('nav').classList.replace('bg-blue-600', 'bg-brand-600');
+            updateAdminStats(); // Refrescar por si hubo cambios en memoria
+        } else {
+            // Cambiar a Socio (El que escanea)
+            adminViewEl.classList.add('hidden');
+            memberViewEl.classList.remove('hidden');
+            toggleViewBtn.textContent = 'Volver a Mesa Directiva (Admin)';
+            
+            // Cambiar color de la nav para indicar cambio de contexto
+            toggleViewBtn.classList.replace('bg-brand-700', 'bg-blue-700');
+            toggleViewBtn.classList.replace('hover:bg-brand-800', 'hover:bg-blue-800');
+            document.querySelector('nav').classList.replace('bg-brand-600', 'bg-blue-600');
+            
+            // Sincronizar el título de la reunión
+            memberMeetingNameDisplay.textContent = meetingNameInput.value || "Asamblea General";
+            
+            // Asegurar que mostramos el formulario
+            successMessage.classList.add('hidden');
+            registrationForm.classList.remove('hidden');
+        }
+    }
+
+    toggleViewBtn.addEventListener('click', toggleView);
+
+    // Pequeña función de seguridad para evitar inyección HTML básica
+    function escapeHtml(unsafe) {
+        if(!unsafe) return '';
+        return unsafe
+             .toString()
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    }
+
+    // Comprobar la URL al cargar. Si alguien "escaneó" el link, la URL tendría ?vista=socio
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('vista') === 'socio') {
+            toggleView(); // Forzar vista de socio inmediatamente
+            // Ocultar botón de admin si entró por código QR real
+            toggleViewBtn.style.display = 'none'; 
+        }
+        
+        initApp();
+    };
+
+</script>
+</body>
+</html>
