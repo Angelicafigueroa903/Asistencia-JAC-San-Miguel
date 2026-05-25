@@ -604,15 +604,54 @@
         }
 
         window.markPresentOffline = function(nombre, documento) {
-            if (listAttendees.some(att => att.documento === documento && att.mes === meetingMonth)) return;
-            const ahora = new Date();
-            listAttendees.push({
-                nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                mes: meetingMonth, fecha: meetingDateInput.value
-            });
-            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value);
-            showToast(`Asistencia guardada: ${nombre}`);
-        };
+
+    const yaExiste = listAttendees.some(att => {
+
+        return (
+            att.documento === documento &&
+            att.mes === meetingMonth
+        );
+
+    });
+
+    if (yaExiste) {
+
+        showToast(
+            "Este socio ya registró asistencia"
+        );
+
+        return;
+
+    }
+
+    const ahora = new Date();
+
+    listAttendees.push({
+
+        nombre: nombre,
+        documento: documento,
+        hora: ahora.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        }),
+        mes: meetingMonth,
+        fecha: meetingDateInput.value
+
+    });
+
+    saveConfig();
+
+    renderAttendees();
+
+    renderRosterPanel();
+
+    calculateQuorum();
+
+    showToast(
+        "Asistencia registrada"
+    );
+
+};
 
         function renderRosterManagement() {
             const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
@@ -738,14 +777,35 @@
 
 });
 
-        window.deleteRosterMember = function(cedula) {
-            if (confirm("¿Seguro de retirar este socio del directorio?")) {
-                roster = roster.filter(m => m.cedula !== cedula);
-                listAttendees = listAttendees.filter(att => att.cedula !== cedula);
-                saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum(); renderAttendees();
-                showToast("Socio removido.");
-            }
-        };
+        window.deleteRosterMember = function(documento) {
+
+    const confirmar = confirm(
+        "¿Eliminar este socio del directorio?"
+    );
+
+    if (!confirmar) return;
+
+    roster = roster.filter(
+        member => member.documento !== documento
+    );
+
+    listAttendees = listAttendees.filter(
+        att => att.documento !== documento
+    );
+
+    saveConfig();
+
+    renderRosterManagement();
+
+    renderRosterPanel();
+
+    renderAttendees();
+
+    calculateQuorum();
+
+    showToast("Socio eliminado");
+
+};
 
         window.loadDefaultRoster = function() {
             if (confirm("¿Cargar datos de prueba?")) {
@@ -854,10 +914,10 @@
                     tr.innerHTML = `
                         <td class="p-3">
                             <div class="font-bold text-slate-800">${escapeHtml(att.nombre)}</div>
-                            <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(att.cedula)} (Firma: ${att.hora})</div>
+                            <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(att.documento)} (Firma: ${att.hora})</div>
                         </td>
                         <td class="p-3 text-right">
-                            <button onclick="removeAttendance('${att.cedula}')" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg hover:bg-rose-50 transition"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                            <button onclick="removeAttendance('${att.documento}')" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg hover:bg-rose-50 transition"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
                         </td>
                     `;
                     attendeesList.appendChild(tr);
@@ -866,13 +926,34 @@
             lucide.createIcons();
         }
 
-        window.removeAttendance = function(cedula) {
-            if (confirm("¿Borrar asistencia de este socio?")) {
-                listAttendees = listAttendees.filter(att => !(att.cedula === cedula && att.mes === meetingMonth));
-                saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value);
-                showToast("Registro borrado.");
-            }
-        };
+        window.removeAttendance = function(documento) {
+
+    const confirmar = confirm(
+        "¿Eliminar asistencia de este socio?"
+    );
+
+    if (!confirmar) return;
+
+    listAttendees = listAttendees.filter(att => {
+
+        return !(
+            att.documento === documento &&
+            att.mes === meetingMonth
+        );
+
+    });
+
+    saveConfig();
+
+    renderAttendees();
+
+    renderRosterPanel();
+
+    calculateQuorum();
+
+    showToast("Asistencia eliminada");
+
+};
 
         const quickAddModal = document.getElementById('quickAddModal');
         const quickNameInput = document.getElementById('quickNameInput');
@@ -890,7 +971,16 @@
         window.submitQuickAdd = function() {
             const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
             if (!nombre || !cedula) { showToast("Ingresa nombre y documento."); return; }
-            if (listAttendees.some(att => att.documento === documento && att.mes === meetingMonth)) { showToast("Ya tiene asistencia."); return; }
+            const yaExiste = listAttendees.some(att => {
+
+    return (
+        att.cedula === cedula &&
+        att.mes === meetingMonth
+    );
+
+});
+
+if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
             const ahora = new Date();
             listAttendees.push({ nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
