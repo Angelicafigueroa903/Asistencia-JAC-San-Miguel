@@ -595,7 +595,7 @@
     lugarNacimiento: "",
     genero: "",
     rh: "",
-    edad: "",
+    edad: 0,
     cargo: "Socio"
 });
             saveConfig(); renderRosterManagement(); renderRosterPanel();
@@ -614,7 +614,7 @@
 
         window.loadDefaultRoster = function() {
             if (confirm("¿Cargar datos de prueba?")) {
-                roster = [
+                
                     roster = [
 
     {
@@ -626,7 +626,7 @@
         lugarNacimiento: "Neiva",
         genero: "Masculino",
         rh: "O+",
-        edad: "55",
+        edad: 55,
         cargo: "Presidente"
     },
 
@@ -639,7 +639,7 @@
         lugarNacimiento: "Pitalito",
         genero: "Femenino",
         rh: "A+",
-        edad: "45",
+        edad: 45,
         cargo: "Tesorera"
     },
 
@@ -652,7 +652,7 @@
         lugarNacimiento: "Garzón",
         genero: "Masculino",
         rh: "B+",
-        edad: "57",
+        edad: 57,
         cargo: "Fiscal"
     }
 
