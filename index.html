@@ -188,13 +188,57 @@
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 space-y-3 h-fit">
                         <h3 class="text-xs font-bold uppercase text-slate-500">Añadir Nuevo Socio</h3>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nombres y Apellidos</label>
-                            <input type="text" id="rosterNameInput" placeholder="Ej. Carlos Arturo Marín" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Número de Cédula</label>
-                            <input type="number" id="rosterIdInput" placeholder="Ej. 107524589" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        </div>
+    <label>Nombres y Apellidos</label>
+    <input type="text" id="rosterNameInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Tipo Documento</label>
+    <input type="text" id="tipoDocumentoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Número Documento</label>
+    <input type="text" id="rosterIdInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Lugar Expedición</label>
+    <input type="text" id="lugarExpedicionInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Fecha Nacimiento</label>
+    <input type="date" id="fechaNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Lugar Nacimiento</label>
+    <input type="text" id="lugarNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Género</label>
+    <select id="generoInput" class="w-full px-3 py-2 border rounded-lg">
+        <option>Masculino</option>
+        <option>Femenino</option>
+    </select>
+</div>
+
+<div>
+    <label>RH</label>
+    <input type="text" id="rhInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Edad</label>
+    <input type="number" id="edadInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+
+<div>
+    <label>Cargo</label>
+    <input type="text" id="cargoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
                         <button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
                             <i data-lucide="user-plus-2" class="w-4 h-4"></i>
                             Guardar en Directorio
@@ -423,6 +467,14 @@
 
         const rosterNameInput = document.getElementById('rosterNameInput');
         const rosterIdInput = document.getElementById('rosterIdInput');
+        const tipoDocumentoInput = document.getElementById('tipoDocumentoInput');
+        const lugarExpedicionInput = document.getElementById('lugarExpedicionInput');
+        const fechaNacimientoInput = document.getElementById('fechaNacimientoInput');
+        const lugarNacimientoInput = document.getElementById('lugarNacimientoInput');
+        const generoInput = document.getElementById('generoInput');
+        const rhInput = document.getElementById('rhInput');
+        const edadInput = document.getElementById('edadInput');
+        const cargoInput = document.getElementById('cargoInput');
         const addRosterMemberBtn = document.getElementById('addRosterMemberBtn');
         const rosterCountText = document.getElementById('rosterCountText');
         const rosterTableBody = document.getElementById('rosterTableBody');
@@ -634,27 +686,57 @@
         }
 
         addRosterMemberBtn.addEventListener('click', () => {
-            const nombre = rosterNameInput.value.trim();
-            const documento = rosterIdInput.value.trim();
-            if (!nombre || !cedula) { showToast("Diligencia nombre y cédula."); return; }
-            if (roster.some(m => m.cedula === cedula)) { showToast("Ya existe un socio con esa cédula."); return; }
 
-            roster.push({
-    nombre: nombre,
-    documento: documento,
-    tipoDocumento: "CC",
-    lugarExpedicion: "",
-    fechaNacimiento: "",
-    lugarNacimiento: "",
-    genero: "",
-    rh: "",
-    edad: 0,
-    cargo: "Socio"
+    const nombre = rosterNameInput.value.trim();
+    const cedula = rosterIdInput.value.trim();
+
+    if (!nombre || !cedula) {
+        showToast("Complete nombre y documento");
+        return;
+    }
+
+    if (roster.some(m => m.cedula === cedula)) {
+        showToast("Ya existe este socio");
+        return;
+    }
+
+    roster.push({
+
+        nombre: nombre,
+        tipoDocumento: tipoDocumentoInput.value,
+        cedula: cedula,
+        lugarExpedicion: lugarExpedicionInput.value,
+        fechaNacimiento: fechaNacimientoInput.value,
+        lugarNacimiento: lugarNacimientoInput.value,
+        genero: generoInput.value,
+        rh: rhInput.value,
+        edad: edadInput.value,
+        cargo: cargoInput.value
+
+    });
+
+    saveConfig();
+
+    renderRosterManagement();
+
+    renderRosterPanel();
+
+    calculateQuorum();
+
+    rosterNameInput.value = '';
+    rosterIdInput.value = '';
+    tipoDocumentoInput.value = '';
+    lugarExpedicionInput.value = '';
+    fechaNacimientoInput.value = '';
+    lugarNacimientoInput.value = '';
+    generoInput.value = '';
+    rhInput.value = '';
+    edadInput.value = '';
+    cargoInput.value = '';
+
+    showToast("Socio agregado correctamente");
+
 });
-            saveConfig(); renderRosterManagement(); renderRosterPanel();
-            rosterNameInput.value = ''; rosterIdInput.value = ''; rosterNameInput.focus();
-            showToast("Socio agregado.");
-        });
 
         window.deleteRosterMember = function(cedula) {
             if (confirm("¿Seguro de retirar este socio del directorio?")) {
