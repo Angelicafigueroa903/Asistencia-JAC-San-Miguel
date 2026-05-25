@@ -586,7 +586,18 @@
             if (!nombre || !cedula) { showToast("Diligencia nombre y cédula."); return; }
             if (roster.some(m => m.cedula === cedula)) { showToast("Ya existe un socio con esa cédula."); return; }
 
-            roster.push({ nombre: nombre, cedula: cedula });
+            roster.push({
+    nombre: nombre,
+    cedula: cedula,
+    tipoDocumento: "CC",
+    lugarExpedicion: "",
+    fechaNacimiento: "",
+    lugarNacimiento: "",
+    genero: "",
+    rh: "",
+    edad: "",
+    cargo: "Socio"
+});
             saveConfig(); renderRosterManagement(); renderRosterPanel();
             rosterNameInput.value = ''; rosterIdInput.value = ''; rosterNameInput.focus();
             showToast("Socio agregado.");
@@ -604,10 +615,48 @@
         window.loadDefaultRoster = function() {
             if (confirm("¿Cargar datos de prueba?")) {
                 roster = [
-                    { nombre: "Pedro Nel Gómez", cedula: "70123456" },
-                    { nombre: "María Custodia Ortiz", cedula: "41987654" },
-                    { nombre: "José del Carmen Rojas", cedula: "19345678" }
-                ];
+                    roster = [
+
+    {
+        nombre: "Pedro Nel Gómez",
+        cedula: "70123456",
+        tipoDocumento: "CC",
+        lugarExpedicion: "Neiva",
+        fechaNacimiento: "1970-05-10",
+        lugarNacimiento: "Neiva",
+        genero: "Masculino",
+        rh: "O+",
+        edad: "55",
+        cargo: "Presidente"
+    },
+
+    {
+        nombre: "María Custodia Ortiz",
+        cedula: "41987654",
+        tipoDocumento: "CC",
+        lugarExpedicion: "Pitalito",
+        fechaNacimiento: "1980-02-18",
+        lugarNacimiento: "Pitalito",
+        genero: "Femenino",
+        rh: "A+",
+        edad: "45",
+        cargo: "Tesorera"
+    },
+
+    {
+        nombre: "José del Carmen Rojas",
+        cedula: "19345678",
+        tipoDocumento: "CC",
+        lugarExpedicion: "Garzón",
+        fechaNacimiento: "1968-09-22",
+        lugarNacimiento: "Garzón",
+        genero: "Masculino",
+        rh: "B+",
+        edad: "57",
+        cargo: "Fiscal"
+    }
+
+];
                 saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
                 showToast("Datos cargados.");
             }
@@ -710,7 +759,22 @@
 
             const ahora = new Date();
             listAttendees.push({ nombre: nombre, cedula: cedula, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
-            if (!roster.some(m => m.cedula === cedula)) roster.push({ nombre: nombre, cedula: cedula });
+            if (!roster.some(m => m.cedula === cedula)) {
+
+    roster.push({
+        nombre: nombre,
+        cedula: cedula,
+        tipoDocumento: "CC",
+        lugarExpedicion: "",
+        fechaNacimiento: "",
+        lugarNacimiento: "",
+        genero: "",
+        rh: "",
+        edad: "",
+        cargo: "Socio"
+    });
+
+}
 
             saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
             closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
@@ -764,19 +828,72 @@
 
     }
 
+    let baseRequired = (
+        totalSocios * (quorumPercent / 100)
+    );
+
+    let requiredAttendees = plusOne
+        ? Math.floor(baseRequired) + 1
+        : Math.ceil(baseRequired);
+
+    if (requiredAttendees < 1)
+        requiredAttendees = 1;
+
+    if (requiredAttendees > totalSocios)
+        requiredAttendees = totalSocios;
+
+    const hayQuorum =
+        asistentesDelMes.length >= requiredAttendees
+            ? "SI"
+            : "NO";
+
     const datosExcel = [];
 
-    asistentesDelMes.forEach(att => {
+    asistentesDelMes.forEach((att, index) => {
+
+        const socio = roster.find(
+            r => r.cedula === att.cedula
+        ) || {};
 
         datosExcel.push({
 
-            "Nombre del Socio": att.nombre,
+            "N°": index + 1,
 
-            "Cédula": att.cedula,
+            "Mes": att.mes,
 
-            "Hora de Registro": att.hora,
+            "Fecha Reunión": att.fecha,
 
-            "Fecha": att.fecha
+            "Tipo Asamblea": meetingName,
+
+            "Nombre Completo": socio.nombre || att.nombre,
+
+            "Tipo Documento": socio.tipoDocumento || "CC",
+
+            "Número Documento": socio.cedula || att.cedula,
+
+            "Lugar Expedición": socio.lugarExpedicion || "",
+
+            "Fecha Nacimiento": socio.fechaNacimiento || "",
+
+            "Lugar Nacimiento": socio.lugarNacimiento || "",
+
+            "Género": socio.genero || "",
+
+            "RH": socio.rh || "",
+
+            "Edad": socio.edad || "",
+
+            "Cargo": socio.cargo || "Socio",
+
+            "Hora Registro": att.hora,
+
+            "Total Socios Habilitados": totalSocios,
+
+            "Asistentes Registrados": asistentesDelMes.length,
+
+            "Mínimo para Quórum": requiredAttendees,
+
+            "¿Hay Quórum?": hayQuorum
 
         });
 
@@ -797,7 +914,9 @@
         `Asistencia_JAC_${meetingMonth}.xlsx`
     );
 
-    showToast("Reporte Excel descargado");
+    showToast(
+        "Reporte completo descargado"
+    );
 
 });
 
