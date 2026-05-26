@@ -838,7 +838,7 @@
     roster.push({
 
         nombre: nombre,
-        documento: documento,
+        documento: cedula,
         tipoDocumento: tipoDocumentoInput.value,
         lugarExpedicion: lugarExpedicionInput.value,
         fechaNacimiento: fechaNacimientoInput.value,
@@ -997,7 +997,7 @@
             rows.forEach(r => r.remove());
 
             const filtered = listAttendees.filter(att => att.mes === meetingMonth).filter(att => 
-                att.nombre.toLowerCase().includes(filterQuery.toLowerCase()) || att.cedula.includes(filterQuery)
+                att.nombre.toLowerCase().includes(filterQuery.toLowerCase()) || att.documento.includes(filterQuery)
             );
 
             if (filtered.length === 0) {
