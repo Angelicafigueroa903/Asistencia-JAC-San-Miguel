@@ -7,6 +7,48 @@
     <title>Asistencia JAC San Miguel - Modo Offline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot,
+    query
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyDQW-RwUM2YPMZW1taUmRlT1UsBiHDkSlM",
+
+  authDomain: "jac-sanmiguel.firebaseapp.com",
+
+  projectId: "jac-sanmiguel",
+
+  storageBucket: "jac-sanmiguel.firebasestorage.app",
+
+  messagingSenderId: "989859968502",
+
+  appId: "1:989859968502:web:ed0ffdb758561e02cb43d7",
+
+  measurementId: "G-K8JBP2RJ5Y"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+window.db = db;
+window.collection = collection;
+window.addDoc = addDoc;
+window.onSnapshot = onSnapshot;
+window.query = query;
+
+</script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -1186,17 +1228,71 @@ function generateMeetingQR() {
             quickAddModal.classList.add('opacity-0', 'pointer-events-none');
         };
 
-        window.submitQuickAdd = function() {
-            const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
-            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
-            const yaExiste = listAttendees.some(att => {
+        window.submitQuickAdd = async function() {
 
-    return (
-        att.documento === documento &&
-        att.mes === meetingMonth
-    );
+    const nombre =
+        quickNameInput.value.trim();
 
-});
+    const documento =
+        quickIdInput.value.trim();
+
+    if (!nombre || !documento) {
+
+        showToast(
+            "Ingresa nombre y documento."
+        );
+
+        return;
+
+    }
+
+    try {
+
+        await addDoc(
+
+            collection(
+                db,
+                "asistencias"
+            ),
+
+            {
+
+                nombre: nombre,
+
+                documento: documento,
+
+                mes: meetingMonth,
+
+                fecha: meetingDateInput.value,
+
+                reunion: meetingName,
+
+                hora: new Date()
+                    .toLocaleTimeString()
+
+            }
+
+        );
+
+        closeQuickAddModal();
+
+        showToast(
+            "Asistencia registrada"
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        showToast(
+            "Error guardando asistencia"
+        );
+
+    }
+
+};
 
 if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
@@ -1891,6 +1987,38 @@ function procesarQR(textoQR) {
     }
 
 }
+        function escucharAsistenciasTiempoReal() {
+
+    const q = query(
+
+        collection(
+            db,
+            "asistencias"
+        )
+
+    );
+
+    onSnapshot(q, (snapshot) => {
+
+        listAttendees = [];
+
+        snapshot.forEach((doc) => {
+
+            listAttendees.push(
+                doc.data()
+            );
+
+        });
+
+        renderAttendees();
+
+        renderRosterPanel();
+
+        calculateQuorum();
+
+    });
+
+}
         window.onload = () => {
 
     loadSystemData();
@@ -1898,6 +2026,8 @@ function procesarQR(textoQR) {
     generarQRReunion();
 
     verificarRegistroQR();
+
+    escucharAsistenciasTiempoReal();
 
     lucide.createIcons();
 
