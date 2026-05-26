@@ -3,56 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#059669">
     <title>Asistencia JAC San Miguel - Modo Offline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    onSnapshot,
-    query
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyDQW-RwUM2YPMZW1taUmRlT1UsBiHDkSlM",
-
-  authDomain: "jac-sanmiguel.firebaseapp.com",
-
-  projectId: "jac-sanmiguel",
-
-  storageBucket: "jac-sanmiguel.firebasestorage.app",
-
-  messagingSenderId: "989859968502",
-
-  appId: "1:989859968502:web:ed0ffdb758561e02cb43d7",
-
-  measurementId: "G-K8JBP2RJ5Y"
-
-};
-
-const app = initializeApp(firebaseConfig);
-
-const db = getFirestore(app);
-
-window.db = db;
-window.collection = collection;
-window.addDoc = addDoc;
-window.onSnapshot = onSnapshot;
-window.query = query;
-
-</script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* Estilos personalizados para scrollbars más limpias */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -141,41 +95,7 @@ window.query = query;
                     </div>
                 </div>
             </div>
-<!-- QR DE ASISTENCIA -->
-<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-6">
-    
-    <div class="flex flex-col md:flex-row items-center gap-6">
 
-        <div class="flex flex-col items-center">
-            <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <i data-lucide="qr-code" class="w-5 h-5 text-emerald-600"></i>
-                Código QR de la Reunión
-            </h2>
-
-            <div id="qrcode" class="bg-white p-4 rounded-xl border"></div>
-
-            <p class="text-xs text-slate-500 mt-3 text-center">
-                Escanee este QR para registrar asistencia
-            </p>
-        </div>
-
-        <div class="flex-1">
-            <div class="bg-slate-50 rounded-xl p-4 border">
-                <p class="text-xs text-slate-500 uppercase font-bold">
-                    Información del QR
-                </p>
-
-                <div class="mt-2 space-y-1 text-sm">
-                    <p><b>Asamblea:</b> <span id="qrMeetingName"></span></p>
-                    <p><b>Fecha:</b> <span id="qrMeetingDate"></span></p>
-                    <p><b>Mes:</b> <span id="qrMeetingMonth"></span></p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-</div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
@@ -202,14 +122,6 @@ window.query = query;
                             <i data-lucide="user-plus" class="w-4 h-4"></i>
                             Registrar socio nuevo (no en lista)
                         </button>
-                        <button onclick="startQRScanner()" 
-class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-blue-200">
-
-    <i data-lucide="qr-code" class="w-4 h-4"></i>
-
-    Escanear Código QR
-
-</button>
                     </div>
                 </div>
 
@@ -286,7 +198,7 @@ class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold 
     <select id="tipoDocumentoInput"
         class="w-full px-3 py-2 border rounded-lg">
 
-        <option value="C.C">C.C</option>
+        <option value="CC">C.C</option>
         <option value="TI">T.I</option>
 
     </select>
@@ -460,19 +372,6 @@ class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold 
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Tipo de Asamblea</label>
                             <input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" value="Asamblea General Ordinaria">
                         </div>
-                     <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 text-center">
-
-    <h4 class="text-xs font-bold text-slate-600 mb-3">
-        Código QR de la Reunión
-    </h4>
-
-    <canvas id="meetingQR" class="mx-auto"></canvas>
-
-    <p id="qrTextLabel"
-       class="text-[10px] text-slate-400 mt-3 break-all">
-    </p>
-
-</div>
                     </div>
 
                     <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
@@ -552,36 +451,7 @@ class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold 
             </div>
         </div>
     </div>
-<!-- MODAL QR -->
 
-<div id="qrModal"
-class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-300">
-
-    <div class="bg-white rounded-2xl p-5 w-full max-w-md">
-
-        <div class="flex justify-between items-center mb-4">
-
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-
-                <i data-lucide="qr-code" class="w-5 h-5 text-blue-600"></i>
-
-                Escanear QR
-
-            </h3>
-
-            <button onclick="closeQRScanner()">
-
-                <i data-lucide="x" class="w-5 h-5"></i>
-
-            </button>
-
-        </div>
-
-        <div id="qr-reader" class="w-full"></div>
-
-    </div>
-
-</div>
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50">
         <i data-lucide="info" class="text-emerald-400 w-4.5 h-4.5"></i>
         <span id="toastMessage">Mensaje</span>
@@ -782,7 +652,7 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
                 card.innerHTML = `
                     <div>
                         <div class="font-bold text-slate-800 text-xs">${escapeHtml(member.nombre)}</div>
-                        <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(member.tipoDocumento)} ${escapeHtml(member.documento)}</div>
+                        <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(member.documento)}</div>
                     </div>
                     ${isPresent ? `
                         <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[10px] font-black flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i>PRESENTE</span>
@@ -1041,7 +911,7 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
     {
         nombre: "Pedro Nel Gómez",
         documento: "70123456",
-        tipoDocumento: "C.C",
+        tipoDocumento: "CC",
         lugarExpedicion: "Neiva",
         fechaNacimiento: "1970-05-10",
         lugarNacimiento: "Neiva",
@@ -1054,7 +924,7 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
     {
         nombre: "María Custodia Ortiz",
         documento: "41987654",
-        tipoDocumento: "C.C",
+        tipoDocumento: "CC",
         lugarExpedicion: "Pitalito",
         fechaNacimiento: "1980-02-18",
         lugarNacimiento: "Pitalito",
@@ -1067,7 +937,7 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
     {
         nombre: "José del Carmen Rojas",
         documento: "19345678",
-        tipoDocumento: "C.C",
+        tipoDocumento: "CC",
         lugarExpedicion: "Garzón",
         fechaNacimiento: "1968-09-22",
         lugarNacimiento: "Garzón",
@@ -1082,41 +952,7 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
                 showToast("Datos cargados.");
             }
         };
-function generateMeetingQR() {
 
-    const fecha = meetingDateInput.value || "SIN_FECHA";
-
-    const qrContenido =
-        `JAC|SAN_MIGUEL|${meetingMonth}|${fecha}`;
-
-    const canvas =
-        document.getElementById('meetingQR');
-
-    QRCode.toCanvas(
-        canvas,
-        qrContenido,
-        {
-            width: 220,
-            margin: 2
-        },
-        function(error) {
-
-            if (error) {
-
-                console.error(error);
-
-                return;
-
-            }
-
-        }
-    );
-
-    document.getElementById(
-        'qrTextLabel'
-    ).textContent = qrContenido;
-
-}
         function calculateQuorum() {
             const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
             const presentCount = asistenciasMes.length;
@@ -1228,71 +1064,17 @@ function generateMeetingQR() {
             quickAddModal.classList.add('opacity-0', 'pointer-events-none');
         };
 
-        window.submitQuickAdd = async function() {
+        window.submitQuickAdd = function() {
+            const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
+            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
+            const yaExiste = listAttendees.some(att => {
 
-    const nombre =
-        quickNameInput.value.trim();
+    return (
+        att.documento === documento &&
+        att.mes === meetingMonth
+    );
 
-    const documento =
-        quickIdInput.value.trim();
-
-    if (!nombre || !documento) {
-
-        showToast(
-            "Ingresa nombre y documento."
-        );
-
-        return;
-
-    }
-
-    try {
-
-        await addDoc(
-
-            collection(
-                db,
-                "asistencias"
-            ),
-
-            {
-
-                nombre: nombre,
-
-                documento: documento,
-
-                mes: meetingMonth,
-
-                fecha: meetingDateInput.value,
-
-                reunion: meetingName,
-
-                hora: new Date()
-                    .toLocaleTimeString()
-
-            }
-
-        );
-
-        closeQuickAddModal();
-
-        showToast(
-            "Asistencia registrada"
-        );
-
-    }
-
-    catch(error) {
-
-        console.error(error);
-
-        showToast(
-            "Error guardando asistencia"
-        );
-
-    }
-
-};
+});
 
 if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
@@ -1303,7 +1085,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
     roster.push({
         nombre: nombre,
         documento: documento,
-        tipoDocumento: "C.C",
+        tipoDocumento: "CC",
         lugarExpedicion: "",
         fechaNacimiento: "",
         lugarNacimiento: "",
@@ -1320,56 +1102,13 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
         };
 
         // Eventos
-       meetingMonthInput.addEventListener('change', (e) => {
+        meetingMonthInput.addEventListener('change', (e) => {
+            meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
+            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
+        });
 
-    meetingMonth = e.target.value;
-
-    badgeMonth.textContent =
-        meetingMonth.toUpperCase();
-
-    saveConfig();
-
-    calculateQuorum();
-
-    renderAttendees();
-
-    renderRosterPanel(
-        searchRosterInput.value
-    );
-
-    generateMeetingQR();
-
-    showToast(
-        `Mes cambiado a: ${meetingMonth}`
-    );
-
-});
-
-        meetingDateInput.addEventListener(
-    'change',
-    () => {
-
-        saveConfig();
-
-        generateMeetingQR();
-
-    }
-);
-       meetingNameInput.addEventListener(
-    'input',
-    (e) => {
-
-        meetingName = e.target.value;
-
-        currentMeetingLabel.textContent =
-            meetingName;
-
-        saveConfig();
-
-        generateMeetingQR();
-
-    }
-); 
+        meetingDateInput.addEventListener('change', () => saveConfig());
+        meetingNameInput.addEventListener('input', (e) => { meetingName = e.target.value; currentMeetingLabel.textContent = meetingName; saveConfig(); });
 
         updateSociosBtn.addEventListener('click', () => {
             const val = parseInt(totalSociosInput.value);
@@ -1381,25 +1120,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
         searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
         searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
-meetingDateInput.addEventListener('change', () => {
 
-    saveConfig();
-
-    generarQRReunion();
-
-});
-
-meetingMonthInput.addEventListener('change', () => {
-
-    generarQRReunion();
-
-});
-
-meetingNameInput.addEventListener('input', () => {
-
-    generarQRReunion();
-
-});
         resetMeetingBtn.addEventListener('click', () => {
             if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
                 listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
@@ -1467,7 +1188,7 @@ meetingNameInput.addEventListener('input', () => {
 
             "Nombre Completo": socio.nombre || att.nombre,
 
-            "Tipo Documento": socio.tipoDocumento || "C.C",
+            "Tipo Documento": socio.tipoDocumento || "CC",
 
             "Número Documento": socio.documento || att.documento,
 
@@ -1619,9 +1340,8 @@ importRosterFile.addEventListener('change', function(event) {
                     lugarExpedicion:
                         row["LUGAR EXPEDICION"] || "",
 
-                    fechaNacimiento: convertirFechaExcel(
-    row["FECHA NACIMIENTO"]
-),
+                    fechaNacimiento:
+                        row["FECHA NACIMIENTO"] || "",
 
                     lugarNacimiento:
                         row["LUGAR NACIMIENTO"] || "",
@@ -1755,58 +1475,6 @@ importRosterFile.addEventListener('change', function(event) {
 
 }
 
-function convertirFechaExcel(fecha) {
-
-    if (!fecha) return "";
-
-    // Si viene como número de Excel
-    if (!isNaN(fecha)) {
-
-        const excelDate = Number(fecha);
-
-        const jsDate = new Date(
-            (excelDate - 25569) * 86400 * 1000
-        );
-
-        const year = jsDate.getFullYear();
-        const month = String(
-            jsDate.getMonth() + 1
-        ).padStart(2, '0');
-
-        const day = String(
-            jsDate.getDate()
-        ).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    // Si viene tipo 01/30/94
-    if (fecha.includes('/')) {
-
-        const partes = fecha.split('/');
-
-        let mes = partes[0];
-        let dia = partes[1];
-        let anio = partes[2];
-
-        // convertir 94 → 1994
-        if (anio.length === 2) {
-
-            anio = parseInt(anio) > 30
-                ? `19${anio}`
-                : `20${anio}`;
-        }
-
-        return `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
-    }
-
-    // Si ya viene YYYY-MM-DD
-    if (fecha.includes('-')) {
-        return fecha;
-    }
-
-    return fecha;
-}        
 function formatearFecha(fecha) {
 
     if (!fecha) return '';
@@ -1836,202 +1504,39 @@ function formatearFecha(fecha) {
     return fecha;
 
 }
-let qrScanner = null;
 
-window.startQRScanner = function() {
+    if (!fecha) return '';
 
-    const modal = document.getElementById('qrModal');
+    // Si es número de Excel
+    if (!isNaN(fecha)) {
 
-    modal.classList.remove(
-        'opacity-0',
-        'pointer-events-none'
-    );
+        const excelDate = Number(fecha);
 
-    qrScanner = new Html5Qrcode("qr-reader");
-
-    qrScanner.start(
-
-        { facingMode: "environment" },
-
-        {
-            fps: 10,
-            qrbox: 250
-        },
-
-        function(decodedText) {
-
-            procesarQR(decodedText);
-
-        },
-
-        function(error) {
-            // ignorar errores de lectura
-        }
-
-    );
-
-};
-
-window.closeQRScanner = function() {
-
-    const modal = document.getElementById('qrModal');
-
-    modal.classList.add(
-        'opacity-0',
-        'pointer-events-none'
-    );
-
-    if (qrScanner) {
-
-        qrScanner.stop().then(() => {
-
-            qrScanner.clear();
-
-        });
-
-    }
-
-};
-
-function procesarQR(textoQR) {
-
-    // EJEMPLO QR:
-    // 12345678
-
-    function procesarQR(textoQR) {
-
-    if (textoQR === "ASISTENCIA_JAC") {
-
-        closeQRScanner();
-
-        showToast(
-            "QR válido. Busque el socio."
+        const jsDate = new Date(
+            (excelDate - 25569) * 86400 * 1000
         );
 
-        document
-            .getElementById('searchRosterInput')
-            .focus();
-
-        return;
-    }
-
-    showToast("QR no válido");
-
-}
-
-    if (!socio) {
-
-        showToast("Socio no encontrado");
-
-        return;
+        return jsDate.toLocaleDateString('es-CO');
 
     }
 
-    markPresentOffline(
-        socio.nombre,
-        socio.documento
-    );
+    // Si viene YYYY-MM-DD
+    if (fecha.includes('-')) {
 
-    closeQRScanner();
+        const partes = fecha.split('-');
 
-}
-      function generarQRReunion() {
-
-    const qrContainer =
-        document.getElementById('qrcode');
-
-    qrContainer.innerHTML = "";
-
-    const datosQR =
-    "https://TU-ENLACE.netlify.app" +
-    `?registro=1&mes=${meetingMonth}`;
-
-    new QRCode(qrContainer, {
-
-        text: datosQR,
-        width: 220,
-        height: 220
-
-    });
-
-    document.getElementById(
-        'qrMeetingName'
-    ).textContent = meetingName;
-
-    document.getElementById(
-        'qrMeetingDate'
-    ).textContent =
-        meetingDateInput.value;
-
-    document.getElementById(
-        'qrMeetingMonth'
-    ).textContent =
-        meetingMonth;
-
-}  
-        function verificarRegistroQR() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    if (params.get('registro') === '1') {
-
-        openQuickAddModal();
-
-        showToast(
-            "Escaneo QR detectado"
-        );
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
 
     }
 
-}
-        function escucharAsistenciasTiempoReal() {
-
-    const q = query(
-
-        collection(
-            db,
-            "asistencias"
-        )
-
-    );
-
-    onSnapshot(q, (snapshot) => {
-
-        listAttendees = [];
-
-        snapshot.forEach((doc) => {
-
-            listAttendees.push(
-                doc.data()
-            );
-
-        });
-
-        renderAttendees();
-
-        renderRosterPanel();
-
-        calculateQuorum();
-
-    });
+    return fecha;
 
 }
-        window.onload = () => {
-
-    loadSystemData();
-
-    generarQRReunion();
-
-    verificarRegistroQR();
-
-    escucharAsistenciasTiempoReal();
-
-    lucide.createIcons();
-
-};
+}
+        window.onload = () => { 
+            loadSystemData(); 
+            lucide.createIcons(); 
+        };
     </script>
 </body>
 </html>
