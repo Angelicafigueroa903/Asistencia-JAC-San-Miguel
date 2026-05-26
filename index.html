@@ -194,7 +194,14 @@
 
 <div>
     <label>Tipo Documento</label>
-    <input type="text" id="tipoDocumentoInput" class="w-full px-3 py-2 border rounded-lg">
+
+    <select id="tipoDocumentoInput"
+        class="w-full px-3 py-2 border rounded-lg">
+
+        <option value="CC">C.C</option>
+        <option value="TI">T.I</option>
+
+    </select>
 </div>
 
 <div>
@@ -232,7 +239,14 @@
 
 <div>
     <label>Edad</label>
-    <input type="number" id="edadInput" class="w-full px-3 py-2 border rounded-lg">
+
+    <input
+        type="number"
+        id="edadInput"
+        readonly
+        class="w-full px-3 py-2 border rounded-lg bg-slate-100"
+    >
+
 </div>
 
 <div>
@@ -475,6 +489,43 @@
         const rhInput = document.getElementById('rhInput');
         const edadInput = document.getElementById('edadInput');
         const cargoInput = document.getElementById('cargoInput');
+        fechaNacimientoInput.addEventListener('change', () => {
+
+    if (!fechaNacimientoInput.value) {
+
+        edadInput.value = '';
+
+        return;
+
+    }
+
+    const hoy = new Date();
+
+    const nacimiento = new Date(
+        fechaNacimientoInput.value
+    );
+
+    let edad =
+        hoy.getFullYear() -
+        nacimiento.getFullYear();
+
+    const mes =
+        hoy.getMonth() -
+        nacimiento.getMonth();
+
+    if (
+        mes < 0 ||
+        (
+            mes === 0 &&
+            hoy.getDate() < nacimiento.getDate()
+        )
+    ) {
+        edad--;
+    }
+
+    edadInput.value = edad;
+
+});
         const addRosterMemberBtn = document.getElementById('addRosterMemberBtn');
         const rosterCountText = document.getElementById('rosterCountText');
         const rosterTableBody = document.getElementById('rosterTableBody');
