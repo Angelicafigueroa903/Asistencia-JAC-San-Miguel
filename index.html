@@ -717,6 +717,7 @@
 
         function renderRosterManagement() {
             const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
+            console.log(roster);
             rows.forEach(r => r.remove());
 
             rosterCountText.textContent = `Socios Registrados: ${roster.length} activos`;
@@ -734,8 +735,9 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                tr.innerHTML = `
+
 <td class="p-3 font-bold text-slate-800">
-    ${escapeHtml(member.nombre)}
+    ${escapeHtml(member.nombre || '')}
 </td>
 
 <td class="p-3">
@@ -743,7 +745,7 @@
 </td>
 
 <td class="p-3 text-slate-500 font-mono">
-    ${escapeHtml(member.documento)}
+    ${escapeHtml(member.documento || '')}
 </td>
 
 <td class="p-3">
@@ -751,7 +753,7 @@
 </td>
 
 <td class="p-3">
-    ${formatearFecha(member.fechaNacimiento)}
+    ${formatearFecha(member.fechaNacimiento || '')}
 </td>
 
 <td class="p-3">
@@ -775,13 +777,15 @@
 </td>
 
 <td class="p-3 text-right">
-    <button onclick="deleteRosterMember('${member.documento}')"
+    <button
+        onclick="deleteRosterMember('${member.documento}')"
         class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition">
 
         <i data-lucide="trash-2" class="w-4 h-4"></i>
 
     </button>
 </td>
+
 `;
                 rosterTableBody.appendChild(tr);
             });
