@@ -1341,8 +1341,9 @@ importRosterFile.addEventListener('change', function(event) {
                     lugarExpedicion:
                         row["LUGAR EXPEDICION"] || "",
 
-                    fechaNacimiento:
-                        row["FECHA NACIMIENTO"] || "",
+                    fechaNacimiento: convertirFechaExcel(
+    row["FECHA NACIMIENTO"]
+),
 
                     lugarNacimiento:
                         row["LUGAR NACIMIENTO"] || "",
@@ -1476,6 +1477,58 @@ importRosterFile.addEventListener('change', function(event) {
 
 }
 
+function convertirFechaExcel(fecha) {
+
+    if (!fecha) return "";
+
+    // Si viene como número de Excel
+    if (!isNaN(fecha)) {
+
+        const excelDate = Number(fecha);
+
+        const jsDate = new Date(
+            (excelDate - 25569) * 86400 * 1000
+        );
+
+        const year = jsDate.getFullYear();
+        const month = String(
+            jsDate.getMonth() + 1
+        ).padStart(2, '0');
+
+        const day = String(
+            jsDate.getDate()
+        ).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+    // Si viene tipo 01/30/94
+    if (fecha.includes('/')) {
+
+        const partes = fecha.split('/');
+
+        let mes = partes[0];
+        let dia = partes[1];
+        let anio = partes[2];
+
+        // convertir 94 → 1994
+        if (anio.length === 2) {
+
+            anio = parseInt(anio) > 30
+                ? `19${anio}`
+                : `20${anio}`;
+        }
+
+        return `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+    }
+
+    // Si ya viene YYYY-MM-DD
+    if (fecha.includes('-')) {
+        return fecha;
+    }
+
+    return fecha;
+}        
 function formatearFecha(fecha) {
 
     if (!fecha) return '';
