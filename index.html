@@ -1846,13 +1846,9 @@ function procesarQR(textoQR) {
 
     qrContainer.innerHTML = "";
 
-    const datosQR = JSON.stringify({
-
-        reunion: meetingName,
-        fecha: meetingDateInput.value,
-        mes: meetingMonth
-
-    });
+    const datosQR =
+    window.location.href +
+    `?registro=1&mes=${meetingMonth}`;
 
     new QRCode(qrContainer, {
 
@@ -1877,11 +1873,31 @@ function procesarQR(textoQR) {
         meetingMonth;
 
 }  
+        function verificarRegistroQR() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    if (params.get('registro') === '1') {
+
+        openQuickAddModal();
+
+        showToast(
+            "Escaneo QR detectado"
+        );
+
+    }
+
+}
         window.onload = () => {
 
     loadSystemData();
 
     generarQRReunion();
+
+    verificarRegistroQR();
 
     lucide.createIcons();
 
