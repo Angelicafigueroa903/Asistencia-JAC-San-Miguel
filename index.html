@@ -727,29 +727,57 @@
         addRosterMemberBtn.addEventListener('click', () => {
 
     const nombre = rosterNameInput.value.trim();
-    const cedula = rosterIdInput.value.trim();
+    const documento = rosterIdInput.value.trim();
 
-    if (!nombre || !cedula) {
+    if (!nombre || !documento) {
+
         showToast("Complete nombre y documento");
+
         return;
+
     }
 
-    if (roster.some(m => m.cedula === cedula)) {
+    if (roster.some(m => m.documento === documento)) {
+
         showToast("Ya existe este socio");
+
         return;
+
+    }
+
+    // calcular edad automática
+    let edad = "";
+
+    if (fechaNacimientoInput.value) {
+
+        const hoy = new Date();
+
+        const nacimiento = new Date(fechaNacimientoInput.value);
+
+        edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+        const m = hoy.getMonth() - nacimiento.getMonth();
+
+        if (
+            m < 0 ||
+            (m === 0 && hoy.getDate() < nacimiento.getDate())
+        ) {
+            edad--;
+        }
+
     }
 
     roster.push({
 
         nombre: nombre,
+        documento: documento,
         tipoDocumento: tipoDocumentoInput.value,
-        cedula: cedula,
         lugarExpedicion: lugarExpedicionInput.value,
         fechaNacimiento: fechaNacimientoInput.value,
         lugarNacimiento: lugarNacimientoInput.value,
         genero: generoInput.value,
         rh: rhInput.value,
-        edad: edadInput.value,
+        edad: edad,
         cargo: cargoInput.value
 
     });
@@ -970,11 +998,11 @@
 
         window.submitQuickAdd = function() {
             const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
-            if (!nombre || !cedula) { showToast("Ingresa nombre y documento."); return; }
+            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
             const yaExiste = listAttendees.some(att => {
 
     return (
-        att.cedula === cedula &&
+        att.documento === documento &&
         att.mes === meetingMonth
     );
 
@@ -1077,7 +1105,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
     asistentesDelMes.forEach((att, index) => {
 
         const socio = roster.find(
-            r => r.cedula === att.cedula
+            r => r.documento === att.documento
         ) || {};
 
         datosExcel.push({
@@ -1206,7 +1234,7 @@ importRosterFile.addEventListener('change', function(event) {
                         cleanKey.includes("documento") ||
                         cleanKey === "cc"
                     ) {
-                        cedula = row[key].toString().trim();
+                        documento = row[key].toString().trim();
                     }
 
                 });
