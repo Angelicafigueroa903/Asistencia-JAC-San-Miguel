@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <style>
         /* Estilos personalizados para scrollbars más limpias */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -382,6 +383,19 @@ class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold 
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Tipo de Asamblea</label>
                             <input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" value="Asamblea General Ordinaria">
                         </div>
+                     <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 text-center">
+
+    <h4 class="text-xs font-bold text-slate-600 mb-3">
+        Código QR de la Reunión
+    </h4>
+
+    <canvas id="meetingQR" class="mx-auto"></canvas>
+
+    <p id="qrTextLabel"
+       class="text-[10px] text-slate-400 mt-3 break-all">
+    </p>
+
+</div>
                     </div>
 
                     <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
@@ -991,7 +1005,41 @@ class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-
                 showToast("Datos cargados.");
             }
         };
+function generateMeetingQR() {
 
+    const fecha = meetingDateInput.value || "SIN_FECHA";
+
+    const qrContenido =
+        `JAC|SAN_MIGUEL|${meetingMonth}|${fecha}`;
+
+    const canvas =
+        document.getElementById('meetingQR');
+
+    QRCode.toCanvas(
+        canvas,
+        qrContenido,
+        {
+            width: 220,
+            margin: 2
+        },
+        function(error) {
+
+            if (error) {
+
+                console.error(error);
+
+                return;
+
+            }
+
+        }
+    );
+
+    document.getElementById(
+        'qrTextLabel'
+    ).textContent = qrContenido;
+
+}
         function calculateQuorum() {
             const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
             const presentCount = asistenciasMes.length;
@@ -1141,13 +1189,56 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
         };
 
         // Eventos
-        meetingMonthInput.addEventListener('change', (e) => {
-            meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
-            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
-        });
+       meetingMonthInput.addEventListener('change', (e) => {
 
-        meetingDateInput.addEventListener('change', () => saveConfig());
-        meetingNameInput.addEventListener('input', (e) => { meetingName = e.target.value; currentMeetingLabel.textContent = meetingName; saveConfig(); });
+    meetingMonth = e.target.value;
+
+    badgeMonth.textContent =
+        meetingMonth.toUpperCase();
+
+    saveConfig();
+
+    calculateQuorum();
+
+    renderAttendees();
+
+    renderRosterPanel(
+        searchRosterInput.value
+    );
+
+    generateMeetingQR();
+
+    showToast(
+        `Mes cambiado a: ${meetingMonth}`
+    );
+
+});
+
+        meetingDateInput.addEventListener(
+    'change',
+    () => {
+
+        saveConfig();
+
+        generateMeetingQR();
+
+    }
+);
+       meetingNameInput.addEventListener(
+    'input',
+    (e) => {
+
+        meetingName = e.target.value;
+
+        currentMeetingLabel.textContent =
+            meetingName;
+
+        saveConfig();
+
+        generateMeetingQR();
+
+    }
+); 
 
         updateSociosBtn.addEventListener('click', () => {
             const val = parseInt(totalSociosInput.value);
@@ -1696,10 +1787,15 @@ function procesarQR(textoQR) {
 
 }
         
-        window.onload = () => { 
-            loadSystemData(); 
-            lucide.createIcons(); 
-        };
+        window.onload = () => {
+
+    loadSystemData();
+
+    generateMeetingQR();
+
+    lucide.createIcons();
+
+};
     </script>
 </body>
 </html>
