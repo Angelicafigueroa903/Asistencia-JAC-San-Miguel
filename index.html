@@ -1263,10 +1263,11 @@ importRosterFile.addEventListener('change', function(event) {
 
             const worksheet = workbook.Sheets[sheetName];
 
-            const jsonData = XLSX.utils.sheet_to_json(
-                worksheet,
-                { defval: "" }
-            );
+           const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+    defval: "",
+    raw: false,
+    dateNF: 'dd/mm/yyyy'
+}); 
 
             let nuevos = 0;
 
@@ -1323,7 +1324,7 @@ importRosterFile.addEventListener('change', function(event) {
                         row["NOMBRES Y APELLIDOS"] || "",
 
                     tipoDocumento:
-                        row["TIPO DOCUMENTO"] || "CC",
+                        row["TIPO DOCUMENTO"] || "C.C",
 
                     documento:
                         documento,
@@ -1347,7 +1348,7 @@ importRosterFile.addEventListener('change', function(event) {
                         edad,
 
                     cargo:
-                        row["CARGO"] || "AFILIADO"
+                        row["CARGO"] || "Afiliado"
 
                 });
 
