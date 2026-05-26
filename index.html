@@ -274,6 +274,15 @@
         Cargar Excel de Socios
 
     </button>
+                            
+       <button 
+    onclick="downloadExcelTemplate()"
+    class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+
+    <i data-lucide="download" class="w-4 h-4"></i>
+    Descargar Formato Excel
+
+</button>                     
 
     <p class="text-[10px] text-slate-400 mt-2 text-center">
         Formato: Nombre Completo | Documento
@@ -1254,58 +1263,95 @@ importRosterFile.addEventListener('change', function(event) {
 
             const worksheet = workbook.Sheets[sheetName];
 
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-                defval: ""
-            });
+            const jsonData = XLSX.utils.sheet_to_json(
+                worksheet,
+                { defval: "" }
+            );
 
             let nuevos = 0;
 
             jsonData.forEach(row => {
 
-                const keys = Object.keys(row);
+                const documento =
+                    row["NUMERO DOCUMENTO"]
+                        ?.toString()
+                        .trim();
 
-                let nombre = "";
-                let documento = "";
-
-                keys.forEach(key => {
-
-                    const cleanKey = key
-                        .toString()
-                        .trim()
-                        .toLowerCase();
-
-                    if (
-                        cleanKey.includes("nombre")
-                    ) {
-                        nombre = row[key].toString().trim();
-                    }
-
-                    if (
-                        cleanKey.includes("documento") ||
-                        cleanKey.includes("documento") ||
-                        cleanKey === "cc"
-                    ) {
-                        documento = row[key].toString().trim();
-                    }
-
-                });
-
-                if (!nombre || !documento) return;
+                if (!documento) return;
 
                 const existe = roster.some(
                     m => m.documento === documento
                 );
 
-                if (!existe) {
+                if (existe) return;
 
-                    roster.push({
-                        nombre: nombre,
-                        documento: documento
-                    });
+                // calcular edad automática
+                let edad = "";
 
-                    nuevos++;
+                if (row["FECHA NACIMIENTO"]) {
+
+                    const hoy = new Date();
+
+                    const nacimiento = new Date(
+                        row["FECHA NACIMIENTO"]
+                    );
+
+                    edad =
+                        hoy.getFullYear() -
+                        nacimiento.getFullYear();
+
+                    const m =
+                        hoy.getMonth() -
+                        nacimiento.getMonth();
+
+                    if (
+                        m < 0 ||
+                        (
+                            m === 0 &&
+                            hoy.getDate() <
+                            nacimiento.getDate()
+                        )
+                    ) {
+                        edad--;
+                    }
 
                 }
+
+                roster.push({
+
+                    nombre:
+                        row["NOMBRES Y APELLIDOS"] || "",
+
+                    tipoDocumento:
+                        row["TIPO DOCUMENTO"] || "CC",
+
+                    documento:
+                        documento,
+
+                    lugarExpedicion:
+                        row["LUGAR EXPEDICION"] || "",
+
+                    fechaNacimiento:
+                        row["FECHA NACIMIENTO"] || "",
+
+                    lugarNacimiento:
+                        row["LUGAR NACIMIENTO"] || "",
+
+                    genero:
+                        row["GENERO"] || "",
+
+                    rh:
+                        row["RH"] || "",
+
+                    edad:
+                        edad,
+
+                    cargo:
+                        row["CARGO"] || "AFILIADO"
+
+                });
+
+                nuevos++;
 
             });
 
@@ -1318,14 +1364,16 @@ importRosterFile.addEventListener('change', function(event) {
             calculateQuorum();
 
             showToast(
-                `${nuevos} socios cargados desde Excel`
+                `${nuevos} socios cargados`
             );
 
         } catch(error) {
 
             console.error(error);
 
-            showToast("Error leyendo Excel");
+            showToast(
+                "Error leyendo Excel"
+            );
 
         }
 
@@ -1334,6 +1382,89 @@ importRosterFile.addEventListener('change', function(event) {
     reader.readAsArrayBuffer(file);
 
 });
+        function downloadExcelTemplate() {
+
+    const datos = [
+
+        {
+            "NOMBRES Y APELLIDOS": "",
+            "TIPO DOCUMENTO": "CC",
+            "NUMERO DOCUMENTO": "",
+            "LUGAR EXPEDICION": "",
+            "FECHA NACIMIENTO": "1990-01-01",
+            "LUGAR NACIMIENTO": "",
+            "GENERO": "Masculino",
+            "RH": "O+",
+            "CARGO": "AFILIADO"
+        }
+
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(datos);
+
+    // ancho columnas
+    worksheet['!cols'] = [
+
+        { wch: 35 },
+        { wch: 18 },
+        { wch: 22 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 10 },
+        { wch: 20 }
+
+    ];
+
+    // aplicar fuente
+    const range = XLSX.utils.decode_range(
+        worksheet['!ref']
+    );
+
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+
+            const cellAddress = XLSX.utils.encode_cell({
+                r: R,
+                c: C
+            });
+
+            if (!worksheet[cellAddress]) continue;
+
+            worksheet[cellAddress].s = {
+
+                font: {
+                    name: "Palatino Linotype",
+                    sz: 12,
+                    bold: R === 0
+                }
+
+            };
+
+        }
+
+    }
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "SOCIOS"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        "FORMATO_SOCIOS_JAC.xlsx"
+    );
+
+    showToast(
+        "Formato Excel descargado"
+    );
+
+}
         window.onload = () => { loadSystemData(); lucide.createIcons(); };
     </script>
 </body>
