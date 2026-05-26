@@ -1,1891 +1,1339 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-50">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#059669">
-    <title>Asistencia JAC San Miguel - Modo Offline</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        /* Estilos personalizados para scrollbars más limpias */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#059669">
+<title>Asistencia JAC San Miguel - Modo Offline</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+/* Estilos personalizados para scrollbars más limpias */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
 </head>
 <body class="h-full text-slate-800 flex flex-col antialiased select-none">
-
-    <header class="bg-emerald-600 text-white shadow-md shrink-0">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-emerald-700 rounded-xl shadow-inner">
-                    <i data-lucide="users" class="w-7 h-7 text-emerald-100"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight">JAC San Miguel</h1>
-                    <p class="text-xs text-emerald-100 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                        Sistema de Control Local 100% Offline
-                    </p>
-                </div>
-            </div>
-            
-            <nav class="flex bg-emerald-700/50 p-1 rounded-xl">
-                <button onclick="switchTab('asistencia')" id="tab-asistencia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-750 shadow-sm flex items-center gap-1.5">
-                    <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
-                    Asistencia
-                </button>
-                <button onclick="switchTab('directorio')" id="tab-directorio" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
-                    <i data-lucide="contact-2" class="w-3.5 h-3.5"></i>
-                    Directorio
-                </button>
-                <button onclick="switchTab('config')" id="tab-config" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
-                    <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-                    Ajustes JAC
-                </button>
-            </nav>
-        </div>
-    </header>
-
-    <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:py-6 overflow-y-auto">
-        
-        <div id="section-asistencia" class="space-y-6">
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                
-                <div id="quorumCard" class="md:col-span-2 p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between shadow-sm bg-white border-slate-100">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Verificación de Quórum</p>
-                            <h3 id="quorumStatusText" class="text-xl font-black mt-0.5">Calculando...</h3>
-                        </div>
-                        <span id="quorumIcon" class="p-2 rounded-xl">
-                            <i data-lucide="shield-alert" class="w-5 h-5"></i>
-                        </span>
-                    </div>
-                    <div>
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 mb-1.5 overflow-hidden">
-                            <div id="quorumProgressBar" class="h-full bg-slate-300 transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <p class="text-[11px] text-slate-500 font-medium" id="quorumHelperText">Cargando...</p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <i data-lucide="user-check" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Socios Presentes</p>
-                        <h4 class="text-2xl font-black text-slate-800" id="presentCountText">0</h4>
-                        <p class="text-[11px] text-slate-500" id="presentPercentText">0% de asistencia</p>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                    <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
-                        <i data-lucide="book-open" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Habilitados Hoy</p>
-                        <h4 class="text-2xl font-black text-slate-800" id="totalSociosText">0</h4>
-                        <p class="text-[11px] text-slate-500" id="quorumMinText">Mínimo para quórum: 0</p>
-                    </div>
-                </div>
-            </div>
-<!-- QR DE ASISTENCIA -->
-<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-6">
-    
-    <div class="flex flex-col md:flex-row items-center gap-6">
-
-        <div class="flex flex-col items-center">
-            <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                <i data-lucide="qr-code" class="w-5 h-5 text-emerald-600"></i>
-                Código QR de la Reunión
-            </h2>
-
-            <div id="qrcode" class="bg-white p-4 rounded-xl border"></div>
-
-            <p class="text-xs text-slate-500 mt-3 text-center">
-                Escanee este QR para registrar asistencia
-            </p>
-        </div>
-
-        <div class="flex-1">
-            <div class="bg-slate-50 rounded-xl p-4 border">
-                <p class="text-xs text-slate-500 uppercase font-bold">
-                    Información del QR
-                </p>
-
-                <div class="mt-2 space-y-1 text-sm">
-                    <p><b>Asamblea:</b> <span id="qrMeetingName"></span></p>
-                    <p><b>Fecha:</b> <span id="qrMeetingDate"></span></p>
-                    <p><b>Mes:</b> <span id="qrMeetingMonth"></span></p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
+<header class="bg-emerald-600 text-white shadow-md shrink-0">
+<div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-emerald-700 rounded-xl shadow-inner">
+<i data-lucide="users" class="w-7 h-7 text-emerald-100"></i>
 </div>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
-                    <div class="mb-4">
-                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="list-todo" class="text-emerald-600 w-5 h-5"></i>
-                            Marcar Asistencia Rápida
-                        </h2>
-                        <p class="text-xs text-slate-500">Haz clic en "Registrar" al lado de cada socio para guardarlo.</p>
-                    </div>
+<div>
+<h1 class="text-lg font-bold tracking-tight">JAC San Miguel</h1>
+<p class="text-xs text-emerald-100 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+Sistema de Control Local 100% Offline
+</p>
+</div>
+</div>
 
-                    <div class="relative mb-3">
-                        <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
-                        <input type="text" id="searchRosterInput" placeholder="Escribe el nombre del socio para buscarlo..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                    </div>
-
-                    <div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50/50 p-2 custom-scrollbar">
-                        <div id="rosterListContainer" class="space-y-2">
-                            </div>
-                    </div>
-                    
-                    <div class="mt-3 pt-3 border-t border-slate-150 flex gap-2">
-                        <button onclick="openQuickAddModal()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-emerald-200">
-                            <i data-lucide="user-plus" class="w-4 h-4"></i>
-                            Registrar socio nuevo (no en lista)
-                        </button>
-                        <button onclick="startQRScanner()" 
-class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-blue-200">
-
-    <i data-lucide="qr-code" class="w-4 h-4"></i>
-
-    Escanear Código QR
-
+<nav class="flex bg-emerald-700/50 p-1 rounded-xl">
+<button onclick="switchTab('asistencia')" id="tab-asistencia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-750 shadow-sm flex items-center gap-1.5">
+<i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+Asistencia
 </button>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
-                    <div class="mb-4">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                                <i data-lucide="user-check" class="text-emerald-600 w-5 h-5"></i>
-                                Socios Registrados
-                            </h2>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold uppercase" id="badgeMonth">
-                                MAYO
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-500" id="currentMeetingLabel">Asamblea General Ordinaria</p>
-                    </div>
-
-                    <div class="relative mb-3">
-                        <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
-                        <input type="text" id="searchAttendee" placeholder="Filtrar registrados..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                    </div>
-
-                    <div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50 custom-scrollbar">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 sticky top-0 text-slate-500 font-bold uppercase text-[9px] tracking-wider z-10">
-                                <tr>
-                                    <th class="p-3">Socio</th>
-                                    <th class="p-3 text-right">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="attendeesList" class="divide-y divide-slate-100">
-                                <tr id="emptyAttendeesRow">
-                                    <td colspan="2" class="p-8 text-center text-slate-400">
-                                        <i data-lucide="clipboard-signature" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-                                        Nadie ha registrado asistencia en este mes todavía.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-3 pt-3 border-t border-slate-100">
-                        <button id="exportCsvBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                            Exportar Reporte a Excel (.CSV)
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div id="section-directorio" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-1">
-                        <i data-lucide="contact-2" class="text-emerald-600 w-5 h-5"></i>
-                        Directorio de Socios de la Vereda
-                    </h2>
-                    <p class="text-xs text-slate-500">Agrega o elimina todos los socios con derecho a voto en tu JAC. Esto se configura una sola vez.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 space-y-3 h-fit">
-                        <h3 class="text-xs font-bold uppercase text-slate-500">Añadir Nuevo Socio</h3>
-                        <div>
-    <label>Nombres y Apellidos</label>
-    <input type="text" id="rosterNameInput" class="w-full px-3 py-2 border rounded-lg">
+<button onclick="switchTab('directorio')" id="tab-directorio" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
+<i data-lucide="contact-2" class="w-3.5 h-3.5"></i>
+Directorio
+</button>
+<button onclick="switchTab('config')" id="tab-config" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
+<i data-lucide="settings" class="w-3.5 h-3.5"></i>
+Ajustes JAC
+</button>
+</nav>
 </div>
+</header>
+<main class="flex-1 max-w-6xl w-full mx-auto p-4 md:py-6 overflow-y-auto">
 
+<div id="section-asistencia" class="space-y-6">
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+<div id="quorumCard" class="md:col-span-2 p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between shadow-sm bg-white border-slate-100">
+<div class="flex justify-between items-start mb-2">
 <div>
-    <label>Tipo Documento</label>
-
-    <select id="tipoDocumentoInput"
-        class="w-full px-3 py-2 border rounded-lg">
-
-        <option value="C.C">C.C</option>
-        <option value="TI">T.I</option>
-
-    </select>
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Verificación de Quórum</p>
+<h3 id="quorumStatusText" class="text-xl font-black mt-0.5">Calculando...</h3>
 </div>
-
+<span id="quorumIcon" class="p-2 rounded-xl">
+<i data-lucide="shield-alert" class="w-5 h-5"></i>
+</span>
+</div>
 <div>
-    <label>Número Documento</label>
-    <input type="text" id="rosterIdInput" class="w-full px-3 py-2 border rounded-lg">
+<div class="w-full bg-slate-100 rounded-full h-2.5 mb-1.5 overflow-hidden">
+<div id="quorumProgressBar" class="h-full bg-slate-300 transition-all duration-500" style="width: 0%"></div>
 </div>
-
+<p class="text-[11px] text-slate-500 font-medium" id="quorumHelperText">Cargando...</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+<div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+<i data-lucide="user-check" class="w-5 h-5"></i>
+</div>
 <div>
-    <label>Lugar Expedición</label>
-    <input type="text" id="lugarExpedicionInput" class="w-full px-3 py-2 border rounded-lg">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Socios Presentes</p>
+<h4 class="text-2xl font-black text-slate-800" id="presentCountText">0</h4>
+<p class="text-[11px] text-slate-500" id="presentPercentText">0% de asistencia</p>
 </div>
-
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+<div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+<i data-lucide="book-open" class="w-5 h-5"></i>
+</div>
 <div>
-    <label>Fecha Nacimiento</label>
-    <input type="date" id="fechaNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Habilitados Hoy</p>
+<h4 class="text-2xl font-black text-slate-800" id="totalSociosText">0</h4>
+<p class="text-[11px] text-slate-500" id="quorumMinText">Mínimo para quórum: 0</p>
+</div>
+</div>
 </div>
 
-<div>
-    <label>Lugar Nacimiento</label>
-    <input type="text" id="lugarNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+<div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
+<div class="mb-4">
+<h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+<i data-lucide="list-todo" class="text-emerald-600 w-5 h-5"></i>
+Marcar Asistencia Rápida
+</h2>
+<p class="text-xs text-slate-500">Haz clic en "Registrar" al lado de cada socio para guardarlo.</p>
+</div>
+<div class="relative mb-3">
+<i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+<input type="text" id="searchRosterInput" placeholder="Escribe el nombre del socio para buscarlo..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+</div>
+<div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50/50 p-2 custom-scrollbar">
+<div id="rosterListContainer" class="space-y-2">
+</div>
 </div>
 
-<div>
-    <label>Género</label>
-    <select id="generoInput" class="w-full px-3 py-2 border rounded-lg">
-        <option>Masculino</option>
-        <option>Femenino</option>
-    </select>
+<div class="mt-3 pt-3 border-t border-slate-150 flex gap-2">
+<button onclick="openQuickAddModal()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-emerald-200">
+<i data-lucide="user-plus" class="w-4 h-4"></i>
+Registrar socio nuevo (no en lista)
+</button>
+<button onclick="startQRScanner()"
+class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-blue-200">
+<i data-lucide="qr-code" class="w-4 h-4"></i>
+Escanear Código QR de Socio
+</button>
 </div>
-
-<div>
-    <label>RH</label>
-    <input type="text" id="rhInput" class="w-full px-3 py-2 border rounded-lg">
 </div>
-
-<div>
-    <label>Edad</label>
-
-    <input
-        type="number"
-        id="edadInput"
-        readonly
-        class="w-full px-3 py-2 border rounded-lg bg-slate-100"
-    >
-
+<div class="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
+<div class="mb-4">
+<div class="flex justify-between items-center">
+<h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+<i data-lucide="user-check" class="text-emerald-600 w-5 h-5"></i>
+Socios Registrados
+</h2>
+<span class="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold uppercase" id="badgeMonth">
+MAYO
+</span>
 </div>
-
-<div>
-    <label>Cargo</label>
-    <input type="text" id="cargoInput" class="w-full px-3 py-2 border rounded-lg">
+<p class="text-xs text-slate-500" id="currentMeetingLabel">Asamblea General Ordinaria</p>
 </div>
-                        <button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
-                            <i data-lucide="user-plus-2" class="w-4 h-4"></i>
-                            Guardar en Directorio
-                        </button>
-                        <div class="pt-4 border-t border-slate-200">
-
-    <input 
-        type="file"
-        id="importRosterFile"
-        accept=".xlsx,.xls"
-        class="hidden"
-    >
-
-    <button 
-        onclick="document.getElementById('importRosterFile').click()"
-        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
-
-        <i data-lucide="upload" class="w-4 h-4"></i>
-        Cargar Excel de Socios
-
-    </button>
-                            
-       <button 
-    onclick="downloadExcelTemplate()"
-    class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
-
-    <i data-lucide="download" class="w-4 h-4"></i>
-    Descargar Formato Excel
-
-</button>                     
-
-    <p class="text-[10px] text-slate-400 mt-2 text-center">
-        Formato: Nombre Completo | Documento
-    </p>
-
+<div class="relative mb-3">
+<i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-4 h-4"></i>
+<input type="text" id="searchAttendee" placeholder="Filtrar registrados..." class="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
 </div>
-                    </div>
-
-                    <div class="md:col-span-2 flex flex-col h-[400px]">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-slate-500" id="rosterCountText">Cargando directorio...</span>
-                            <button onclick="loadDefaultRoster()" class="text-emerald-600 hover:text-emerald-800 text-[11px] font-bold flex items-center gap-1">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                                Cargar Socios de Prueba
-                            </button>
-                        </div>
-                        <div class="flex-1 border border-slate-100 rounded-xl bg-slate-50/50 overflow-y-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-100 sticky top-0 text-slate-500 font-bold uppercase text-[9px] tracking-wider z-10">
-                                    <tr>
-    <th class="p-3">Nombre</th>
-    <th class="p-3">Tipo Doc.</th>
-    <th class="p-3">Documento</th>
-    <th class="p-3">Lugar Exp.</th>
-    <th class="p-3">Fecha Nac.</th>
-    <th class="p-3">Lugar Nac.</th>
-    <th class="p-3">Género</th>
-    <th class="p-3">RH</th>
-    <th class="p-3">Edad</th>
-    <th class="p-3">Cargo</th>
-    <th class="p-3 text-right">Acción</th>
+<div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50 custom-scrollbar">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-100 sticky top-0 text-slate-500 font-bold uppercase text-[9px] tracking-wider z-10">
+<tr>
+<th class="p-3">Socio</th>
+<th class="p-3 text-right">Acción</th>
 </tr>
-                                </thead>
-                                <tbody id="rosterTableBody" class="divide-y divide-slate-100">
-                                    <tr id="emptyRosterRow">
-                                        <td colspan="11" class="p-8 text-center text-slate-400">
-                                            <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
-                                            Aún no has agregado socios a la lista general.
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="section-config" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-1">
-                        <i data-lucide="settings" class="text-emerald-600 w-5 h-5"></i>
-                        Ajustes Generales de la Asamblea
-                    </h2>
-                    <p class="text-xs text-slate-500">Controla el mes de trabajo, el nombre de la reunión y las condiciones legales del quórum.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
-                        <h3 class="text-xs font-bold uppercase text-slate-500 flex items-center gap-1.5 border-b pb-1.5 border-slate-200">
-                            <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
-                            Fechas y Título
-                        </h3>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mes de la Reunión</label>
-                            <select id="meetingMonthInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                                <option value="Enero">Enero</option>
-                                <option value="Febrero">Febrero</option>
-                                <option value="Marzo">Marzo</option>
-                                <option value="Abril">Abril</option>
-                                <option value="Mayo">Mayo</option>
-                                <option value="Junio">Junio</option>
-                                <option value="Julio">Julio</option>
-                                <option value="Agosto">Agosto</option>
-                                <option value="Septiembre">Septiembre</option>
-                                <option value="Octubre">Octubre</option>
-                                <option value="Noviembre">Noviembre</option>
-                                <option value="Diciembre">Diciembre</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha de la Asamblea</label>
-                            <input type="date" id="meetingDateInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Tipo de Asamblea</label>
-                            <input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" value="Asamblea General Ordinaria">
-                        </div>
-                     <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 text-center">
-
-    <h4 class="text-xs font-bold text-slate-600 mb-3">
-        Código QR de la Reunión
-    </h4>
-
-    <canvas id="meetingQR" class="mx-auto"></canvas>
-
-    <p id="qrTextLabel"
-       class="text-[10px] text-slate-400 mt-3 break-all">
-    </p>
-
+</thead>
+<tbody id="attendeesList" class="divide-y divide-slate-100">
+<tr id="emptyAttendeesRow">
+<td colspan="2" class="p-8 text-center text-slate-400">
+<i data-lucide="clipboard-signature" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+Nadie ha registrado asistencia en este mes todavía.
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-                    </div>
 
-                    <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
-                        <h3 class="text-xs font-bold uppercase text-slate-500 flex items-center gap-1.5 border-b pb-1.5 border-slate-200">
-                            <i data-lucide="scale" class="w-4 h-4 text-emerald-600"></i>
-                            Reglas de Socios y Quórum
-                        </h3>
-                        
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Número de Socios Habilitados</label>
-                            <div class="flex gap-2">
-                                <input type="number" id="totalSociosInput" min="1" class="w-full px-3 py-2 text-sm font-bold rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" value="300">
-                                <button id="updateSociosBtn" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Establecer</button>
-                            </div>
-                        </div>
+<div class="mt-3 pt-3 border-t border-slate-100">
+<button id="exportCsvBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+<i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+Exportar Reporte a Excel (.CSV)
+</button>
+</div>
+</div>
+</div>
+</div>
+<div id="section-directorio" class="hidden space-y-6">
+<div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+<div>
+<h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-1">
+<i data-lucide="contact-2" class="text-emerald-600 w-5 h-5"></i>
+Directorio de Socios de la Vereda
+</h2>
+<p class="text-xs text-slate-500">Agrega o elimina todos los socios con derecho a voto en tu JAC.
+Esto se configura una sola vez.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-slate-50 p-4 rounded-xl border border-slate-150 space-y-3 h-fit">
+<h3 class="text-xs font-bold uppercase text-slate-500">Añadir Nuevo Socio</h3>
+<div>
+<label>Nombres y Apellidos</label>
+<input type="text" id="rosterNameInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Tipo Documento</label>
+<select id="tipoDocumentoInput"
+class="w-full px-3 py-2 border rounded-lg">
+<option value="C.C">C.C</option>
+<option value="TI">T.I</option>
+</select>
+</div>
+<div>
+<label>Número Documento</label>
+<input type="text" id="rosterIdInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Lugar Expedición</label>
+<input type="text" id="lugarExpedicionInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Fecha Nacimiento</label>
+<input type="date" id="fechaNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Lugar Nacimiento</label>
+<input type="text" id="lugarNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Género</label>
+<select id="generoInput" class="w-full px-3 py-2 border rounded-lg">
+<option>Masculino</option>
+<option>Femenino</option>
+</select>
+</div>
+<div>
+<label>RH</label>
+<input type="text" id="rhInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<div>
+<label>Edad</label>
+<input
+type="number"
+id="edadInput"
+readonly
+class="w-full px-3 py-2 border rounded-lg bg-slate-100"
+>
+</div>
+<div>
+<label>Cargo</label>
+<input type="text" id="cargoInput" class="w-full px-3 py-2 border rounded-lg">
+</div>
+<button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+<i data-lucide="user-plus-2" class="w-4 h-4"></i>
+Guardar en Directorio
+</button>
+<div class="pt-4 border-t border-slate-200">
+<input
+type="file"
+id="importRosterFile"
+accept=".xlsx,.xls"
+class="hidden"
+>
+<button
+onclick="document.getElementById('importRosterFile').click()"
+class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+<i data-lucide="upload" class="w-4 h-4"></i>
+Cargar Excel de Socios
+</button>
 
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Porcentaje Requerido</label>
-                            <div class="flex items-center gap-2">
-                                <input type="range" id="quorumPercentInput" min="1" max="100" value="50" class="w-full accent-emerald-600">
-                                <span id="quorumPercentLabel" class="text-xs font-black text-slate-700 w-10 text-right">50%</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 bg-white p-3 rounded-lg border border-slate-200">
-                            <input type="checkbox" id="plusOneCheck" checked class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                            <div>
-                                <label for="plusOneCheck" class="text-xs font-bold text-slate-700 block">Sumar un Socio (+1)</label>
-                                <span class="text-[10px] text-slate-400">Mitad de asistentes + 1 (Fórmula clásica de quórum de ley).</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<button
+onclick="downloadExcelTemplate()"
+class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+<i data-lucide="download" class="w-4 h-4"></i>
+Descargar Formato Excel
+</button>
+<p class="text-[10px] text-slate-400 mt-2 text-center">
+Formato: Nombre Completo | Documento
+</p>
+</div>
+</div>
+<div class="md:col-span-2 flex flex-col h-[400px]">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-bold text-slate-500" id="rosterCountText">Cargando directorio...</span>
+<button onclick="loadDefaultRoster()" class="text-emerald-600 hover:text-emerald-800 text-[11px] font-bold flex items-center gap-1">
+<i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+Cargar Socios de Prueba
+</button>
+</div>
+<div class="flex-1 border border-slate-100 rounded-xl bg-slate-50/50 overflow-y-auto custom-scrollbar">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-100 sticky top-0 text-slate-500 font-bold uppercase text-[9px] tracking-wider z-10">
+<tr>
+<th class="p-3">Nombre</th>
+<th class="p-3">Tipo Doc.</th>
+<th class="p-3">Documento</th>
+<th class="p-3">Lugar Exp.</th>
+<th class="p-3">Fecha Nac.</th>
+<th class="p-3">Lugar Nac.</th>
+<th class="p-3">Género</th>
+<th class="p-3">RH</th>
+<th class="p-3">Edad</th>
+<th class="p-3">Cargo</th>
+<th class="p-3 text-right">Acción</th>
+</tr>
+</thead>
+<tbody id="rosterTableBody" class="divide-y divide-slate-100">
+<tr id="emptyRosterRow">
+<td colspan="11" class="p-8 text-center text-slate-400">
+<i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+Aún no has agregado socios a la lista general.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="section-config" class="hidden space-y-6">
+<div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+<div>
+<h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-1">
+<i data-lucide="settings" class="text-emerald-600 w-5 h-5"></i>
+Ajustes Generales de la Asamblea
+</h2>
+<p class="text-xs text-slate-500">Controla el mes de trabajo, el nombre de la reunión y las condiciones legales del quórum.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
+<h3 class="text-xs font-bold uppercase text-slate-500 flex items-center gap-1.5 border-b pb-1.5 border-slate-200">
+<i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+Fechas y Título
+</h3>
+<div>
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mes de la Reunión</label>
+<select id="meetingMonthInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+<option value="Enero">Enero</option>
+<option value="Febrero">Febrero</option>
+<option value="Marzo">Marzo</option>
+<option value="Abril">Abril</option>
+<option value="Mayo">Mayo</option>
+<option value="Junio">Junio</option>
+<option value="Julio">Julio</option>
+<option value="Agosto">Agosto</option>
+<option value="Septiembre">Septiembre</option>
+<option value="Octubre">Octubre</option>
+<option value="Noviembre">Noviembre</option>
+<option value="Diciembre">Diciembre</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha de la Asamblea</label>
+<input type="date" id="meetingDateInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Tipo de Asamblea</label>
+<input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" value="Asamblea General Ordinaria">
+</div>
+</div>
+<div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
+<h3 class="text-xs font-bold uppercase text-slate-500 flex items-center gap-1.5 border-b pb-1.5 border-slate-200">
+<i data-lucide="scale" class="w-4 h-4 text-emerald-600"></i>
+Reglas de Socios y Quórum
+</h3>
 
-                <div class="pt-4 border-t border-slate-100 flex flex-wrap gap-3">
-                    <button id="resetMeetingBtn" class="py-2 px-4 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-rose-100">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                        Borrar Asistencia de Este Mes
-                    </button>
-                    <button onclick="hardResetSystem()" class="py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ml-auto">
-                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-                        Restablecer Todo de Fábrica
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="bg-white border-t border-slate-100 text-center py-4 text-slate-400 text-xs shrink-0 font-medium">
-        <p>&copy; 2026 Junta de Acción Comunal Vereda San Miguel. Base de datos guardada en memoria local de tu dispositivo.</p>
-    </footer>
-
-    <div id="quickAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-350">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 flex items-center gap-1.5">
-                    <i data-lucide="user-plus-2" class="text-emerald-600 w-5 h-5"></i>
-                    Socio Nuevo (Firma Manual)
-                </h3>
-                <button onclick="closeQuickAddModal()" class="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nombre Completo</label>
-                    <input type="text" id="quickNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Número de Cédula</label>
-                    <input type="number" id="quickIdInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium font-mono">
-                </div>
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeQuickAddModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition">Cancelar</button>
-                <button onclick="submitQuickAdd()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Registrar Entrada</button>
-            </div>
-        </div>
-    </div>
-<!-- MODAL QR -->
-
+<div>
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Número de Socios Habilitados</label>
+<div class="flex gap-2">
+<input type="number" id="totalSociosInput" min="1" class="w-full px-3 py-2 text-sm font-bold rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" value="300">
+<button id="updateSociosBtn" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Establecer</button>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Porcentaje Requerido</label>
+<div class="flex items-center gap-2">
+<input type="range" id="quorumPercentInput" min="1" max="100" value="50" class="w-full accent-emerald-600">
+<span id="quorumPercentLabel" class="text-xs font-black text-slate-700 w-10 text-right">50%</span>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-white p-3 rounded-lg border border-slate-200">
+<input type="checkbox" id="plusOneCheck" checked class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+<div>
+<label for="plusOneCheck" class="text-xs font-bold text-slate-700 block">Sumar un Socio (+1)</label>
+<span class="text-[10px] text-slate-400">Mitad de asistentes + 1 (Fórmula clásica de quórum de ley).</span>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-100 flex flex-wrap gap-3">
+<button id="resetMeetingBtn" class="py-2 px-4 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-rose-100">
+<i data-lucide="refresh-cw" class="w-4 h-4"></i>
+Borrar Asistencia de Este Mes
+</button>
+<button onclick="hardResetSystem()" class="py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ml-auto">
+<i data-lucide="alert-triangle" class="w-4 h-4"></i>
+Restablecer Todo de Fábrica
+</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white border-t border-slate-100 text-center py-4 text-slate-400 text-xs shrink-0 font-medium">
+<p>&copy; 2026 Junta de Acción Comunal Vereda San Miguel. Base de datos guardada en memoria local de tu dispositivo.</p>
+</footer>
+<div id="quickAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-350">
+<div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="font-bold text-slate-800 flex items-center gap-1.5">
+<i data-lucide="user-plus-2" class="text-emerald-600 w-5 h-5"></i>
+Socio Nuevo (Firma Manual)
+</h3>
+<button onclick="closeQuickAddModal()" class="text-slate-400 hover:text-slate-600">
+<i data-lucide="x" class="w-5 h-5"></i>
+</button>
+</div>
+<div class="space-y-3">
+<div>
+<label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nombre Completo</label>
+<input type="text" id="quickNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+</div>
+<div>
+<label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Número de Cédula</label>
+<input type="number" id="quickIdInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium font-mono">
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button onclick="closeQuickAddModal()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition">Cancelar</button>
+<button onclick="submitQuickAdd()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Registrar Entrada</button>
+</div>
+</div>
+</div>
 <div id="qrModal"
 class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-300">
-
-    <div class="bg-white rounded-2xl p-5 w-full max-w-md">
-
-        <div class="flex justify-between items-center mb-4">
-
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-
-                <i data-lucide="qr-code" class="w-5 h-5 text-blue-600"></i>
-
-                Escanear QR
-
-            </h3>
-
-            <button onclick="closeQRScanner()">
-
-                <i data-lucide="x" class="w-5 h-5"></i>
-
-            </button>
-
-        </div>
-
-        <div id="qr-reader" class="w-full"></div>
-
-    </div>
-
+<div class="bg-white rounded-2xl p-5 w-full max-w-md">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-slate-800 flex items-center gap-2">
+<i data-lucide="qr-code" class="w-5 h-5 text-blue-600"></i>
+Escanear QR de Socio
+</h3>
+<button onclick="closeQRScanner()">
+<i data-lucide="x" class="w-5 h-5"></i>
+</button>
 </div>
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50">
-        <i data-lucide="info" class="text-emerald-400 w-4.5 h-4.5"></i>
-        <span id="toastMessage">Mensaje</span>
-    </div>
+<div id="qr-reader" class="w-full"></div>
+</div>
+</div>
+<div id="toast" class="fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50">
+<i data-lucide="info" class="text-emerald-400 w-4.5 h-4.5"></i>
+<span id="toastMessage">Mensaje</span>
+</div>
+<script>
+// --- AQUÍ SE CAMBIA EN JAVASCRIPT SI SE QUIERE MODIFICAR EL CÓDIGO BASE ---
+let totalSocios = 300;
+let quorumPercent = 50;
+let plusOne = true;
+let meetingName = "Asamblea General Ordinaria";
+let meetingMonth = "Mayo";
+let listAttendees = [];
+let roster = [];
+const meetingMonthInput = document.getElementById('meetingMonthInput');
+const meetingDateInput = document.getElementById('meetingDateInput');
+const meetingNameInput = document.getElementById('meetingNameInput');
+const totalSociosInput = document.getElementById('totalSociosInput');
+const updateSociosBtn = document.getElementById('updateSociosBtn');
+const quorumPercentInput = document.getElementById('quorumPercentInput');
+const quorumPercentLabel = document.getElementById('quorumPercentLabel');
+const plusOneCheck = document.getElementById('plusOneCheck');
+const totalSociosText = document.getElementById('totalSociosText');
+const quorumMinText = document.getElementById('quorumMinText');
+const presentCountText = document.getElementById('presentCountText');
+const presentPercentText = document.getElementById('presentPercentText');
+const quorumStatusText = document.getElementById('quorumStatusText');
+const quorumHelperText = document.getElementById('quorumHelperText');
+const quorumProgressBar = document.getElementById('quorumProgressBar');
+const quorumCard = document.getElementById('quorumCard');
+const quorumIcon = document.getElementById('quorumIcon');
+const badgeMonth = document.getElementById('badgeMonth');
+const currentMeetingLabel = document.getElementById('currentMeetingLabel');
+const rosterNameInput = document.getElementById('rosterNameInput');
+const rosterIdInput = document.getElementById('rosterIdInput');
+const tipoDocumentoInput = document.getElementById('tipoDocumentoInput');
+const lugarExpedicionInput = document.getElementById('lugarExpedicionInput');
+const fechaNacimientoInput = document.getElementById('fechaNacimientoInput');
+const lugarNacimientoInput = document.getElementById('lugarNacimientoInput');
+const generoInput = document.getElementById('generoInput');
+const rhInput = document.getElementById('rhInput');
+const edadInput = document.getElementById('edadInput');
+const cargoInput = document.getElementById('cargoInput');
 
-    <script>
-        // --- AQUÍ SE CAMBIA EN JAVASCRIPT SI SE QUIERE MODIFICAR EL CÓDIGO BASE ---
-        let totalSocios = 300; 
-        let quorumPercent = 50;
-        let plusOne = true;
-        let meetingName = "Asamblea General Ordinaria";
-        let meetingMonth = "Mayo";
-        let listAttendees = []; 
-        let roster = []; 
-
-        const meetingMonthInput = document.getElementById('meetingMonthInput');
-        const meetingDateInput = document.getElementById('meetingDateInput');
-        const meetingNameInput = document.getElementById('meetingNameInput');
-        const totalSociosInput = document.getElementById('totalSociosInput');
-        const updateSociosBtn = document.getElementById('updateSociosBtn');
-        const quorumPercentInput = document.getElementById('quorumPercentInput');
-        const quorumPercentLabel = document.getElementById('quorumPercentLabel');
-        const plusOneCheck = document.getElementById('plusOneCheck');
-
-        const totalSociosText = document.getElementById('totalSociosText');
-        const quorumMinText = document.getElementById('quorumMinText');
-        const presentCountText = document.getElementById('presentCountText');
-        const presentPercentText = document.getElementById('presentPercentText');
-        const quorumStatusText = document.getElementById('quorumStatusText');
-        const quorumHelperText = document.getElementById('quorumHelperText');
-        const quorumProgressBar = document.getElementById('quorumProgressBar');
-        const quorumCard = document.getElementById('quorumCard');
-        const quorumIcon = document.getElementById('quorumIcon');
-        const badgeMonth = document.getElementById('badgeMonth');
-        const currentMeetingLabel = document.getElementById('currentMeetingLabel');
-
-        const rosterNameInput = document.getElementById('rosterNameInput');
-        const rosterIdInput = document.getElementById('rosterIdInput');
-        const tipoDocumentoInput = document.getElementById('tipoDocumentoInput');
-        const lugarExpedicionInput = document.getElementById('lugarExpedicionInput');
-        const fechaNacimientoInput = document.getElementById('fechaNacimientoInput');
-        const lugarNacimientoInput = document.getElementById('lugarNacimientoInput');
-        const generoInput = document.getElementById('generoInput');
-        const rhInput = document.getElementById('rhInput');
-        const edadInput = document.getElementById('edadInput');
-        const cargoInput = document.getElementById('cargoInput');
-        fechaNacimientoInput.addEventListener('change', () => {
-
-    if (!fechaNacimientoInput.value) {
-
-        edadInput.value = '';
-
-        return;
-
-    }
-
-    const hoy = new Date();
-
-    const nacimiento = new Date(
-        fechaNacimientoInput.value
-    );
-
-    let edad =
-        hoy.getFullYear() -
-        nacimiento.getFullYear();
-
-    const mes =
-        hoy.getMonth() -
-        nacimiento.getMonth();
-
-    if (
-        mes < 0 ||
-        (
-            mes === 0 &&
-            hoy.getDate() < nacimiento.getDate()
-        )
-    ) {
-        edad--;
-    }
-
-    edadInput.value = edad;
-
-});
-        const addRosterMemberBtn = document.getElementById('addRosterMemberBtn');
-        const rosterCountText = document.getElementById('rosterCountText');
-        const rosterTableBody = document.getElementById('rosterTableBody');
-        const emptyRosterRow = document.getElementById('emptyRosterRow');
-
-        const searchAttendee = document.getElementById('searchAttendee');
-        const searchRosterInput = document.getElementById('searchRosterInput');
-        const rosterListContainer = document.getElementById('rosterListContainer');
-        const attendeesList = document.getElementById('attendeesList');
-        const emptyAttendeesRow = document.getElementById('emptyAttendeesRow');
-        const resetMeetingBtn = document.getElementById('resetMeetingBtn');
-        const exportCsvBtn = document.getElementById('exportCsvBtn');
-        const importRosterFile = document.getElementById('importRosterFile');
-
-        function loadSystemData() {
-            const hoy = new Date();
-            meetingDateInput.value = hoy.toISOString().split('T')[0];
-
-            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            meetingMonth = meses[hoy.getMonth()];
-            meetingMonthInput.value = meetingMonth;
-            badgeMonth.textContent = meetingMonth.toUpperCase();
-
-            if (localStorage.getItem('jac_total_offline')) {
-                totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
-                totalSociosInput.value = totalSocios;
-            }
-            if (localStorage.getItem('jac_percent_offline')) {
-                quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
-                quorumPercentInput.value = quorumPercent;
-                quorumPercentLabel.textContent = `${quorumPercent}%`;
-            }
-            if (localStorage.getItem('jac_plusone_offline')) {
-                plusOne = localStorage.getItem('jac_plusone_offline') === 'true';
-                plusOneCheck.checked = plusOne;
-            }
-            if (localStorage.getItem('jac_name_offline')) {
-                meetingName = localStorage.getItem('jac_name_offline');
-                meetingNameInput.value = meetingName;
-                currentMeetingLabel.textContent = meetingName;
-            }
-            if (localStorage.getItem('jac_month_offline')) {
-                meetingMonth = localStorage.getItem('jac_month_offline');
-                meetingMonthInput.value = meetingMonth;
-                badgeMonth.textContent = meetingMonth.toUpperCase();
-            }
-            if (localStorage.getItem('jac_date_offline')) {
-                meetingDateInput.value = localStorage.getItem('jac_date_offline');
-            }
-            if (localStorage.getItem('jac_attendees_offline')) {
-                listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
-            }
-            if (localStorage.getItem('jac_roster_offline')) {
-                roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
-            } else {
-                roster = [];
-            }
-
-            calculateQuorum();
-            renderAttendees();
-            renderRosterPanel();
-            renderRosterManagement();
-        }
-
-        function saveConfig() {
-            localStorage.setItem('jac_total_offline', totalSocios);
-            localStorage.setItem('jac_percent_offline', quorumPercent);
-            localStorage.setItem('jac_plusone_offline', plusOne);
-            localStorage.setItem('jac_name_offline', meetingName);
-            localStorage.setItem('jac_month_offline', meetingMonth);
-            localStorage.setItem('jac_date_offline', meetingDateInput.value);
-            localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
-            localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
-        }
-
-        window.switchTab = function(tabName) {
-            document.getElementById('section-asistencia').classList.add('hidden');
-            document.getElementById('section-directorio').classList.add('hidden');
-            document.getElementById('section-config').classList.add('hidden');
-
-            document.getElementById('tab-asistencia').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById('tab-directorio').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById('tab-config').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-
-            document.getElementById(`section-${tabName}`).classList.remove('hidden');
-            
-            const activeTabButton = document.getElementById(`tab-${tabName}`);
-            activeTabButton.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-sm flex items-center gap-1.5";
-            
-            lucide.createIcons();
-        };
-
-        function renderRosterPanel(filterText = '') {
-            rosterListContainer.innerHTML = '';
-            
-            const filteredRoster = roster.filter(m => 
-                m.nombre.toLowerCase().includes(filterText.toLowerCase()) || 
-                m.documento.includes(filterText)
-            );
-
-            if (filteredRoster.length === 0) {
-                rosterListContainer.innerHTML = `<div class="p-6 text-center text-slate-400 bg-white border border-slate-150 rounded-xl text-xs">No hay socios en el directorio que coincidan.</div>`;
-                return;
-            }
-
-            filteredRoster.sort((a, b) =>
-    (a.nombre || '').localeCompare(b.nombre || '')
+fechaNacimientoInput.addEventListener('change', () => {
+if (!fechaNacimientoInput.value) {
+edadInput.value = '';
+return;
+}
+const hoy = new Date();
+const nacimiento = new Date(
+fechaNacimientoInput.value
 );
+let edad =
+hoy.getFullYear() -
+nacimiento.getFullYear();
+const mes =
+hoy.getMonth() -
+nacimiento.getMonth();
+if (
+mes < 0 ||
+(
+mes === 0 &&
+hoy.getDate() < nacimiento.getDate()
+)
+) {
+edad--;
+}
+edadInput.value = edad;
+});
+const addRosterMemberBtn = document.getElementById('addRosterMemberBtn');
+const rosterCountText = document.getElementById('rosterCountText');
+const rosterTableBody = document.getElementById('rosterTableBody');
+const emptyRosterRow = document.getElementById('emptyRosterRow');
+const searchAttendee = document.getElementById('searchAttendee');
+const searchRosterInput = document.getElementById('searchRosterInput');
+const rosterListContainer = document.getElementById('rosterListContainer');
+const attendeesList = document.getElementById('attendeesList');
+const emptyAttendeesRow = document.getElementById('emptyAttendeesRow');
+const resetMeetingBtn = document.getElementById('resetMeetingBtn');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const importRosterFile = document.getElementById('importRosterFile');
 
-            filteredRoster.forEach(member => {
-                const isPresent = listAttendees.some(att => att.documento === member.documento && att.mes === meetingMonth);
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border flex justify-between items-center transition ${isPresent ? 'bg-emerald-50/50 border-emerald-200' : 'bg-white border-slate-100 hover:border-slate-200'}`;
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(member.nombre)}</div>
-                        <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(member.tipoDocumento)} ${escapeHtml(member.documento)}</div>
-                    </div>
-                    ${isPresent ? `
-                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[10px] font-black flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i>PRESENTE</span>
-                    ` : `
-                        <button onclick="markPresentOffline('${member.nombre}', '${member.documento}')" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 rounded-lg text-[10px] font-bold transition shadow-sm flex items-center gap-1"><i data-lucide="signature" class="w-3.5 h-3.5"></i>REGISTRAR</button>
-                    `}
-                `;
-                rosterListContainer.appendChild(card);
-            });
-            lucide.createIcons();
-        }
+function loadSystemData() {
+const hoy = new Date();
+meetingDateInput.value = hoy.toISOString().split('T')[0];
+const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+meetingMonth = meses[hoy.getMonth()];
+meetingMonthInput.value = meetingMonth;
+badgeMonth.textContent = meetingMonth.toUpperCase();
+if (localStorage.getItem('jac_total_offline')) {
+totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
+totalSociosInput.value = totalSocios;
+}
+if (localStorage.getItem('jac_percent_offline')) {
+quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
+quorumPercentInput.value = quorumPercent;
+quorumPercentLabel.textContent = `${quorumPercent}%`;
+}
+if (localStorage.getItem('jac_plusone_offline')) {
+plusOne = localStorage.getItem('jac_plusone_offline') === 'true';
+plusOneCheck.checked = plusOne;
+}
+if (localStorage.getItem('jac_name_offline')) {
+meetingName = localStorage.getItem('jac_name_offline');
+meetingNameInput.value = meetingName;
+currentMeetingLabel.textContent = meetingName;
+}
+if (localStorage.getItem('jac_month_offline')) {
+meetingMonth = localStorage.getItem('jac_month_offline');
+meetingMonthInput.value = meetingMonth;
+badgeMonth.textContent = meetingMonth.toUpperCase();
+}
+if (localStorage.getItem('jac_date_offline')) {
+meetingDateInput.value = localStorage.getItem('jac_date_offline');
+}
+if (localStorage.getItem('jac_attendees_offline')) {
+listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
+}
+if (localStorage.getItem('jac_roster_offline')) {
+roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
+} else {
+roster = [];
+}
+calculateQuorum();
+renderAttendees();
+renderRosterPanel();
+renderRosterManagement();
+}
 
-        window.markPresentOffline = function(nombre, documento) {
+function saveConfig() {
+localStorage.setItem('jac_total_offline', totalSocios);
+localStorage.setItem('jac_percent_offline', quorumPercent);
+localStorage.setItem('jac_plusone_offline', plusOne);
+localStorage.setItem('jac_name_offline', meetingName);
+localStorage.setItem('jac_month_offline', meetingMonth);
+localStorage.setItem('jac_date_offline', meetingDateInput.value);
+localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
+localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
+}
 
-    const yaExiste = listAttendees.some(att => {
+window.switchTab = function(tabName) {
+document.getElementById('section-asistencia').classList.add('hidden');
+document.getElementById('section-directorio').classList.add('hidden');
+document.getElementById('section-config').classList.add('hidden');
+document.getElementById('tab-asistencia').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
+document.getElementById('tab-directorio').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
+document.getElementById('tab-config').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
+document.getElementById(`section-${tabName}`).classList.remove('hidden');
 
-        return (
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
+const activeTabButton = document.getElementById(`tab-${tabName}`);
+activeTabButton.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-sm flex items-center gap-1.5";
 
-    });
-
-    if (yaExiste) {
-
-        showToast(
-            "Este socio ya registró asistencia"
-        );
-
-        return;
-
-    }
-
-    const ahora = new Date();
-
-    listAttendees.push({
-
-        nombre: nombre,
-        documento: documento,
-        hora: ahora.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        }),
-        mes: meetingMonth,
-        fecha: meetingDateInput.value
-
-    });
-
-    saveConfig();
-
-    renderAttendees();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    showToast(
-        "Asistencia registrada"
-    );
-
+lucide.createIcons();
 };
 
-        function renderRosterManagement() {
-            const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
-            console.log(roster);
-            rows.forEach(r => r.remove());
+function renderRosterPanel(filterText = '') {
+rosterListContainer.innerHTML = '';
 
-            rosterCountText.textContent = `Socios Registrados: ${roster.length} activos`;
-
-            if (roster.length === 0) {
-                emptyRosterRow.classList.remove('hidden');
-                return;
-            }
-            emptyRosterRow.classList.add('hidden');
-            
-           const sortedRoster = [...roster].sort((a,b) =>
-    (a.nombre || '').localeCompare(b.nombre || '')
+const filteredRoster = roster.filter(m =>
+m.nombre.toLowerCase().includes(filterText.toLowerCase()) ||
+m.documento.includes(filterText)
 );
-            sortedRoster.forEach(member => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-               tr.innerHTML = `
+if (filteredRoster.length === 0) {
+rosterListContainer.innerHTML = `<div class="p-6 text-center text-slate-400 bg-white border border-slate-150 rounded-xl text-xs">No hay socios en el directorio que coincidan.</div>`;
+return;
+}
+filteredRoster.sort((a, b) =>
+(a.nombre || '').localeCompare(b.nombre || '')
+);
+filteredRoster.forEach(member => {
+const isPresent = listAttendees.some(att => att.documento === member.documento && att.mes === meetingMonth);
+const card = document.createElement('div');
+card.className = `p-3 rounded-xl border flex justify-between items-center transition ${isPresent ? 'bg-emerald-50/50 border-emerald-200' : 'bg-white border-slate-100 hover:border-slate-200'}`;
 
-<td class="p-3 font-bold text-slate-800">
-    ${escapeHtml(member.nombre || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.tipoDocumento || '')}
-</td>
-
-<td class="p-3 text-slate-500 font-mono">
-    ${escapeHtml(member.documento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.lugarExpedicion || '')}
-</td>
-
-<td class="p-3">
-    ${formatearFecha(member.fechaNacimiento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.lugarNacimiento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.genero || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.rh || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.edad || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.cargo || '')}
-</td>
-
-<td class="p-3 text-right">
-    <button
-        onclick="deleteRosterMember('${member.documento}')"
-        class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition">
-
-        <i data-lucide="trash-2" class="w-4 h-4"></i>
-
-    </button>
-</td>
-
+card.innerHTML = `
+<div>
+<div class="font-bold text-slate-800 text-xs">${escapeHtml(member.nombre)}</div>
+<div class="text-[10px] text-slate-400 font-medium">${escapeHtml(member.tipoDocumento)} ${escapeHtml(member.documento)}</div>
+</div>
+${isPresent ? `
+<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[10px] font-black flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i>PRESENTE</span>
+` : `
+<button onclick="markPresentOffline('${member.nombre}', '${member.documento}')" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 rounded-lg text-[10px] font-bold transition shadow-sm flex items-center gap-1"><i data-lucide="signature" class="w-3.5 h-3.5"></i>REGISTRAR</button>
+`}
 `;
-                rosterTableBody.appendChild(tr);
-            });
-            lucide.createIcons();
-        }
-
-        addRosterMemberBtn.addEventListener('click', () => {
-
-    const nombre = rosterNameInput.value.trim();
-    const documento = rosterIdInput.value.trim();
-
-    if (!nombre || !documento) {
-
-        showToast("Complete nombre y documento");
-
-        return;
-
-    }
-
-    if (roster.some(m => m.documento === documento)) {
-
-        showToast("Ya existe este socio");
-
-        return;
-
-    }
-
-    // calcular edad automática
-    let edad = "";
-
-    if (fechaNacimientoInput.value) {
-
-        const hoy = new Date();
-
-        const nacimiento = new Date(fechaNacimientoInput.value);
-
-        edad = hoy.getFullYear() - nacimiento.getFullYear();
-
-        const m = hoy.getMonth() - nacimiento.getMonth();
-
-        if (
-            m < 0 ||
-            (m === 0 && hoy.getDate() < nacimiento.getDate())
-        ) {
-            edad--;
-        }
-
-    }
-
-    roster.push({
-
-        nombre: nombre,
-        documento: documento,
-        tipoDocumento: tipoDocumentoInput.value,
-        lugarExpedicion: lugarExpedicionInput.value,
-        fechaNacimiento: fechaNacimientoInput.value,
-        lugarNacimiento: lugarNacimientoInput.value,
-        genero: generoInput.value,
-        rh: rhInput.value,
-        edad: edad,
-        cargo: cargoInput.value
-
-    });
-
-    saveConfig();
-
-    renderRosterManagement();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    rosterNameInput.value = '';
-    rosterIdInput.value = '';
-    tipoDocumentoInput.value = '';
-    lugarExpedicionInput.value = '';
-    fechaNacimientoInput.value = '';
-    lugarNacimientoInput.value = '';
-    generoInput.value = '';
-    rhInput.value = '';
-    edadInput.value = '';
-    cargoInput.value = '';
-
-    showToast("Socio agregado correctamente");
-
+rosterListContainer.appendChild(card);
 });
+lucide.createIcons();
+}
 
-        window.deleteRosterMember = function(documento) {
-
-    const confirmar = confirm(
-        "¿Eliminar este socio del directorio?"
-    );
-
-    if (!confirmar) return;
-
-    roster = roster.filter(
-        member => member.documento !== documento
-    );
-
-    listAttendees = listAttendees.filter(
-        att => att.documento !== documento
-    );
-
-    saveConfig();
-
-    renderRosterManagement();
-
-    renderRosterPanel();
-
-    renderAttendees();
-
-    calculateQuorum();
-
-    showToast("Socio eliminado");
-
+window.markPresentOffline = function(nombre, documento) {
+const yaExiste = listAttendees.some(att => {
+return (
+att.documento === documento &&
+att.mes === meetingMonth
+);
+});
+if (yaExiste) {
+showToast(
+"Este socio ya registró asistencia"
+);
+return;
+}
+const ahora = new Date();
+listAttendees.push({
+nombre: nombre,
+documento: documento,
+hora: ahora.toLocaleTimeString([], {
+hour: '2-digit',
+minute: '2-digit'
+}),
+mes: meetingMonth,
+fecha: meetingDateInput.value
+});
+saveConfig();
+renderAttendees();
+renderRosterPanel();
+calculateQuorum();
+showToast(
+"Asistencia registrada"
+);
 };
 
-        window.loadDefaultRoster = function() {
-            if (confirm("¿Cargar datos de prueba?")) {
-                
-                    roster = [
+function renderRosterManagement() {
+const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
+console.log(roster);
+rows.forEach(r => r.remove());
+rosterCountText.textContent = `Socios Registrados: ${roster.length} activos`;
+if (roster.length === 0) {
+emptyRosterRow.classList.remove('hidden');
+return;
+}
+emptyRosterRow.classList.add('hidden');
 
-    {
-        nombre: "Pedro Nel Gómez",
-        documento: "70123456",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Neiva",
-        fechaNacimiento: "1970-05-10",
-        lugarNacimiento: "Neiva",
-        genero: "Masculino",
-        rh: "O+",
-        edad: 55,
-        cargo: "Presidente"
-    },
+const sortedRoster = [...roster].sort((a,b) =>
+(a.nombre || '').localeCompare(b.nombre || '')
+);
+sortedRoster.forEach(member => {
+const tr = document.createElement('tr');
+tr.className = "hover:bg-slate-50 transition";
+tr.innerHTML = `
+<td class="p-3 font-bold text-slate-800">
+${escapeHtml(member.nombre || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.tipoDocumento || '')}
+</td>
+<td class="p-3 text-slate-500 font-mono">
+${escapeHtml(member.documento || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.lugarExpedicion || '')}
+</td>
+<td class="p-3">
+${formatearFecha(member.fechaNacimiento || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.lugarNacimiento || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.genero || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.rh || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.edad || '')}
+</td>
+<td class="p-3">
+${escapeHtml(member.cargo || '')}
+</td>
+<td class="p-3 text-right">
+<button
+onclick="deleteRosterMember('${member.documento}')"
+class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition">
+<i data-lucide="trash-2" class="w-4 h-4"></i>
+</button>
+</td>
+`;
+rosterTableBody.appendChild(tr);
+});
+lucide.createIcons();
+}
 
-    {
-        nombre: "María Custodia Ortiz",
-        documento: "41987654",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Pitalito",
-        fechaNacimiento: "1980-02-18",
-        lugarNacimiento: "Pitalito",
-        genero: "Femenino",
-        rh: "A+",
-        edad: 45,
-        cargo: "Tesorera"
-    },
+addRosterMemberBtn.addEventListener('click', () => {
+const nombre = rosterNameInput.value.trim();
+const documento = rosterIdInput.value.trim();
+if (!nombre || !documento) {
+showToast("Complete nombre y documento");
+return;
+}
+if (roster.some(m => m.documento === documento)) {
+showToast("Ya existe este socio");
+return;
+}
+// calcular edad automática
+let edad = "";
+if (fechaNacimientoInput.value) {
+const hoy = new Date();
+const nacimiento = new Date(fechaNacimientoInput.value);
+edad = hoy.getFullYear() - nacimiento.getFullYear();
+const m = hoy.getMonth() - nacimiento.getMonth();
+if (
+m < 0 ||
+(m === 0 && hoy.getDate() < nacimiento.getDate())
+) {
+edad--;
+}
+}
+roster.push({
+nombre: nombre,
+documento: documento,
+tipoDocumento: tipoDocumentoInput.value,
+lugarExpedicion: lugarExpedicionInput.value,
+fechaNacimiento: fechaNacimientoInput.value,
+lugarNacimiento: lugarNacimientoInput.value,
+genero: generoInput.value,
+rh: rhInput.value,
+edad: edad,
+cargo: cargoInput.value
+});
+saveConfig();
+renderRosterManagement();
+renderRosterPanel();
+calculateQuorum();
+rosterNameInput.value = '';
+rosterIdInput.value = '';
+tipoDocumentoInput.value = '';
+lugarExpedicionInput.value = '';
+fechaNacimientoInput.value = '';
+lugarNacimientoInput.value = '';
+generoInput.value = '';
+rhInput.value = '';
+edadInput.value = '';
+cargoInput.value = '';
+showToast("Socio agregado correctamente");
+});
 
-    {
-        nombre: "José del Carmen Rojas",
-        documento: "19345678",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Garzón",
-        fechaNacimiento: "1968-09-22",
-        lugarNacimiento: "Garzón",
-        genero: "Masculino",
-        rh: "B+",
-        edad: 57,
-        cargo: "Fiscal"
-    }
+window.deleteRosterMember = function(documento) {
+const confirmar = confirm(
+"¿Eliminar este socio del directorio?"
+);
+if (!confirmar) return;
+roster = roster.filter(
+member => member.documento !== documento
+);
+listAttendees = listAttendees.filter(
+att => att.documento !== documento
+);
+saveConfig();
+renderRosterManagement();
+renderRosterPanel();
+renderAttendees();
+calculateQuorum();
+showToast("Socio eliminado");
+};
 
+window.loadDefaultRoster = function() {
+if (confirm("¿Cargar datos de prueba?")) {
+
+roster = [
+{
+nombre: "Pedro Nel Gómez",
+documento: "70123456",
+tipoDocumento: "C.C",
+lugarExpedicion: "Neiva",
+fechaNacimiento: "1970-05-10",
+lugarNacimiento: "Neiva",
+genero: "Masculino",
+rh: "O+",
+edad: 55,
+cargo: "Presidente"
+},
+{
+nombre: "María Custodia Ortiz",
+documento: "41987654",
+tipoDocumento: "C.C",
+lugarExpedicion: "Pitalito",
+fechaNacimiento: "1980-02-18",
+lugarNacimiento: "Pitalito",
+genero: "Femenino",
+rh: "A+",
+edad: 45,
+cargo: "Tesorera"
+},
+{
+nombre: "José del Carmen Rojas",
+documento: "19345678",
+tipoDocumento: "C.C",
+lugarExpedicion: "Garzón",
+fechaNacimiento: "1968-09-22",
+lugarNacimiento: "Garzón",
+genero: "Masculino",
+rh: "B+",
+edad: 57,
+cargo: "Fiscal"
+}
 ];
-                saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
-                showToast("Datos cargados.");
-            }
-        };
-function generateMeetingQR() {
-
-    const fecha = meetingDateInput.value || "SIN_FECHA";
-
-    const qrContenido =
-        `JAC|SAN_MIGUEL|${meetingMonth}|${fecha}`;
-
-    const canvas =
-        document.getElementById('meetingQR');
-
-    QRCode.toCanvas(
-        canvas,
-        qrContenido,
-        {
-            width: 220,
-            margin: 2
-        },
-        function(error) {
-
-            if (error) {
-
-                console.error(error);
-
-                return;
-
-            }
-
-        }
-    );
-
-    document.getElementById(
-        'qrTextLabel'
-    ).textContent = qrContenido;
-
+saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
+showToast("Datos cargados.");
 }
-        function calculateQuorum() {
-            const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
-            const presentCount = asistenciasMes.length;
-
-            let baseRequired = (totalSocios * (quorumPercent / 100));
-            let requiredAttendees = plusOne ? Math.floor(baseRequired) + 1 : Math.ceil(baseRequired);
-
-            if (requiredAttendees < 1) requiredAttendees = 1;
-            if (requiredAttendees > totalSocios) requiredAttendees = totalSocios;
-
-            const hasQuorum = presentCount >= requiredAttendees;
-            const progress = Math.min((presentCount / requiredAttendees) * 100, 100);
-
-            totalSociosText.textContent = totalSocios;
-            quorumMinText.textContent = `Mínimo de Ley: ${requiredAttendees} socios`;
-            presentCountText.textContent = presentCount;
-            presentPercentText.textContent = `${totalSocios > 0 ? Math.round((presentCount / totalSocios) * 100) : 0}% de participación en ${meetingMonth}`;
-            quorumProgressBar.style.width = `${progress}%`;
-
-            if (hasQuorum) {
-                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-emerald-150 bg-emerald-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
-                quorumStatusText.textContent = "¡QUÓRUM ALCANZADO!";
-                quorumStatusText.className = "text-xl font-black text-emerald-800 mt-0.5";
-                quorumHelperText.textContent = `Asamblea válida. Hay ${presentCount} socios de ${requiredAttendees} mínimos.`;
-                quorumProgressBar.className = "h-full bg-emerald-600 transition-all duration-500";
-                quorumIcon.className = "p-2 rounded-xl bg-emerald-100 text-emerald-600";
-                quorumIcon.innerHTML = `<i data-lucide="shield-check" class="w-5 h-5"></i>`;
-            } else {
-                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-rose-150 bg-rose-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
-                quorumStatusText.textContent = "FALTA QUÓRUM";
-                quorumStatusText.className = "text-xl font-black text-rose-800 mt-0.5";
-                quorumHelperText.textContent = `Faltan ${requiredAttendees - presentCount} socios para tomar actas válidas.`;
-                quorumProgressBar.className = "h-full bg-rose-500 transition-all duration-500";
-                quorumIcon.className = "p-2 rounded-xl bg-rose-100 text-rose-600";
-                quorumIcon.innerHTML = `<i data-lucide="shield-alert" class="w-5 h-5"></i>`;
-            }
-            lucide.createIcons();
-        }
-
-        function renderAttendees(filterQuery = '') {
-            const rows = Array.from(attendeesList.querySelectorAll('tr:not(#emptyAttendeesRow)'));
-            rows.forEach(r => r.remove());
-
-            const filtered = listAttendees.filter(att => att.mes === meetingMonth).filter(att => 
-                att.nombre.toLowerCase().includes(filterQuery.toLowerCase()) || att.documento.includes(filterQuery)
-            );
-
-            if (filtered.length === 0) {
-                emptyAttendeesRow.classList.remove('hidden');
-            } else {
-                emptyAttendeesRow.classList.add('hidden');
-                [...filtered].reverse().forEach(att => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-100/50 transition-colors duration-150";
-                    tr.innerHTML = `
-                        <td class="p-3">
-                            <div class="font-bold text-slate-800">${escapeHtml(att.nombre)}</div>
-                            <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(att.documento)} (Firma: ${att.hora})</div>
-                        </td>
-                        <td class="p-3 text-right">
-                            <button onclick="removeAttendance('${att.documento}')" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg hover:bg-rose-50 transition"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
-                        </td>
-                    `;
-                    attendeesList.appendChild(tr);
-                });
-            }
-            lucide.createIcons();
-        }
-
-        window.removeAttendance = function(documento) {
-
-    const confirmar = confirm(
-        "¿Eliminar asistencia de este socio?"
-    );
-
-    if (!confirmar) return;
-
-    listAttendees = listAttendees.filter(att => {
-
-        return !(
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
-
-    });
-
-    saveConfig();
-
-    renderAttendees();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    showToast("Asistencia eliminada");
-
 };
 
-        const quickAddModal = document.getElementById('quickAddModal');
-        const quickNameInput = document.getElementById('quickNameInput');
-        const quickIdInput = document.getElementById('quickIdInput');
-
-        window.openQuickAddModal = function() {
-            quickAddModal.classList.remove('opacity-0', 'pointer-events-none');
-            quickNameInput.value = ''; quickIdInput.value = ''; quickNameInput.focus();
-        };
-
-        window.closeQuickAddModal = function() {
-            quickAddModal.classList.add('opacity-0', 'pointer-events-none');
-        };
-
-        window.submitQuickAdd = function() {
-            const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
-            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
-            const yaExiste = listAttendees.some(att => {
-
-    return (
-        att.documento === documento &&
-        att.mes === meetingMonth
-    );
-
-});
-
-if (yaExiste) { showToast("Ya tiene asistencia."); return; }
-
-            const ahora = new Date();
-            listAttendees.push({ nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
-            if (!roster.some(m => m.documento === documento)) {
-
-    roster.push({
-        nombre: nombre,
-        documento: documento,
-        tipoDocumento: "C.C",
-        lugarExpedicion: "",
-        fechaNacimiento: "",
-        lugarNacimiento: "",
-        genero: "",
-        rh: "",
-        edad: "",
-        cargo: "Socio"
-    });
-
+function calculateQuorum() {
+const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
+const presentCount = asistenciasMes.length;
+let baseRequired = (totalSocios * (quorumPercent / 100));
+let requiredAttendees = plusOne ? Math.floor(baseRequired) + 1 : Math.ceil(baseRequired);
+if (requiredAttendees < 1) requiredAttendees = 1;
+if (requiredAttendees > totalSocios) requiredAttendees = totalSocios;
+const hasQuorum = presentCount >= requiredAttendees;
+const progress = Math.min((presentCount / requiredAttendees) * 100, 100);
+totalSociosText.textContent = totalSocios;
+quorumMinText.textContent = `Mínimo de Ley: ${requiredAttendees} socios`;
+presentCountText.textContent = presentCount;
+presentPercentText.textContent = `${totalSocios > 0 ? Math.round((presentCount / totalSocios) * 100) : 0}% de participación en ${meetingMonth}`;
+quorumProgressBar.style.width = `${progress}%`;
+if (hasQuorum) {
+quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-emerald-150 bg-emerald-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
+quorumStatusText.textContent = "¡QUÓRUM ALCANZADO!";
+quorumStatusText.className = "text-xl font-black text-emerald-800 mt-0.5";
+quorumHelperText.textContent = `Asamblea válida. Hay ${presentCount} socios de ${requiredAttendees} mínimos.`;
+quorumProgressBar.className = "h-full bg-emerald-600 transition-all duration-500";
+quorumIcon.className = "p-2 rounded-xl bg-emerald-100 text-emerald-600";
+quorumIcon.innerHTML = `<i data-lucide="shield-check" class="w-5 h-5"></i>`;
+} else {
+quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-rose-150 bg-rose-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
+quorumStatusText.textContent = "FALTA QUÓRUM";
+quorumStatusText.className = "text-xl font-black text-rose-800 mt-0.5";
+quorumHelperText.textContent = `Faltan ${requiredAttendees - presentCount} socios para tomar actas válidas.`;
+quorumProgressBar.className = "h-full bg-rose-500 transition-all duration-500";
+quorumIcon.className = "p-2 rounded-xl bg-rose-100 text-rose-600";
+quorumIcon.innerHTML = `<i data-lucide="shield-alert" class="w-5 h-5"></i>`;
+}
+lucide.createIcons();
 }
 
-            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
-            closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
-        };
+function renderAttendees(filterQuery = '') {
+const rows = Array.from(attendeesList.querySelectorAll('tr:not(#emptyAttendeesRow)'));
+rows.forEach(r => r.remove());
+const filtered = listAttendees.filter(att => att.mes === meetingMonth).filter(att =>
+att.nombre.toLowerCase().includes(filterQuery.toLowerCase()) || att.documento.includes(filterQuery)
+);
+if (filtered.length === 0) {
+emptyAttendeesRow.classList.remove('hidden');
+} else {
+emptyAttendeesRow.classList.add('hidden');
+[...filtered].reverse().forEach(att => {
+const tr = document.createElement('tr');
+tr.className = "hover:bg-slate-100/50 transition-colors duration-150";
+tr.innerHTML = `
+<td class="p-3">
+<div class="font-bold text-slate-800">${escapeHtml(att.nombre)}</div>
+<div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(att.documento)} (Firma: ${att.hora})</div>
+</td>
+<td class="p-3 text-right">
+<button onclick="removeAttendance('${att.documento}')" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg hover:bg-rose-50 transition"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+</td>
+`;
+attendeesList.appendChild(tr);
+});
+}
+lucide.createIcons();
+}
 
-        // Eventos
-       meetingMonthInput.addEventListener('change', (e) => {
+window.removeAttendance = function(documento) {
+const confirmar = confirm(
+"¿Eliminar asistencia de este socio?"
+);
+if (!confirmar) return;
+listAttendees = listAttendees.filter(att => {
+return !(
+att.documento === documento &&
+att.mes === meetingMonth
+);
+});
+saveConfig();
+renderAttendees();
+renderRosterPanel();
+calculateQuorum();
+showToast("Asistencia eliminada");
+};
 
-    meetingMonth = e.target.value;
+const quickAddModal = document.getElementById('quickAddModal');
+const quickNameInput = document.getElementById('quickNameInput');
+const quickIdInput = document.getElementById('quickIdInput');
 
-    badgeMonth.textContent =
-        meetingMonth.toUpperCase();
+window.openQuickAddModal = function() {
+quickAddModal.classList.remove('opacity-0', 'pointer-events-none');
+quickNameInput.value = ''; quickIdInput.value = ''; quickNameInput.focus();
+};
 
-    saveConfig();
+window.closeQuickAddModal = function() {
+quickAddModal.classList.add('opacity-0', 'pointer-events-none');
+};
 
-    calculateQuorum();
+window.submitQuickAdd = function() {
+const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
+if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
+const yaExiste = listAttendees.some(att => {
+return (
+att.documento === documento &&
+att.mes === meetingMonth
+);
+});
+if (yaExiste) { showToast("Ya tiene asistencia."); return; }
+const ahora = new Date();
+listAttendees.push({ nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
+if (!roster.some(m => m.documento === documento)) {
+roster.push({
+nombre: nombre,
+documento: documento,
+tipoDocumento: "C.C",
+lugarExpedicion: "",
+fechaNacimiento: "",
+lugarNacimiento: "",
+genero: "",
+rh: "",
+edad: "",
+cargo: "Socio"
+});
+}
+saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
+closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
+};
 
-    renderAttendees();
-
-    renderRosterPanel(
-        searchRosterInput.value
-    );
-
-    generateMeetingQR();
-
-    showToast(
-        `Mes cambiado a: ${meetingMonth}`
-    );
-
+// Eventos
+meetingMonthInput.addEventListener('change', (e) => {
+meetingMonth = e.target.value;
+badgeMonth.textContent = meetingMonth.toUpperCase();
+saveConfig();
+calculateQuorum();
+renderAttendees();
+renderRosterPanel(searchRosterInput.value);
+showToast(`Mes cambiado a: ${meetingMonth}`);
 });
 
-        meetingDateInput.addEventListener(
-    'change',
-    () => {
-
-        saveConfig();
-
-        generateMeetingQR();
-
-    }
-);
-       meetingNameInput.addEventListener(
-    'input',
-    (e) => {
-
-        meetingName = e.target.value;
-
-        currentMeetingLabel.textContent =
-            meetingName;
-
-        saveConfig();
-
-        generateMeetingQR();
-
-    }
-); 
-
-        updateSociosBtn.addEventListener('click', () => {
-            const val = parseInt(totalSociosInput.value);
-            if (val > 0) { totalSocios = val; saveConfig(); calculateQuorum(); showToast(`Total de habilitados: ${totalSocios}.`); }
-        });
-
-        quorumPercentInput.addEventListener('input', (e) => { quorumPercent = parseInt(e.target.value); quorumPercentLabel.textContent = `${quorumPercent}%`; saveConfig(); calculateQuorum(); });
-        plusOneCheck.addEventListener('change', (e) => { plusOne = e.target.checked; saveConfig(); calculateQuorum(); });
-
-        searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
-        searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
 meetingDateInput.addEventListener('change', () => {
-
-    saveConfig();
-
-    generarQRReunion();
-
+saveConfig();
 });
 
-meetingMonthInput.addEventListener('change', () => {
-
-    generarQRReunion();
-
+meetingNameInput.addEventListener('input', (e) => {
+meetingName = e.target.value;
+currentMeetingLabel.textContent = meetingName;
+saveConfig();
 });
 
-meetingNameInput.addEventListener('input', () => {
-
-    generarQRReunion();
-
-});
-        resetMeetingBtn.addEventListener('click', () => {
-            if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
-                listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
-                saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); showToast(`Listado borrado.`);
-            }
-        });
-
-        window.hardResetSystem = function() {
-            if (confirm("⚠️ PELIGRO: Esto borrará todos los socios y asistencias de todos los meses de forma permanente. ¿Estás seguro?")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        }
-
-       exportCsvBtn.addEventListener('click', () => {
-
-    const asistentesDelMes = listAttendees.filter(
-        att => att.mes === meetingMonth
-    );
-
-    if (asistentesDelMes.length === 0) {
-
-        showToast(`No hay registros en ${meetingMonth}.`);
-
-        return;
-
-    }
-
-    let baseRequired = (
-        totalSocios * (quorumPercent / 100)
-    );
-
-    let requiredAttendees = plusOne
-        ? Math.floor(baseRequired) + 1
-        : Math.ceil(baseRequired);
-
-    if (requiredAttendees < 1)
-        requiredAttendees = 1;
-
-    if (requiredAttendees > totalSocios)
-        requiredAttendees = totalSocios;
-
-    const hayQuorum =
-        asistentesDelMes.length >= requiredAttendees
-            ? "SI"
-            : "NO";
-
-    const datosExcel = [];
-
-    asistentesDelMes.forEach((att, index) => {
-
-        const socio = roster.find(
-            r => r.documento === att.documento
-        ) || {};
-
-        datosExcel.push({
-
-            "N°": index + 1,
-
-            "Mes": att.mes,
-
-            "Fecha Reunión": att.fecha,
-
-            "Tipo Asamblea": meetingName,
-
-            "Nombre Completo": socio.nombre || att.nombre,
-
-            "Tipo Documento": socio.tipoDocumento || "C.C",
-
-            "Número Documento": socio.documento || att.documento,
-
-            "Lugar Expedición": socio.lugarExpedicion || "",
-
-            "Fecha Nacimiento": socio.fechaNacimiento || "",
-
-            "Lugar Nacimiento": socio.lugarNacimiento || "",
-
-            "Género": socio.genero || "",
-
-            "RH": socio.rh || "",
-
-            "Edad": socio.edad || "",
-
-            "Cargo": socio.cargo || "Socio",
-
-            "Hora Registro": att.hora,
-
-            "Total Socios Habilitados": totalSocios,
-
-            "Asistentes Registrados": asistentesDelMes.length,
-
-            "Mínimo para Quórum": requiredAttendees,
-
-            "¿Hay Quórum?": hayQuorum
-
-        });
-
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(datosExcel);
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Asistencia"
-    );
-
-    XLSX.writeFile(
-        workbook,
-        `Asistencia_JAC_${meetingMonth}.xlsx`
-    );
-
-    showToast(
-        "Reporte completo descargado"
-    );
-
+updateSociosBtn.addEventListener('click', () => {
+const val = parseInt(totalSociosInput.value);
+if (val > 0) { totalSocios = val; saveConfig(); calculateQuorum(); showToast(`Total de habilitados: ${totalSocios}.`); }
 });
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.className = "fixed bottom-5 right-5 transform translate-y-0 opacity-100 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50 transition-all duration-300";
-            setTimeout(() => { toast.className = "fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50"; }, 3000);
-        }
+quorumPercentInput.addEventListener('input', (e) => { quorumPercent = parseInt(e.target.value); quorumPercentLabel.textContent = `${quorumPercent}%`; saveConfig(); calculateQuorum(); });
+plusOneCheck.addEventListener('change', (e) => { plusOne = e.target.checked; saveConfig(); calculateQuorum(); });
+searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
+searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
 
-        function escapeHtml(unsafe) { return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-importRosterFile.addEventListener('change', function(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-
-        try {
-
-            const data = new Uint8Array(e.target.result);
-
-            const workbook = XLSX.read(data, {
-                type: 'array'
-            });
-
-            const sheetName = workbook.SheetNames[0];
-
-            const worksheet = workbook.Sheets[sheetName];
-
-           const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-    defval: "",
-    raw: false,
-    dateNF: 'dd/mm/yyyy'
-}); 
-
-            let nuevos = 0;
-
-            jsonData.forEach(row => {
-
-                const documento =
-                    row["NUMERO DOCUMENTO"]
-                        ?.toString()
-                        .trim();
-
-                if (!documento) return;
-
-                const existe = roster.some(
-                    m => m.documento === documento
-                );
-
-                if (existe) return;
-
-                // calcular edad automática
-                let edad = "";
-
-                if (row["FECHA NACIMIENTO"]) {
-
-                    const hoy = new Date();
-
-                    const nacimiento = new Date(
-                        row["FECHA NACIMIENTO"]
-                    );
-
-                    edad =
-                        hoy.getFullYear() -
-                        nacimiento.getFullYear();
-
-                    const m =
-                        hoy.getMonth() -
-                        nacimiento.getMonth();
-
-                    if (
-                        m < 0 ||
-                        (
-                            m === 0 &&
-                            hoy.getDate() <
-                            nacimiento.getDate()
-                        )
-                    ) {
-                        edad--;
-                    }
-
-                }
-
-                roster.push({
-
-                    nombre:
-                        row["NOMBRES Y APELLIDOS"] || "",
-
-                    tipoDocumento:
-                        row["TIPO DOCUMENTO"] || "C.C",
-
-                    documento:
-                        documento,
-
-                    lugarExpedicion:
-                        row["LUGAR EXPEDICION"] || "",
-
-                    fechaNacimiento: convertirFechaExcel(
-    row["FECHA NACIMIENTO"]
-),
-
-                    lugarNacimiento:
-                        row["LUGAR NACIMIENTO"] || "",
-
-                    genero:
-                        row["GENERO"] || "",
-
-                    rh:
-                        row["RH"] || "",
-
-                    edad:
-                        edad,
-
-                    cargo:
-                        row["CARGO"] || "Afiliado"
-
-                });
-
-                nuevos++;
-
-            });
-
-            saveConfig();
-
-            renderRosterManagement();
-
-            renderRosterPanel();
-
-            calculateQuorum();
-
-            showToast(
-                `${nuevos} socios cargados`
-            );
-
-        } catch(error) {
-
-            console.error(error);
-
-            showToast(
-                "Error leyendo Excel"
-            );
-
-        }
-
-    };
-
-    reader.readAsArrayBuffer(file);
-
+resetMeetingBtn.addEventListener('click', () => {
+if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
+listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
+saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); showToast(`Listado borrado.`);
+}
 });
-        function downloadExcelTemplate() {
 
-    const datos = [
+window.hardResetSystem = function() {
+if (confirm(" ⚠ ️ PELIGRO: Esto borrará todos los socios y asistencias de todos los meses de forma permanente. ¿Estás seguro?")) {
+localStorage.clear();
+window.location.reload();
+}
+}
 
-        {
-            "NOMBRES Y APELLIDOS": "",
-            "TIPO DOCUMENTO": "C.C",
-            "NUMERO DOCUMENTO": "",
-            "LUGAR EXPEDICION": "",
-            "FECHA NACIMIENTO": "DD/MM/AAAA",
-            "LUGAR NACIMIENTO": "",
-            "GENERO": "Masculino",
-            "RH": "O+",
-            "CARGO": "Afiliado"
-        }
-
-    ];
-
-    const worksheet = XLSX.utils.json_to_sheet(datos);
-
-    // ancho columnas
-    worksheet['!cols'] = [
-
-        { wch: 35 },
-        { wch: 18 },
-        { wch: 22 },
-        { wch: 25 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 15 },
-        { wch: 10 },
-        { wch: 20 }
-
-    ];
-
-    // aplicar fuente
-    const range = XLSX.utils.decode_range(
-        worksheet['!ref']
-    );
-
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-
-            const cellAddress = XLSX.utils.encode_cell({
-                r: R,
-                c: C
-            });
-
-            if (!worksheet[cellAddress]) continue;
-
-            worksheet[cellAddress].s = {
-
-                font: {
-                    name: "Palatino Linotype",
-                    sz: 12,
-                    bold: R === 0
-                }
-
-            };
-
-        }
-
-    }
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "SOCIOS"
-    );
-
-    XLSX.writeFile(
-        workbook,
-        "FORMATO_SOCIOS_JAC.xlsx"
-    );
-
-    showToast(
-    "Formato Excel descargado"
+exportCsvBtn.addEventListener('click', () => {
+const asistentesDelMes = listAttendees.filter(
+att => att.mes === meetingMonth
 );
+if (asistentesDelMes.length === 0) {
+showToast(`No hay registros en ${meetingMonth}.`);
+return;
+}
+let baseRequired = (
+totalSocios * (quorumPercent / 100)
+);
+let requiredAttendees = plusOne
+? Math.floor(baseRequired) + 1
+: Math.ceil(baseRequired);
+if (requiredAttendees < 1)
+requiredAttendees = 1;
+if (requiredAttendees > totalSocios)
+requiredAttendees = totalSocios;
+const hayQuorum =
+asistentesDelMes.length >= requiredAttendees
+? "SI"
+: "NO";
+const datosExcel = [];
+asistentesDelMes.forEach((att, index) => {
+const socio = roster.find(
+r => r.documento === att.documento
+) || {};
+datosExcel.push({
+"N°": index + 1,
+"Mes": att.mes,
+"Fecha Reunión": att.fecha,
+"Tipo Asamblea": meetingName,
+"Nombre Completo": socio.nombre || att.nombre,
+"Tipo Documento": socio.tipoDocumento || "C.C",
+"Número Documento": socio.documento || att.documento,
+"Lugar Expedición": socio.lugarExpedicion || "",
+"Fecha Nacimiento": socio.fechaNacimiento || "",
+"Lugar Nacimiento": socio.lugarNacimiento || "",
+"Género": socio.genero || "",
+"RH": socio.rh || "",
+"Edad": socio.edad || "",
+"Cargo": socio.cargo || "Socio",
+"Hora Registro": att.hora,
+"Total Socios Habilitados": totalSocios,
+"Asistentes Registrados": asistentesDelMes.length,
+"Mínimo para Quórum": requiredAttendees,
+"¿Hay Quórum?": hayQuorum
+});
+});
+const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+const workbook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(
+workbook,
+worksheet,
+"Asistencia"
+);
+XLSX.writeFile(
+workbook,
+`Asistencia_JAC_${meetingMonth}.xlsx`
+);
+showToast(
+"Reporte completo descargado"
+);
+});
 
+function showToast(message) {
+const toast = document.getElementById('toast');
+document.getElementById('toastMessage').textContent = message;
+toast.className = "fixed bottom-5 right-5 transform translate-y-0 opacity-100 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50 transition-all duration-300";
+setTimeout(() => { toast.className = "fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50"; }, 3000);
+}
+
+function escapeHtml(unsafe) { return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+
+importRosterFile.addEventListener('change', function(event) {
+const file = event.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function(e) {
+try {
+const data = new Uint8Array(e.target.result);
+const workbook = XLSX.read(data, {
+type: 'array'
+});
+const sheetName = workbook.SheetNames[0];
+const worksheet = workbook.Sheets[sheetName];
+const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+defval: "",
+raw: false,
+dateNF: 'dd/mm/yyyy'
+});
+let nuevos = 0;
+jsonData.forEach(row => {
+const documento =
+row["NUMERO DOCUMENTO"]
+?.toString()
+.trim();
+if (!documento) return;
+const existe = roster.some(
+m => m.documento === documento
+);
+if (existe) return;
+// calcular edad automática
+let edad = "";
+if (row["FECHA NACIMIENTO"]) {
+const hoy = new Date();
+const nacimiento = new Date(
+row["FECHA NACIMIENTO"]
+);
+edad =
+hoy.getFullYear() -
+nacimiento.getFullYear();
+const m =
+hoy.getMonth() -
+nacimiento.getMonth();
+if (
+m < 0 ||
+(
+m === 0 &&
+hoy.getDate() <
+nacimiento.getDate()
+)
+) {
+edad--;
+}
+}
+roster.push({
+nombre:
+row["NOMBRES Y APELLIDOS"] || "",
+tipoDocumento:
+row["TIPO DOCUMENTO"] || "C.C",
+documento:
+documento,
+lugarExpedicion:
+row["LUGAR EXPEDICION"] || "",
+fechaNacimiento: convertirFechaExcel(
+row["FECHA NACIMIENTO"]
+),
+lugarNacimiento:
+row["LUGAR NACIMIENTO"] || "",
+genero:
+row["GENERO"] || "",
+rh:
+row["RH"] || "",
+edad:
+edad,
+cargo:
+row["CARGO"] || "Afiliado"
+});
+nuevos++;
+});
+saveConfig();
+renderRosterManagement();
+renderRosterPanel();
+calculateQuorum();
+showToast(
+`${nuevos} socios cargados`
+);
+} catch(error) {
+console.error(error);
+showToast(
+"Error leyendo Excel"
+);
+}
+};
+reader.readAsArrayBuffer(file);
+});
+
+function downloadExcelTemplate() {
+const datos = [
+{
+"NOMBRES Y APELLIDOS": "",
+"TIPO DOCUMENTO": "C.C",
+"NUMERO DOCUMENTO": "",
+"LUGAR EXPEDICION": "",
+"FECHA NACIMIENTO": "DD/MM/AAAA",
+"LUGAR NACIMIENTO": "",
+"GENERO": "Masculino",
+"RH": "O+",
+"CARGO": "Afiliado"
+}
+];
+const worksheet = XLSX.utils.json_to_sheet(datos);
+// ancho columnas
+worksheet['!cols'] = [
+{ wch: 35 },
+{ wch: 18 },
+{ wch: 22 },
+{ wch: 25 },
+{ wch: 20 },
+{ wch: 25 },
+{ wch: 15 },
+{ wch: 10 },
+{ wch: 20 }
+];
+// aplicar fuente
+const range = XLSX.utils.decode_range(
+worksheet['!ref']
+);
+for (let R = range.s.r; R <= range.e.r; ++R) {
+for (let C = range.s.c; C <= range.e.c; ++C) {
+const cellAddress = XLSX.utils.encode_cell({
+r: R,
+c: C
+});
+if (!worksheet[cellAddress]) continue;
+worksheet[cellAddress].s = {
+font: {
+name: "Palatino Linotype",
+sz: 12,
+bold: R === 0
+}
+};
+}
+}
+const workbook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(
+workbook,
+worksheet,
+"SOCIOS"
+);
+XLSX.writeFile(
+workbook,
+"FORMATO_SOCIOS_JAC.xlsx"
+);
+showToast(
+"Formato Excel descargado"
+);
 }
 
 function convertirFechaExcel(fecha) {
-
-    if (!fecha) return "";
-
-    // Si viene como número de Excel
-    if (!isNaN(fecha)) {
-
-        const excelDate = Number(fecha);
-
-        const jsDate = new Date(
-            (excelDate - 25569) * 86400 * 1000
-        );
-
-        const year = jsDate.getFullYear();
-        const month = String(
-            jsDate.getMonth() + 1
-        ).padStart(2, '0');
-
-        const day = String(
-            jsDate.getDate()
-        ).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    // Si viene tipo 01/30/94
-    if (fecha.includes('/')) {
-
-        const partes = fecha.split('/');
-
-        let mes = partes[0];
-        let dia = partes[1];
-        let anio = partes[2];
-
-        // convertir 94 → 1994
-        if (anio.length === 2) {
-
-            anio = parseInt(anio) > 30
-                ? `19${anio}`
-                : `20${anio}`;
-        }
-
-        return `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
-    }
-
-    // Si ya viene YYYY-MM-DD
-    if (fecha.includes('-')) {
-        return fecha;
-    }
-
-    return fecha;
-}        
-function formatearFecha(fecha) {
-
-    if (!fecha) return '';
-
-    // Si es número de Excel
-    if (!isNaN(fecha)) {
-
-        const excelDate = Number(fecha);
-
-        const jsDate = new Date(
-            (excelDate - 25569) * 86400 * 1000
-        );
-
-        return jsDate.toLocaleDateString('es-CO');
-
-    }
-
-    // Si viene YYYY-MM-DD
-    if (fecha.includes('-')) {
-
-        const partes = fecha.split('-');
-
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-    }
-
-    return fecha;
-
+if (!fecha) return "";
+if (!isNaN(fecha)) {
+const excelDate = Number(fecha);
+const jsDate = new Date(
+(excelDate - 25569) * 86400 * 1000
+);
+const year = jsDate.getFullYear();
+const month = String(
+jsDate.getMonth() + 1
+).padStart(2, '0');
+const day = String(
+jsDate.getDate()
+).padStart(2, '0');
+return `${year}-${month}-${day}`;
 }
+if (fecha.includes('/')) {
+const partes = fecha.split('/');
+let mes = partes[0];
+let dia = partes[1];
+let anio = partes[2];
+if (anio.length === 2) {
+anio = parseInt(anio) > 30
+? `19${anio}`
+: `20${anio}`;
+}
+return `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+}
+if (fecha.includes('-')) {
+return fecha;
+}
+return fecha;
+}
+
+function formatearFecha(fecha) {
+if (!fecha) return '';
+if (!isNaN(fecha)) {
+const excelDate = Number(fecha);
+const jsDate = new Date(
+(excelDate - 25569) * 86400 * 1000
+);
+return jsDate.toLocaleDateString('es-CO');
+}
+if (fecha.includes('-')) {
+const partes = fecha.split('-');
+return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+return fecha;
+}
+
 let qrScanner = null;
-
 window.startQRScanner = function() {
-
-    const modal = document.getElementById('qrModal');
-
-    modal.classList.remove(
-        'opacity-0',
-        'pointer-events-none'
-    );
-
-    qrScanner = new Html5Qrcode("qr-reader");
-
-    qrScanner.start(
-
-        { facingMode: "environment" },
-
-        {
-            fps: 10,
-            qrbox: 250
-        },
-
-        function(decodedText) {
-
-            procesarQR(decodedText);
-
-        },
-
-        function(error) {
-            // ignorar errores de lectura
-        }
-
-    );
-
+const modal = document.getElementById('qrModal');
+modal.classList.remove(
+'opacity-0',
+'pointer-events-none'
+);
+qrScanner = new Html5Qrcode("qr-reader");
+qrScanner.start(
+{ facingMode: "environment" },
+{
+fps: 10,
+qrbox: 250
+},
+function(decodedText) {
+procesarQR(decodedText);
+},
+function(error) {
+// ignorar errores de lectura
+}
+);
 };
 
 window.closeQRScanner = function() {
-
-    const modal = document.getElementById('qrModal');
-
-    modal.classList.add(
-        'opacity-0',
-        'pointer-events-none'
-    );
-
-    if (qrScanner) {
-
-        qrScanner.stop().then(() => {
-
-            qrScanner.clear();
-
-        });
-
-    }
-
+const modal = document.getElementById('qrModal');
+modal.classList.add(
+'opacity-0',
+'pointer-events-none'
+);
+if (qrScanner) {
+qrScanner.stop().then(() => {
+qrScanner.clear();
+});
+}
 };
 
 function procesarQR(textoQR) {
+// Escaneo del documento del socio
+const socio = roster.find(m => m.documento === textoQR);
 
-    // EJEMPLO QR:
-    // 12345678
-
-    function procesarQR(textoQR) {
-
-    if (textoQR === "ASISTENCIA_JAC") {
-
-        closeQRScanner();
-
-        showToast(
-            "QR válido. Busque el socio."
-        );
-
-        document
-            .getElementById('searchRosterInput')
-            .focus();
-
-        return;
-    }
-
-    showToast("QR no válido");
-
+if (!socio) {
+showToast("Socio no encontrado");
+return;
+}
+markPresentOffline(socio.nombre, socio.documento);
+closeQRScanner();
 }
 
-    if (!socio) {
-
-        showToast("Socio no encontrado");
-
-        return;
-
-    }
-
-    markPresentOffline(
-        socio.nombre,
-        socio.documento
-    );
-
-    closeQRScanner();
-
-}
-      function generarQRReunion() {
-
-    const qrContainer =
-        document.getElementById('qrcode');
-
-    qrContainer.innerHTML = "";
-
-    const datosQR = JSON.stringify({
-
-        reunion: meetingName,
-        fecha: meetingDateInput.value,
-        mes: meetingMonth
-
-    });
-
-    new QRCode(qrContainer, {
-
-        text: datosQR,
-        width: 220,
-        height: 220
-
-    });
-
-    document.getElementById(
-        'qrMeetingName'
-    ).textContent = meetingName;
-
-    document.getElementById(
-        'qrMeetingDate'
-    ).textContent =
-        meetingDateInput.value;
-
-    document.getElementById(
-        'qrMeetingMonth'
-    ).textContent =
-        meetingMonth;
-
-}  
-        window.onload = () => {
-
-    loadSystemData();
-
-    generarQRReunion();
-
-    lucide.createIcons();
-
+window.onload = () => {
+loadSystemData();
+lucide.createIcons();
 };
-    </script>
+</script>
 </body>
 </html>
