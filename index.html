@@ -640,7 +640,9 @@
                 return;
             }
 
-            filteredRoster.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            filteredRoster.sort((a, b) =>
+    (a.nombre || '').localeCompare(b.nombre || '')
+);
 
             filteredRoster.forEach(member => {
                 const isPresent = listAttendees.some(att => att.documento === member.documento && att.mes === meetingMonth);
@@ -725,7 +727,9 @@
             }
             emptyRosterRow.classList.add('hidden');
             
-            const sortedRoster = [...roster].sort((a,b) => a.nombre.localeCompare(b.nombre));
+           const sortedRoster = [...roster].sort((a,b) =>
+    (a.nombre || '').localeCompare(b.nombre || '')
+);
             sortedRoster.forEach(member => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
