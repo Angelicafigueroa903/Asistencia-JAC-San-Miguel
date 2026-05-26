@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         /* Estilos personalizados para scrollbars más limpias */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -98,7 +99,41 @@
                     </div>
                 </div>
             </div>
+<!-- QR DE ASISTENCIA -->
+<div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-6">
+    
+    <div class="flex flex-col md:flex-row items-center gap-6">
 
+        <div class="flex flex-col items-center">
+            <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <i data-lucide="qr-code" class="w-5 h-5 text-emerald-600"></i>
+                Código QR de la Reunión
+            </h2>
+
+            <div id="qrcode" class="bg-white p-4 rounded-xl border"></div>
+
+            <p class="text-xs text-slate-500 mt-3 text-center">
+                Escanee este QR para registrar asistencia
+            </p>
+        </div>
+
+        <div class="flex-1">
+            <div class="bg-slate-50 rounded-xl p-4 border">
+                <p class="text-xs text-slate-500 uppercase font-bold">
+                    Información del QR
+                </p>
+
+                <div class="mt-2 space-y-1 text-sm">
+                    <p><b>Asamblea:</b> <span id="qrMeetingName"></span></p>
+                    <p><b>Fecha:</b> <span id="qrMeetingDate"></span></p>
+                    <p><b>Mes:</b> <span id="qrMeetingMonth"></span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
@@ -1250,7 +1285,25 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
         searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
         searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
+meetingDateInput.addEventListener('change', () => {
 
+    saveConfig();
+
+    generarQRReunion();
+
+});
+
+meetingMonthInput.addEventListener('change', () => {
+
+    generarQRReunion();
+
+});
+
+meetingNameInput.addEventListener('input', () => {
+
+    generarQRReunion();
+
+});
         resetMeetingBtn.addEventListener('click', () => {
             if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
                 listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
@@ -1786,12 +1839,49 @@ function procesarQR(textoQR) {
     closeQRScanner();
 
 }
-        
+      function generarQRReunion() {
+
+    const qrContainer =
+        document.getElementById('qrcode');
+
+    qrContainer.innerHTML = "";
+
+    const datosQR = JSON.stringify({
+
+        reunion: meetingName,
+        fecha: meetingDateInput.value,
+        mes: meetingMonth
+
+    });
+
+    new QRCode(qrContainer, {
+
+        text: datosQR,
+        width: 220,
+        height: 220
+
+    });
+
+    document.getElementById(
+        'qrMeetingName'
+    ).textContent = meetingName;
+
+    document.getElementById(
+        'qrMeetingDate'
+    ).textContent =
+        meetingDateInput.value;
+
+    document.getElementById(
+        'qrMeetingMonth'
+    ).textContent =
+        meetingMonth;
+
+}  
         window.onload = () => {
 
     loadSystemData();
 
-    generateMeetingQR();
+    generarQRReunion();
 
     lucide.createIcons();
 
