@@ -1658,11 +1658,26 @@ function procesarQR(textoQR) {
     // EJEMPLO QR:
     // 12345678
 
-    const documento = textoQR.trim();
+    function procesarQR(textoQR) {
 
-    const socio = roster.find(
-        s => s.documento === documento
-    );
+    if (textoQR === "ASISTENCIA_JAC") {
+
+        closeQRScanner();
+
+        showToast(
+            "QR válido. Busque el socio."
+        );
+
+        document
+            .getElementById('searchRosterInput')
+            .focus();
+
+        return;
+    }
+
+    showToast("QR no válido");
+
+}
 
     if (!socio) {
 
