@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#059669">
     <title>Asistencia JAC San Miguel - Modo Offline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -198,7 +199,7 @@
     <select id="tipoDocumentoInput"
         class="w-full px-3 py-2 border rounded-lg">
 
-        <option value="CC">C.C</option>
+        <option value="C.C">C.C</option>
         <option value="TI">T.I</option>
 
     </select>
@@ -911,7 +912,7 @@
     {
         nombre: "Pedro Nel Gómez",
         documento: "70123456",
-        tipoDocumento: "CC",
+        tipoDocumento: "C.C",
         lugarExpedicion: "Neiva",
         fechaNacimiento: "1970-05-10",
         lugarNacimiento: "Neiva",
@@ -924,7 +925,7 @@
     {
         nombre: "María Custodia Ortiz",
         documento: "41987654",
-        tipoDocumento: "CC",
+        tipoDocumento: "C.C",
         lugarExpedicion: "Pitalito",
         fechaNacimiento: "1980-02-18",
         lugarNacimiento: "Pitalito",
@@ -937,7 +938,7 @@
     {
         nombre: "José del Carmen Rojas",
         documento: "19345678",
-        tipoDocumento: "CC",
+        tipoDocumento: "C.C",
         lugarExpedicion: "Garzón",
         fechaNacimiento: "1968-09-22",
         lugarNacimiento: "Garzón",
@@ -1085,7 +1086,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
     roster.push({
         nombre: nombre,
         documento: documento,
-        tipoDocumento: "CC",
+        tipoDocumento: "C.C",
         lugarExpedicion: "",
         fechaNacimiento: "",
         lugarNacimiento: "",
@@ -1188,7 +1189,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
             "Nombre Completo": socio.nombre || att.nombre,
 
-            "Tipo Documento": socio.tipoDocumento || "CC",
+            "Tipo Documento": socio.tipoDocumento || "C.C",
 
             "Número Documento": socio.documento || att.documento,
 
