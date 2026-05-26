@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         /* Estilos personalizados para scrollbars más limpias */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -123,6 +124,14 @@
                             <i data-lucide="user-plus" class="w-4 h-4"></i>
                             Registrar socio nuevo (no en lista)
                         </button>
+                        <button onclick="startQRScanner()" 
+class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-blue-200">
+
+    <i data-lucide="qr-code" class="w-4 h-4"></i>
+
+    Escanear Código QR
+
+</button>
                     </div>
                 </div>
 
@@ -452,7 +461,36 @@
             </div>
         </div>
     </div>
+<!-- MODAL QR -->
 
+<div id="qrModal"
+class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-300">
+
+    <div class="bg-white rounded-2xl p-5 w-full max-w-md">
+
+        <div class="flex justify-between items-center mb-4">
+
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+
+                <i data-lucide="qr-code" class="w-5 h-5 text-blue-600"></i>
+
+                Escanear QR
+
+            </h3>
+
+            <button onclick="closeQRScanner()">
+
+                <i data-lucide="x" class="w-5 h-5"></i>
+
+            </button>
+
+        </div>
+
+        <div id="qr-reader" class="w-full"></div>
+
+    </div>
+
+</div>
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50">
         <i data-lucide="info" class="text-emerald-400 w-4.5 h-4.5"></i>
         <span id="toastMessage">Mensaje</span>
@@ -653,7 +691,7 @@
                 card.innerHTML = `
                     <div>
                         <div class="font-bold text-slate-800 text-xs">${escapeHtml(member.nombre)}</div>
-                        <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(member.documento)}</div>
+                        <div class="text-[10px] text-slate-400 font-medium">${escapeHtml(member.tipoDocumento)} ${escapeHtml(member.documento)}</div>
                     </div>
                     ${isPresent ? `
                         <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[10px] font-black flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i>PRESENTE</span>
@@ -1558,6 +1596,91 @@ function formatearFecha(fecha) {
     return fecha;
 
 }
+let qrScanner = null;
+
+window.startQRScanner = function() {
+
+    const modal = document.getElementById('qrModal');
+
+    modal.classList.remove(
+        'opacity-0',
+        'pointer-events-none'
+    );
+
+    qrScanner = new Html5Qrcode("qr-reader");
+
+    qrScanner.start(
+
+        { facingMode: "environment" },
+
+        {
+            fps: 10,
+            qrbox: 250
+        },
+
+        function(decodedText) {
+
+            procesarQR(decodedText);
+
+        },
+
+        function(error) {
+            // ignorar errores de lectura
+        }
+
+    );
+
+};
+
+window.closeQRScanner = function() {
+
+    const modal = document.getElementById('qrModal');
+
+    modal.classList.add(
+        'opacity-0',
+        'pointer-events-none'
+    );
+
+    if (qrScanner) {
+
+        qrScanner.stop().then(() => {
+
+            qrScanner.clear();
+
+        });
+
+    }
+
+};
+
+function procesarQR(textoQR) {
+
+    // EJEMPLO QR:
+    // 12345678
+
+    const documento = textoQR.trim();
+
+    const socio = roster.find(
+        s => s.documento === documento
+    );
+
+    if (!socio) {
+
+        showToast("Socio no encontrado");
+
+        return;
+
+    }
+
+    markPresentOffline(
+        socio.nombre,
+        socio.documento
+    );
+
+    closeQRScanner();
+
+}
+        
         window.onload = () => { 
             loadSystemData(); 
             lucide.createIcons(); 
