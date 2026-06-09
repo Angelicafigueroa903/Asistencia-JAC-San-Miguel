@@ -376,6 +376,10 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
 
                         <th class="p-2">
                             Asistentes
+
+                       <th class="p-2">
+                           Descargar
+                           
                         </th>
 
                     </tr>
@@ -836,14 +840,19 @@ if (
            sortedRoster.forEach(member => {
 console.log("SOCIO:", member);
                
-    const retirar = false;
+    const retirar = tieneTresFaltasConsecutivas(member.documento);
 
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50 transition";
 
     tr.innerHTML = `
         <td class="p-3 font-bold text-slate-800">
-            ${escapeHtml(member.nombre || '')}
+${escapeHtml(member.nombre || '')}
+
+<div class="text-xs text-red-600">
+Faltas consecutivas:
+${contarFallasConsecutivas(member.documento)}
+</div>
 
             ${retirar ? `
             <div class="mt-1 text-[10px] font-bold text-red-600">
@@ -1723,6 +1732,33 @@ function tieneTresFaltasConsecutivas(documento) {
 
     return false;
 }
+        function contarFallasConsecutivas(documento) {
+
+    const reuniones = [...new Set(
+        listAttendees.map(a => a.mes)
+    )];
+
+    reuniones.sort();
+
+    let consecutivas = 0;
+
+    for (let reunion of reuniones) {
+
+        const asistio =
+        listAttendees.some(a =>
+            a.documento === documento &&
+            a.mes === reunion
+        );
+
+        if (asistio) {
+            consecutivas = 0;
+        } else {
+            consecutivas++;
+        }
+    }
+
+    return consecutivas;
+}
         function renderHistorial() {
 
     const body =
@@ -1747,30 +1783,86 @@ function tieneTresFaltasConsecutivas(documento) {
                     a.reunionId === reunion.id
                 ).length;
 
-            body.innerHTML += `
+body.innerHTML += `
+<tr>
 
-            <tr>
+<td class="p-2">
+${reunion.fecha}
+</td>
 
-                <td class="p-2">
-                    ${reunion.fecha}
-                </td>
+<td class="p-2">
+${reunion.nombre}
+</td>
 
-                <td class="p-2">
-                    ${reunion.nombre}
-                </td>
+<td class="p-2">
+${asistentes}
+</td>
 
-                <td class="p-2">
-                    ${asistentes}
-                </td>
+<td class="p-2">
 
-            </tr>
+<button
+onclick="descargarReunion('${reunion.id}')"
+class="text-blue-600 hover:text-blue-800">
 
-            `;
+<i data-lucide="download"></i>
+
+</button>
+
+</td>
+
+</tr>
+`;
 
         });
 
 }
-          window.onload = () => { 
+        
+ function descargarReunion(idReunion){
+
+    const asistentes =
+    listAttendees.filter(
+        a => a.reunionId === idReunion
+    );
+
+    if(asistentes.length === 0){
+
+        showToast(
+            "No hay asistentes"
+        );
+
+        return;
+    }
+
+    const datos = asistentes.map(
+        (a,index)=>({
+
+            "N°": index + 1,
+            "Nombre": a.nombre,
+            "Documento": a.documento,
+            "Fecha": a.fecha,
+            "Hora": a.hora
+
+        })
+    );
+
+    const ws =
+    XLSX.utils.json_to_sheet(datos);
+
+    const wb =
+    XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Asistencia"
+    );
+
+    XLSX.writeFile(
+        wb,
+        `Asistencia_${idReunion}.xlsx`
+    );
+}
+        window.onload = () => { 
             loadSystemData(); 
               renderHistorial();
             lucide.createIcons(); 
