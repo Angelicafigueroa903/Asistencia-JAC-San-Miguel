@@ -34,7 +34,7 @@
             </div>
             
             <nav class="flex bg-emerald-700/50 p-1 rounded-xl">
-                <button onclick="switchTab('asistencia')" id="tab-asistencia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-750 shadow-sm flex items-center gap-1.5">
+                <button onclick="switchTab('asistencia')" id="tab-asistencia" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm flex items-center gap-1.5">
                     <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
                     Asistencia
                 </button>
@@ -42,17 +42,10 @@
                     <i data-lucide="contact-2" class="w-3.5 h-3.5"></i>
                     Directorio
                 </button>
-                <button
-onclick="switchTab('reuniones')"
-id="tab-reuniones"
-class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
-
-    <i data-lucide="history"
-       class="w-3.5 h-3.5"></i>
-
-    Historial
-
-</button>
+                <button onclick="switchTab('reuniones')" id="tab-reuniones" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
+                    <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                    Historial
+                </button>
                 <button onclick="switchTab('config')" id="tab-config" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                     Ajustes JAC
@@ -64,16 +57,14 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:py-6 overflow-y-auto">
         
         <div id="section-asistencia" class="space-y-6">
-            
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                
                 <div id="quorumCard" class="md:col-span-2 p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between shadow-sm bg-white border-slate-100">
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Verificación de Quórum</p>
                             <h3 id="quorumStatusText" class="text-xl font-black mt-0.5">Calculando...</h3>
                         </div>
-                        <span id="quorumIcon" class="p-2 rounded-xl">
+                        <span id="quorumIcon" class="p-2 rounded-xl bg-slate-100">
                             <i data-lucide="shield-alert" class="w-5 h-5"></i>
                         </span>
                     </div>
@@ -109,7 +100,6 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
                 <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[520px]">
                     <div class="mb-4">
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
@@ -125,14 +115,13 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                     </div>
 
                     <div class="flex-1 overflow-y-auto border border-slate-100 rounded-xl bg-slate-50/50 p-2 custom-scrollbar">
-                        <div id="rosterListContainer" class="space-y-2">
-                            </div>
+                        <div id="rosterListContainer" class="space-y-2"></div>
                     </div>
                     
                     <div class="mt-3 pt-3 border-t border-slate-150 flex gap-2">
                         <button onclick="openQuickAddModal()" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 border border-emerald-200">
                             <i data-lucide="user-plus" class="w-4 h-4"></i>
-                            Registrar socio nuevo (no en lista)
+                            Registrar socio nuevo (Firma manual)
                         </button>
                     </div>
                 </div>
@@ -144,9 +133,7 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                                 <i data-lucide="user-check" class="text-emerald-600 w-5 h-5"></i>
                                 Socios Registrados
                             </h2>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold uppercase" id="badgeMonth">
-                                MAYO
-                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold uppercase" id="badgeMonth">MAYO</span>
                         </div>
                         <p class="text-xs text-slate-500" id="currentMeetingLabel">Asamblea General Ordinaria</p>
                     </div>
@@ -178,11 +165,10 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                     <div class="mt-3 pt-3 border-t border-slate-100">
                         <button id="exportCsvBtn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                            Exportar Reporte a Excel (.CSV)
+                            Exportar Reporte a Excel (.xlsx)
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -197,120 +183,90 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 space-y-3 h-fit">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-150 space-y-3 h-fit max-h-[650px] overflow-y-auto custom-scrollbar">
                         <h3 class="text-xs font-bold uppercase text-slate-500">Añadir Nuevo Socio</h3>
+                        
                         <div>
-    <label>Nombres y Apellidos</label>
-    <input type="text" id="rosterNameInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
+                            <label class="text-[11px] font-semibold text-slate-500">Nombres y Apellidos</label>
+                            <input type="text" id="rosterNameInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-<div>
-    <label>Tipo Documento</label>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Tipo Documento</label>
+                            <select id="tipoDocumentoInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="C.C">C.C</option>
+                                <option value="TI">T.I</option>
+                            </select>
+                        </div>
 
-    <select id="tipoDocumentoInput"
-        class="w-full px-3 py-2 border rounded-lg">
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Número Documento</label>
+                            <input type="text" id="rosterIdInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-        <option value="C.C">C.C</option>
-        <option value="TI">T.I</option>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Lugar Expedición</label>
+                            <input type="text" id="lugarExpedicionInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-    </select>
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Fecha Nacimiento</label>
+                            <input type="date" id="fechaNacimientoInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-<div>
-    <label>Número Documento</label>
-    <input type="text" id="rosterIdInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Lugar Nacimiento</label>
+                            <input type="text" id="lugarNacimientoInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-<div>
-    <label>Lugar Expedición</label>
-    <input type="text" id="lugarExpedicionInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Género</label>
+                            <select id="generoInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option>Masculino</option>
+                                <option>Femenino</option>
+                            </select>
+                        </div>
 
-<div>
-    <label>Fecha Nacimiento</label>
-    <input type="date" id="fechaNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">RH</label>
+                            <input type="text" id="rhInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-<div>
-    <label>Lugar Nacimiento</label>
-    <input type="text" id="lugarNacimientoInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Edad</label>
+                            <input type="number" id="edadInput" readonly class="w-full px-3 py-1.5 text-xs border rounded-lg bg-slate-100 text-slate-500">
+                        </div>
 
-<div>
-    <label>Género</label>
-    <select id="generoInput" class="w-full px-3 py-2 border rounded-lg">
-        <option>Masculino</option>
-        <option>Femenino</option>
-    </select>
-</div>
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Cargo</label>
+                            <input type="text" id="cargoInput" placeholder="Ej: Socio, Presidente" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
 
-<div>
-    <label>RH</label>
-    <input type="text" id="rhInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
-
-<div>
-    <label>Edad</label>
-
-    <input
-        type="number"
-        id="edadInput"
-        readonly
-        class="w-full px-3 py-2 border rounded-lg bg-slate-100"
-    >
-
-</div>
-
-<div>
-    <label>Cargo</label>
-    <input type="text" id="cargoInput" class="w-full px-3 py-2 border rounded-lg">
-</div>
-         <div>
-    <label>Comisión</label>
-    <input
-        type="text"
-        id="comisionInput"
-        class="w-full px-3 py-2 border rounded-lg">
-</div>               
+                        <div>
+                            <label class="text-[11px] font-semibold text-slate-500">Comisión</label>
+                            <input type="text" id="comisionInput" class="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+               
                         <button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
                             <i data-lucide="user-plus-2" class="w-4 h-4"></i>
                             Guardar en Directorio
                         </button>
-                        <div class="pt-4 border-t border-slate-200">
 
-    <input 
-        type="file"
-        id="importRosterFile"
-        accept=".xlsx,.xls"
-        class="hidden"
-    >
-
-    <button 
-        onclick="document.getElementById('importRosterFile').click()"
-        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
-
-        <i data-lucide="upload" class="w-4 h-4"></i>
-        Cargar Excel de Socios
-
-    </button>
-                            
-       <button 
-    onclick="downloadExcelTemplate()"
-    class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
-
-    <i data-lucide="download" class="w-4 h-4"></i>
-    Descargar Formato Excel
-
-</button>                     
-
-    <p class="text-[10px] text-slate-400 mt-2 text-center">
-        Formato: Nombre Completo | Documento
-    </p>
-
-</div>
+                        <div class="pt-4 border-t border-slate-200 space-y-2">
+                            <input type="file" id="importRosterFile" accept=".xlsx,.xls" class="hidden">
+                            <button onclick="document.getElementById('importRosterFile').click()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+                                <i data-lucide="upload" class="w-4 h-4"></i>
+                                Cargar Excel de Socios
+                            </button>
+                            <button onclick="downloadExcelTemplate()" class="w-full py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                Descargar Formato Excel
+                            </button>
+                            <p class="text-[10px] text-slate-400 text-center">Columnas: Nombre Completo | Documento | Cargo</p>
+                        </div>
                     </div>
 
-                    <div class="md:col-span-2 flex flex-col h-[400px]">
+                    <div class="md:col-span-2 flex flex-col h-[550px]">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-xs font-bold text-slate-500" id="rosterCountText">Cargando directorio...</span>
                             <button onclick="loadDefaultRoster()" class="text-emerald-600 hover:text-emerald-800 text-[11px] font-bold flex items-center gap-1">
@@ -318,27 +274,27 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                                 Cargar Socios de Prueba
                             </button>
                         </div>
-                        <div class="flex-1 border border-slate-100 rounded-xl bg-slate-50/50 overflow-y-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs">
+                        <div class="flex-1 border border-slate-100 rounded-xl bg-slate-50/50 overflow-x-auto overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs min-w-[900px]">
                                 <thead class="bg-slate-100 sticky top-0 text-slate-500 font-bold uppercase text-[9px] tracking-wider z-10">
                                     <tr>
-    <th class="p-3">Nombre</th>
-    <th class="p-3">Tipo Doc.</th>
-    <th class="p-3">Documento</th>
-    <th class="p-3">Lugar Exp.</th>
-    <th class="p-3">Fecha Nac.</th>
-    <th class="p-3">Lugar Nac.</th>
-    <th class="p-3">Género</th>
-    <th class="p-3">RH</th>
-    <th class="p-3">Edad</th>
-    <th class="p-3">Cargo</th>                                     
-    <th class="p-3">Comisión</th>                                    
-    <th class="p-3 text-right">Acción</th>
-</tr>
+                                        <th class="p-3">Nombre</th>
+                                        <th class="p-3">Tipo Doc.</th>
+                                        <th class="p-3">Documento</th>
+                                        <th class="p-3">Lugar Exp.</th>
+                                        <th class="p-3">Fecha Nac.</th>
+                                        <th class="p-3">Lugar Nac.</th>
+                                        <th class="p-3">Género</th>
+                                        <th class="p-3">RH</th>
+                                        <th class="p-3">Edad</th>
+                                        <th class="p-3">Cargo</th>                                     
+                                        <th class="p-3">Comisión</th>                                    
+                                        <th class="p-3 text-right">Acción</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="rosterTableBody" class="divide-y divide-slate-100">
                                     <tr id="emptyRosterRow">
-                                        <td colspan="11" class="p-8 text-center text-slate-400">
+                                        <td colspan="12" class="p-8 text-center text-slate-400">
                                             <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
                                             Aún no has agregado socios a la lista general.
                                         </td>
@@ -350,49 +306,32 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                 </div>
             </div>
         </div>
-<div id="section-reuniones" class="hidden space-y-6">
 
-    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-
-        <h2 class="text-lg font-bold mb-4">
-            Historial de Reuniones
-        </h2>
-
-        <div class="overflow-auto">
-
-            <table class="w-full text-xs">
-
-                <thead>
-
-                    <tr>
-
-                        <th class="p-2">
-                            Fecha
-                        </th>
-
-                        <th class="p-2">
-                            Asamblea
-                        </th>
-
-                        <th class="p-2">
-                            Asistentes
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="historialReunionesBody">
-
-                </tbody>
-
-            </table>
-
+        <div id="section-reuniones" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+                    <i data-lucide="history" class="text-emerald-600 w-5 h-5"></i>
+                    Historial de Reuniones Controladas
+                </h2>
+                <div class="overflow-auto border border-slate-100 rounded-xl">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px]">
+                            <tr>
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Asamblea / Reunión</th>
+                                <th class="p-3">Asistentes Registrados</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialReunionesBody" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="3" class="p-6 text-center text-slate-400">No hay registros históricos previos guardados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-    </div>
-
-</div>
         <div id="section-config" class="hidden space-y-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
                 <div>
@@ -411,7 +350,7 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                         </h3>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mes de la Reunión</label>
-                            <select id="meetingMonthInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                            <select id="meetingMonthInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none">
                                 <option value="Enero">Enero</option>
                                 <option value="Febrero">Febrero</option>
                                 <option value="Marzo">Marzo</option>
@@ -428,11 +367,11 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Fecha de la Asamblea</label>
-                            <input type="date" id="meetingDateInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                            <input type="date" id="meetingDateInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Tipo de Asamblea</label>
-                            <input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium" value="Asamblea General Ordinaria">
+                            <input type="text" id="meetingNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none" value="Asamblea General Ordinaria">
                         </div>
                     </div>
 
@@ -441,11 +380,10 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                             <i data-lucide="scale" class="w-4 h-4 text-emerald-600"></i>
                             Reglas de Socios y Quórum
                         </h3>
-                        
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Número de Socios Habilitados</label>
                             <div class="flex gap-2">
-                                <input type="number" id="totalSociosInput" min="1" class="w-full px-3 py-2 text-sm font-bold rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" value="300">
+                                <input type="number" id="totalSociosInput" min="1" class="w-full px-3 py-2 text-sm font-bold rounded-lg border border-slate-200 focus:outline-none" value="300">
                                 <button id="updateSociosBtn" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Establecer</button>
                             </div>
                         </div>
@@ -479,14 +417,13 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                 </div>
             </div>
         </div>
-
     </main>
 
     <footer class="bg-white border-t border-slate-100 text-center py-4 text-slate-400 text-xs shrink-0 font-medium">
         <p>&copy; 2026 Junta de Acción Comunal Vereda San Miguel. Base de datos guardada en memoria local de tu dispositivo.</p>
     </footer>
 
-    <div id="quickAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-350">
+    <div id="quickAddModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 flex items-center gap-1.5">
@@ -500,11 +437,11 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
             <div class="space-y-3">
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nombre Completo</label>
-                    <input type="text" id="quickNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                    <input type="text" id="quickNameInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none font-medium">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Número de Cédula</label>
-                    <input type="number" id="quickIdInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium font-mono">
+                    <input type="text" id="quickIdInput" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 focus:outline-none font-medium font-mono">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
@@ -520,7 +457,7 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
     </div>
 
     <script>
-        // --- AQUÍ SE CAMBIA EN JAVASCRIPT SI SE QUIERE MODIFICAR EL CÓDIGO BASE ---
+        // --- ESTADO GLOBAL LOCAL ---
         let totalSocios = 300; 
         let quorumPercent = 50;
         let plusOne = true;
@@ -530,6 +467,7 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
         let roster = []; 
         let reuniones = [];
 
+        // --- ENLACES DOM ---
         const meetingMonthInput = document.getElementById('meetingMonthInput');
         const meetingDateInput = document.getElementById('meetingDateInput');
         const meetingNameInput = document.getElementById('meetingNameInput');
@@ -562,43 +500,7 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
         const edadInput = document.getElementById('edadInput');
         const cargoInput = document.getElementById('cargoInput');
         const comisionInput = document.getElementById('comisionInput');
-        fechaNacimientoInput.addEventListener('change', () => {
 
-    if (!fechaNacimientoInput.value) {
-
-        edadInput.value = '';
-
-        return;
-
-    }
-
-    const hoy = new Date();
-
-    const nacimiento = new Date(
-        fechaNacimientoInput.value
-    );
-
-    let edad =
-        hoy.getFullYear() -
-        nacimiento.getFullYear();
-
-    const mes =
-        hoy.getMonth() -
-        nacimiento.getMonth();
-
-    if (
-        mes < 0 ||
-        (
-            mes === 0 &&
-            hoy.getDate() < nacimiento.getDate()
-        )
-    ) {
-        edad--;
-    }
-
-    edadInput.value = edad;
-
-});
         const addRosterMemberBtn = document.getElementById('addRosterMemberBtn');
         const rosterCountText = document.getElementById('rosterCountText');
         const rosterTableBody = document.getElementById('rosterTableBody');
@@ -612,537 +514,171 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
         const resetMeetingBtn = document.getElementById('resetMeetingBtn');
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const importRosterFile = document.getElementById('importRosterFile');
+        const historialReunionesBody = document.getElementById('historialReunionesBody');
 
+        // --- MANEJO DE EDAD AUTOMÁTICA ---
+        fechaNacimientoInput.addEventListener('change', () => {
+            if (!fechaNacimientoInput.value) { edadInput.value = ''; return; }
+            const hoy = new Date();
+            const nacimiento = new Date(fechaNacimientoInput.value);
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            const mes = hoy.getMonth() - nacimiento.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
+            edadInput.value = edad;
+        });
+
+        // --- CARGA Y SINCRONIZACIÓN LOCAL STORAGE ---
         function loadSystemData() {
+            if (localStorage.getItem('jac_total_socios')) totalSocios = parseInt(localStorage.getItem('jac_total_socios'));
+            if (localStorage.getItem('jac_quorum_percent')) quorumPercent = parseInt(localStorage.getItem('jac_quorum_percent'));
+            if (localStorage.getItem('jac_plus_one')) plusOne = localStorage.getItem('jac_plus_one') === 'true';
+            if (localStorage.getItem('jac_meeting_name')) meetingName = localStorage.getItem('jac_meeting_name');
+            if (localStorage.getItem('jac_meeting_month')) meetingMonth = localStorage.getItem('jac_meeting_month');
+            
+            if (localStorage.getItem('jac_roster_offline')) roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
+            if (localStorage.getItem('jac_attendees_offline')) listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
+            if (localStorage.getItem('jac_reuniones')) reuniones = JSON.parse(localStorage.getItem('jac_reuniones'));
+            
+            totalSociosInput.value = totalSocios;
+            quorumPercentInput.value = quorumPercent;
+            quorumPercentLabel.innerText = `${quorumPercent}%`;
+            plusOneCheck.checked = plusOne;
+            meetingNameInput.value = meetingName;
+            meetingMonthInput.value = meetingMonth;
+            
+            badgeMonth.innerText = meetingMonth.toUpperCase();
+            currentMeetingLabel.innerText = meetingName;
+            
             const hoy = new Date();
             meetingDateInput.value = hoy.toISOString().split('T')[0];
+            
+            renderRosterPanel();
+            renderRosterManagement();
+            renderAttendees();
+            renderHistorial();
+            calculateQuorum();
+        }
 
-            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            meetingMonth = meses[hoy.getMonth()];
-            meetingMonthInput.value = meetingMonth;
-            badgeMonth.textContent = meetingMonth.toUpperCase();
-
-            if (localStorage.getItem('jac_total_offline')) {
-                totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
-                totalSociosInput.value = totalSocios;
-            }
-            if (localStorage.getItem('jac_percent_offline')) {
-                quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
-                quorumPercentInput.value = quorumPercent;
-                quorumPercentLabel.textContent = `${quorumPercent}%`;
-            }
-            if (localStorage.getItem('jac_plusone_offline')) {
-                plusOne = localStorage.getItem('jac_plusone_offline') === 'true';
-                plusOneCheck.checked = plusOne;
-            }
-            if (localStorage.getItem('jac_name_offline')) {
-                meetingName = localStorage.getItem('jac_name_offline');
-                meetingNameInput.value = meetingName;
-                currentMeetingLabel.textContent = meetingName;
-            }
-            if (localStorage.getItem('jac_month_offline')) {
-                meetingMonth = localStorage.getItem('jac_month_offline');
-                meetingMonthInput.value = meetingMonth;
-                badgeMonth.textContent = meetingMonth.toUpperCase();
-            }
-            if (localStorage.getItem('jac_date_offline')) {
-                meetingDateInput.value = localStorage.getItem('jac_date_offline');
-            }
-            if (localStorage.getItem('jac_attendees_offline')) {
-                  roster = JSON.parse( localStorage.getItem('jac_roster_offline') );
-} else {
-    roster = [];
-}
-
-if (localStorage.getItem('jac_reuniones')) {
-    reuniones = JSON.parse( localStorage.getItem('jac_reuniones') );
-} else {
-    reuniones = [];
-}
-
-if (localStorage.getItem('jac_attendees_offline')) {
-    listAttendees = JSON.parse(
-        localStorage.getItem('jac_attendees_offline')   );
-} else {
-    listAttendees = [];
-}
-}
         function saveConfig() {
-    localStorage.setItem('jac_total_offline', totalSocios);
-    localStorage.setItem('jac_percent_offline', quorumPercent);
-    localStorage.setItem('jac_plusone_offline', plusOne);
-    localStorage.setItem('jac_name_offline', meetingName);
-    localStorage.setItem('jac_month_offline', meetingMonth);
-    localStorage.setItem('jac_date_offline', meetingDateInput.value);
+            localStorage.setItem('jac_total_socios', totalSocios);
+            localStorage.setItem('jac_quorum_percent', quorumPercent);
+            localStorage.setItem('jac_plus_one', plusOne);
+            localStorage.setItem('jac_meeting_name', meetingName);
+            localStorage.setItem('jac_meeting_month', meetingMonth);
+            localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
+            localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
+            localStorage.setItem('jac_reuniones', JSON.stringify(reuniones));
+        }
 
-    localStorage.setItem(
-        'jac_attendees_offline',
-        JSON.stringify(listAttendees)
-    );
+        function obtenerIdReunion() {
+            return meetingMonth + "_" + meetingDateInput.value + "_" + meetingName.replace(/\s+/g, '_');
+        }
 
-    localStorage.setItem(
-        'jac_roster_offline',
-        JSON.stringify(roster)
-    );
-
-    localStorage.setItem(
-        'jac_reuniones',
-        JSON.stringify(reuniones)
-    );
-}
-
-        window.switchTab = function(tabName) {
-            document.getElementById('section-asistencia').classList.add('hidden');
-            document.getElementById('section-directorio').classList.add('hidden');
-            document.getElementById('section-config').classList.add('hidden');
-            document.getElementById('section-reuniones').classList.add('hidden');
-            document.getElementById('tab-asistencia').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById('tab-directorio').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById('tab-config').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById('tab-reuniones').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-            document.getElementById(`section-${tabName}`).classList.remove('hidden');
-            
-            const activeTabButton = document.getElementById(`tab-${tabName}`);
-            activeTabButton.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-800 shadow-sm flex items-center gap-1.5";
-            
-            lucide.createIcons();
+        // --- NAVEGACIÓN TABS ---
+        window.switchTab = function(tabId) {
+            ['asistencia', 'directorio', 'reuniones', 'config'].forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-emerald-700 shadow-sm flex items-center gap-1.5";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
+                }
+            });
         };
 
-        function renderRosterPanel(filterText = '') {
-            rosterListContainer.innerHTML = '';
-            
-            const filteredRoster = roster.filter(m => 
-                m.nombre.toLowerCase().includes(filterText.toLowerCase()) || 
-                m.documento.includes(filterText)
-            );
-
-            if (filteredRoster.length === 0) {
-                rosterListContainer.innerHTML = `<div class="p-6 text-center text-slate-400 bg-white border border-slate-150 rounded-xl text-xs">No hay socios en el directorio que coincidan.</div>`;
-                return;
-            }
-
-            filteredRoster.sort((a, b) =>
-    (a.nombre || '').localeCompare(b.nombre || '')
-);
-
-            filteredRoster.forEach(member => {
-                const isPresent = listAttendees.some(att => att.documento === member.documento && att.mes === meetingMonth);
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border flex justify-between items-center transition ${isPresent ? 'bg-emerald-50/50 border-emerald-200' : 'bg-white border-slate-100 hover:border-slate-200'}`;
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="font-bold text-slate-800 text-xs">${escapeHtml(member.nombre)}</div>
-                        <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(member.documento)}</div>
-                    </div>
-                    ${isPresent ? `
-                        <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-[10px] font-black flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i>PRESENTE</span>
-                    ` : `
-                        <button onclick="markPresentOffline('${member.nombre}', '${member.documento}')" class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 rounded-lg text-[10px] font-bold transition shadow-sm flex items-center gap-1"><i data-lucide="signature" class="w-3.5 h-3.5"></i>REGISTRAR</button>
-                    `}
-                `;
-                rosterListContainer.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        window.markPresentOffline = function(nombre, documento) {
-            
-            const idReunion =
-    obtenerIdReunion();
-
-if (
-    !reuniones.some(
-        r => r.id === idReunion
-    )
-) {
-
-    reuniones.push({
-
-        id: idReunion,
-        fecha: meetingDateInput.value,
-        nombre: meetingName
-
-    });
-
-}
-    const yaExiste = listAttendees.some(att => {
-
-        return (
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
-
-    });
-
-    if (yaExiste) {
-
-        showToast(
-            "Este socio ya registró asistencia"
-        );
-
-        return;
-
-    }
-
-    const ahora = new Date();
-
-    listAttendees.push({
-
-    nombre: nombre,
-    documento: documento,
-
-    reunionId:
-        obtenerIdReunion(),
-
-    hora: ahora.toLocaleTimeString([],
-    {
-        hour: '2-digit',
-        minute: '2-digit'
-    }),
-
-    mes: meetingMonth,
-    fecha: meetingDateInput.value
-
-});
-
-    saveConfig();
-            
-    renderHistorial();
-            
-    renderAttendees();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    showToast(
-        "Asistencia registrada"
-    );
-
-};
-
-        function renderRosterManagement() {
-            const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
-            console.log(roster);
-            rows.forEach(r => r.remove());
-
-            rosterCountText.textContent = `Socios Registrados: ${roster.length} activos`;
-
-            if (roster.length === 0) {
-                emptyRosterRow.classList.remove('hidden');
-                return;
-            }
-            emptyRosterRow.classList.add('hidden');
-            
-           const sortedRoster = [...roster].sort((a,b) =>
-    (a.nombre || '').localeCompare(b.nombre || '')
-);
-           sortedRoster.forEach(member => {
-console.log("SOCIO:", member);
-               
-    const retirar =
-    tieneTresFaltasConsecutivas(member.documento);
-
-console.log(
-    member.nombre,
-    member.documento,
-    retirar
-);
-    
-    const tr = document.createElement('tr');
-    tr.className = "hover:bg-slate-50 transition";
-
-    tr.innerHTML = `
-        <td class="p-3 font-bold text-slate-800">
-            ${escapeHtml(member.nombre || '')}
-
-            ${retirar ? `
-            <div class="mt-1 text-[10px] font-bold text-red-600">
-                ⚠ Retiro por 3 faltas consecutivas
-            </div>
-            ` : ''}
-        </td>
-
-<td class="p-3">
-    ${escapeHtml(member.tipoDocumento || '')}
-</td>
-
-<td class="p-3 text-slate-500 font-mono">
-    ${escapeHtml(member.documento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.lugarExpedicion || '')}
-</td>
-
-<td class="p-3">
-    ${formatearFecha(member.fechaNacimiento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.lugarNacimiento || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.genero || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.rh || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.edad || '')}
-</td>
-
-<td class="p-3">
-    ${escapeHtml(member.cargo || '')}
-</td>
-<td class="p-3">
-    ${escapeHtml(member.comision || '')}
-</td>
-
-<td class="p-3 text-right">
-    <button
-        onclick="deleteRosterMember('${member.documento}')"
-        class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition">
-        <i data-lucide="trash-2" class="w-4 h-4"></i>
-    </button>
-</td>
-
-`;
-                rosterTableBody.appendChild(tr);
-            });
-            lucide.createIcons();
-        }
-
-        addRosterMemberBtn.addEventListener('click', () => {
-
-    const nombre = rosterNameInput.value.trim();
-    const documento = rosterIdInput.value.trim();
-
-    if (!nombre || !documento) {
-
-        showToast("Complete nombre y documento");
-
-        return;
-
-    }
-
-    if (roster.some(m => m.documento === documento)) {
-
-        showToast("Ya existe este socio");
-
-        return;
-
-    }
-
-    // calcular edad automática
-    let edad = "";
-
-    if (fechaNacimientoInput.value) {
-
-        const hoy = new Date();
-
-        const nacimiento = new Date(fechaNacimientoInput.value);
-
-        edad = hoy.getFullYear() - nacimiento.getFullYear();
-
-        const m = hoy.getMonth() - nacimiento.getMonth();
-
-        if (
-            m < 0 ||
-            (m === 0 && hoy.getDate() < nacimiento.getDate())
-        ) {
-            edad--;
-        }
-
-    }
-
-    roster.push({
-        nombre: nombre,
-        documento: documento,
-        tipoDocumento: tipoDocumentoInput.value,
-        lugarExpedicion: lugarExpedicionInput.value,
-        fechaNacimiento: fechaNacimientoInput.value,
-        lugarNacimiento: lugarNacimientoInput.value,
-        genero: generoInput.value,
-        rh: rhInput.value,
-        edad: edad,
-        cargo: cargoInput.value,
-        comision: comisionInput.value
-    });
-
-    saveConfig();
-            
-    renderHistorial();
-            
-    renderRosterManagement();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    rosterNameInput.value = '';
-    rosterIdInput.value = '';
-    tipoDocumentoInput.value = '';
-    lugarExpedicionInput.value = '';
-    fechaNacimientoInput.value = '';
-    lugarNacimientoInput.value = '';
-    generoInput.value = '';
-    rhInput.value = '';
-    edadInput.value = '';
-    cargoInput.value = '';
-    comisionInput.value = '';
-
-    showToast("Socio agregado correctamente");
-
-});
-
-        window.deleteRosterMember = function(documento) {
-
-    const confirmar = confirm(
-        "¿Eliminar este socio del directorio?"
-    );
-
-    if (!confirmar) return;
-
-    roster = roster.filter(
-        member => member.documento !== documento
-    );
-
-    listAttendees = listAttendees.filter(
-        att => att.documento !== documento
-    );
-
-    saveConfig();
-            
-   renderHistorial();
-            
-   renderRosterManagement();
-
-    renderRosterPanel();
-
-    renderAttendees();
-
-    calculateQuorum();
-
-    showToast("Socio eliminado");
-
-};
-
-        window.loadDefaultRoster = function() {
-            if (confirm("¿Cargar datos de prueba?")) {
-                
-                    roster = [
-
-    {
-        nombre: "Pedro Nel Gómez",
-        documento: "70123456",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Neiva",
-        fechaNacimiento: "1970-05-10",
-        lugarNacimiento: "Neiva",
-        genero: "Masculino",
-        rh: "O+",
-        edad: 55,
-        cargo: "Presidente"
-    },
-
-    {
-        nombre: "María Custodia Ortiz",
-        documento: "41987654",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Pitalito",
-        fechaNacimiento: "1980-02-18",
-        lugarNacimiento: "Pitalito",
-        genero: "Femenino",
-        rh: "A+",
-        edad: 45,
-        cargo: "Tesorera"
-    },
-
-    {
-        nombre: "José del Carmen Rojas",
-        documento: "19345678",
-        tipoDocumento: "C.C",
-        lugarExpedicion: "Garzón",
-        fechaNacimiento: "1968-09-22",
-        lugarNacimiento: "Garzón",
-        genero: "Masculino",
-        rh: "B+",
-        edad: 57,
-        cargo: "Fiscal"
-    }
-
-];
-                saveConfig(); renderHistorial(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
-                showToast("Datos cargados.");
-            }
-        };
-
+        // --- CÁLCULO MÓDULO QUÓRUM ---
         function calculateQuorum() {
-            const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
-            const presentCount = asistenciasMes.length;
+            totalSociosText.innerText = totalSocios;
+            const idActual = obtenerIdReunion();
+            const presentes = listAttendees.filter(a => a.reunionId === idActual).length;
+            presentCountText.innerText = presentes;
 
-            let baseRequired = (totalSocios * (quorumPercent / 100));
-            let requiredAttendees = plusOne ? Math.floor(baseRequired) + 1 : Math.ceil(baseRequired);
+            let minimo = Math.floor(totalSocios * (quorumPercent / 100));
+            if (plusOne) minimo += 1;
+            quorumMinText.innerText = `Mínimo para quórum: ${minimo}`;
 
-            if (requiredAttendees < 1) requiredAttendees = 1;
-            if (requiredAttendees > totalSocios) requiredAttendees = totalSocios;
+            const pct = totalSocios > 0 ? Math.round((presentes / totalSocios) * 100) : 0;
+            presentPercentText.innerText = `${pct}% de asistencia`;
+            quorumProgressBar.style.width = `${Math.min(pct, 100)}%`;
 
-            const hasQuorum = presentCount >= requiredAttendees;
-            const progress = Math.min((presentCount / requiredAttendees) * 100, 100);
-
-            totalSociosText.textContent = totalSocios;
-            quorumMinText.textContent = `Mínimo de Ley: ${requiredAttendees} socios`;
-            presentCountText.textContent = presentCount;
-            presentPercentText.textContent = `${totalSocios > 0 ? Math.round((presentCount / totalSocios) * 100) : 0}% de participación en ${meetingMonth}`;
-            quorumProgressBar.style.width = `${progress}%`;
-
-            if (hasQuorum) {
-                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-emerald-150 bg-emerald-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
-                quorumStatusText.textContent = "¡QUÓRUM ALCANZADO!";
-                quorumStatusText.className = "text-xl font-black text-emerald-800 mt-0.5";
-                quorumHelperText.textContent = `Asamblea válida. Hay ${presentCount} socios de ${requiredAttendees} mínimos.`;
+            if (presentes >= minimo) {
+                quorumStatusText.innerText = "¡Hay Quórum Legal!";
+                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between shadow-sm bg-emerald-50 border-emerald-200 text-emerald-900";
                 quorumProgressBar.className = "h-full bg-emerald-600 transition-all duration-500";
-                quorumIcon.className = "p-2 rounded-xl bg-emerald-100 text-emerald-600";
-                quorumIcon.innerHTML = `<i data-lucide="shield-check" class="w-5 h-5"></i>`;
+                quorumHelperText.innerText = "Se pueden deliberar y tomar decisiones válidas en la asamblea.";
+                quorumIcon.className = "p-2 rounded-xl bg-emerald-200 text-emerald-700";
+                quorumIcon.innerHTML = '<i data-lucide="shield-check" class="w-5 h-5"></i>';
             } else {
-                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border border-rose-150 bg-rose-50/50 flex flex-col justify-between shadow-sm transition-all duration-300";
-                quorumStatusText.textContent = "FALTA QUÓRUM";
-                quorumStatusText.className = "text-xl font-black text-rose-800 mt-0.5";
-                quorumHelperText.textContent = `Faltan ${requiredAttendees - presentCount} socios para tomar actas válidas.`;
-                quorumProgressBar.className = "h-full bg-rose-500 transition-all duration-500";
-                quorumIcon.className = "p-2 rounded-xl bg-rose-100 text-rose-600";
-                quorumIcon.innerHTML = `<i data-lucide="shield-alert" class="w-5 h-5"></i>`;
+                quorumStatusText.innerText = "Sin Quórum Todavía";
+                quorumCard.className = "md:col-span-2 p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between shadow-sm bg-white border-slate-100";
+                quorumProgressBar.className = "h-full bg-slate-300 transition-all duration-500";
+                quorumHelperText.innerText = `Faltan ${minimo - presentes} socios para alcanzar la validación legal.`;
+                quorumIcon.className = "p-2 rounded-xl bg-rose-50 text-rose-500";
+                quorumIcon.innerHTML = '<i data-lucide="shield-alert" class="w-5 h-5"></i>';
             }
             lucide.createIcons();
         }
 
-        function renderAttendees(filterQuery = '') {
+        // --- VISTAS RENDERERS ---
+        function renderRosterPanel() {
+            const query = searchRosterInput.value.toLowerCase();
+            rosterListContainer.innerHTML = '';
+            const filtered = roster.filter(m => m.nombre.toLowerCase().includes(query) || m.documento.includes(query));
+            const idActual = obtenerIdReunion();
+
+            if (filtered.length === 0) {
+                rosterListContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Ningún socio coincide con la búsqueda.</p>';
+                return;
+            }
+
+            filtered.forEach(member => {
+                const asistio = listAttendees.some(a => a.documento === member.documento && a.reunionId === idActual);
+                const div = document.createElement('div');
+                div.className = "bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center gap-2";
+                div.innerHTML = `
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">${member.nombre}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">${member.tipoDocumento || 'C.C'} ${member.documento} ${member.cargo ? `• ${member.cargo}` : ''}</p>
+                    </div>
+                    <button onclick="registrarAsistencia('${member.nombre.replace(/'/g, "\\'")}', '${member.documento}')" 
+                        class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1 ${asistio ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}"
+                        ${asistio ? 'disabled' : ''}>
+                        <i data-lucide="${asistio ? 'check' : 'user-check'}" class="w-3.5 h-3.5"></i>
+                        ${asistio ? 'Registrado' : 'Registrar'}
+                    </button>
+                `;
+                rosterListContainer.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function renderAttendees() {
+            const query = searchAttendee.value.toLowerCase();
             const rows = Array.from(attendeesList.querySelectorAll('tr:not(#emptyAttendeesRow)'));
             rows.forEach(r => r.remove());
 
-            const filtered = listAttendees.filter(att => att.mes === meetingMonth).filter(att => 
-                att.nombre.toLowerCase().includes(filterQuery.toLowerCase()) || att.documento.includes(filterQuery)
-            );
+            const idActual = obtenerIdReunion();
+            const filtered = listAttendees.filter(a => a.reunionId === idActual && (a.nombre.toLowerCase().includes(query) || a.documento.includes(query)));
 
             if (filtered.length === 0) {
                 emptyAttendeesRow.classList.remove('hidden');
             } else {
                 emptyAttendeesRow.classList.add('hidden');
-                [...filtered].reverse().forEach(att => {
+                filtered.forEach(att => {
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-100/50 transition-colors duration-150";
+                    tr.className = "hover:bg-slate-50/80 transition-colors";
                     tr.innerHTML = `
                         <td class="p-3">
-                            <div class="font-bold text-slate-800">${escapeHtml(att.nombre)}</div>
-                            <div class="text-[10px] text-slate-400 font-medium">C.C. ${escapeHtml(att.documento)} (Firma: ${att.hora})</div>
+                            <p class="font-bold text-slate-800">${att.nombre}</p>
+                            <p class="text-[10px] text-slate-400 font-mono">Doc: ${att.documento} • Registrado: ${att.hora}</p>
                         </td>
                         <td class="p-3 text-right">
-                            <button onclick="removeAttendance('${att.documento}')" class="text-rose-600 hover:text-rose-800 p-1 rounded-lg hover:bg-rose-50 transition"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                            <button onclick="eliminarAsistencia('${att.documento}')" class="text-rose-500 hover:text-rose-700 p-1 rounded transition hover:bg-rose-50">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </td>
                     `;
                     attendeesList.appendChild(tr);
@@ -1151,624 +687,268 @@ console.log(
             lucide.createIcons();
         }
 
-        window.removeAttendance = function(documento) {
+        function renderRosterManagement() {
+            rosterCountText.innerText = `${roster.length} socios activos en base de datos local`;
+            const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
+            rows.forEach(r => r.remove());
 
-    const confirmar = confirm(
-        "¿Eliminar asistencia de este socio?"
-    );
-
-    if (!confirmar) return;
-
-    listAttendees = listAttendees.filter(att => {
-
-        return !(
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
-
-    });
-
-    saveConfig();
-            
-    renderHistorial();
-            
-    renderAttendees();
-
-    renderRosterPanel();
-
-    calculateQuorum();
-
-    showToast("Asistencia eliminada");
-
-};
-
-        const quickAddModal = document.getElementById('quickAddModal');
-        const quickNameInput = document.getElementById('quickNameInput');
-        const quickIdInput = document.getElementById('quickIdInput');
-
-        window.openQuickAddModal = function() {
-            quickAddModal.classList.remove('opacity-0', 'pointer-events-none');
-            quickNameInput.value = ''; quickIdInput.value = ''; quickNameInput.focus();
-        };
-
-        window.closeQuickAddModal = function() {
-            quickAddModal.classList.add('opacity-0', 'pointer-events-none');
-        };
-
-window.submitQuickAdd = function() {
-
-    const nombre = quickNameInput.value.trim(); 
-    const documento = quickIdInput.value.trim();
-
-    if (!nombre || !documento) { 
-        showToast("Ingresa nombre y documento."); 
-        return; 
-    }
-
-    const yaExiste = listAttendees.some(att => {
-        return (
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
-    });
-
-    if (yaExiste) { 
-        showToast("Ya está registrado en esta reunión."); 
-        return; 
-    }
-
-    const ahora = new Date();
-
-    listAttendees.push({
-        nombre: nombre,
-        documento: documento,
-        reunionId: obtenerIdReunion(),
-        hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        mes: meetingMonth,
-        fecha: meetingDateInput.value
-    });
-
-    saveConfig();
-
-    renderHistorial();
-    renderAttendees();
-    renderRosterPanel();
-    calculateQuorum();
-
-    showToast("Asistencia agregada");
-
-    closeQuickAddModal();
-
-};
-
-            // Eventos
-        meetingMonthInput.addEventListener('change', (e) => {
-            meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
-            saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
-        });
-
-        meetingDateInput.addEventListener('change', () => saveConfig());
-        meetingNameInput.addEventListener('input', (e) => { meetingName = e.target.value; currentMeetingLabel.textContent = meetingName; saveConfig(); renderHistorial();});
-
-        updateSociosBtn.addEventListener('click', () => {
-            const val = parseInt(totalSociosInput.value);
-            if (val > 0) { totalSocios = val; saveConfig(); renderHistorial(); calculateQuorum(); showToast(`Total de habilitados: ${totalSocios}.`); }
-        });
-
-        quorumPercentInput.addEventListener('input', (e) => { quorumPercent = parseInt(e.target.value); quorumPercentLabel.textContent = `${quorumPercent}%`; saveConfig(); renderHistorial(); calculateQuorum(); });
-        plusOneCheck.addEventListener('change', (e) => { plusOne = e.target.checked; saveConfig(); renderHistorial(); calculateQuorum(); });
-
-        searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
-        searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
-
-        resetMeetingBtn.addEventListener('click', () => {
-            if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
-                listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
-                saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(); showToast(`Listado borrado.`);
+            if (roster.length === 0) {
+                emptyRosterRow.classList.remove('hidden');
+            } else {
+                emptyRosterRow.classList.add('hidden');
+                roster.forEach(m => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50/80 text-[11px]";
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold text-slate-800">${m.nombre}</td>
+                        <td class="p-3 text-slate-500">${m.tipoDocumento || 'C.C'}</td>
+                        <td class="p-3 font-mono text-slate-600">${m.documento}</td>
+                        <td class="p-3 text-slate-500">${m.lugarExpedicion || '-'}</td>
+                        <td class="p-3 text-slate-500">${m.fechaNacimiento || '-'}</td>
+                        <td class="p-3 text-slate-500">${m.lugarNacimiento || '-'}</td>
+                        <td class="p-3 text-slate-500">${m.genero || '-'}</td>
+                        <td class="p-3 text-slate-500">${m.rh || '-'}</td>
+                        <td class="p-3 text-slate-500">${m.edad || '-'}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${m.cargo || 'Socio'}</span></td>
+                        <td class="p-3 text-slate-500">${m.comision || '-'}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteRosterMember('${m.documento}')" class="text-rose-500 hover:text-rose-700 p-1 rounded transition hover:bg-rose-50">
+                                <i data-lucide="user-minus" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    `;
+                    rosterTableBody.appendChild(tr);
+                });
             }
-        });
-
-        window.hardResetSystem = function() {
-            if (confirm("⚠️ PELIGRO: Esto borrará todos los socios y asistencias de todos los meses de forma permanente. ¿Estás seguro?")) {
-                localStorage.clear();
-                window.location.reload();
-            }
+            lucide.createIcons();
         }
 
-       exportCsvBtn.addEventListener('click', () => {
-
-    const asistentesDelMes = listAttendees.filter(
-        att => att.mes === meetingMonth
-    );
-
-    if (asistentesDelMes.length === 0) {
-
-        showToast(`No hay registros en ${meetingMonth}.`);
-
-        return;
-
-    }
-
-    let baseRequired = (
-        totalSocios * (quorumPercent / 100)
-    );
-
-    let requiredAttendees = plusOne
-        ? Math.floor(baseRequired) + 1
-        : Math.ceil(baseRequired);
-
-    if (requiredAttendees < 1)
-        requiredAttendees = 1;
-
-    if (requiredAttendees > totalSocios)
-        requiredAttendees = totalSocios;
-
-    const hayQuorum =
-        asistentesDelMes.length >= requiredAttendees
-            ? "SI"
-            : "NO";
-
-    const datosExcel = [];
-
-    asistentesDelMes.forEach((att, index) => {
-
-        const socio = roster.find(
-            r => r.documento === att.documento
-        ) || {};
-
-        datosExcel.push({
-
-            "N°": index + 1,
-
-            "Mes": att.mes,
-
-            "Fecha Reunión": att.fecha,
-
-            "Tipo Asamblea": meetingName,
-
-            "Nombre Completo": socio.nombre || att.nombre,
-
-            "Tipo Documento": socio.tipoDocumento || "C.C",
-
-            "Número Documento": socio.documento || att.documento,
-
-            "Lugar Expedición": socio.lugarExpedicion || "",
-
-            "Fecha Nacimiento": socio.fechaNacimiento || "",
-
-            "Lugar Nacimiento": socio.lugarNacimiento || "",
-
-            "Género": socio.genero || "",
-
-            "RH": socio.rh || "",
-
-            "Edad": socio.edad || "",
-
-            "Cargo": socio.cargo || "Socio",
-            
-            "Comisión": socio.comision || "",
-
-            "Hora Registro": att.hora,
-
-            "Total Socios Habilitados": totalSocios,
-
-            "Asistentes Registrados": asistentesDelMes.length,
-
-            "Mínimo para Quórum": requiredAttendees,
-
-            "¿Hay Quórum?": hayQuorum
-
-        });
-
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(datosExcel);
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Asistencia"
-    );
-
-    XLSX.writeFile(
-        workbook,
-        `Asistencia_JAC_${meetingMonth}.xlsx`
-    );
-
-    showToast(
-        "Reporte completo descargado"
-    );
-
-});
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.className = "fixed bottom-5 right-5 transform translate-y-0 opacity-100 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50 transition-all duration-300";
-            setTimeout(() => { toast.className = "fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50"; }, 3000);
+        function renderHistorial() {
+            historialReunionesBody.innerHTML = '';
+            if (reuniones.length === 0) {
+                historialReunionesBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400">No hay registros en el historial offline.</td></tr>`;
+                return;
+            }
+            reuniones.sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).forEach(r => {
+                const count = listAttendees.filter(a => a.reunionId === r.id).length;
+                historialReunionesBody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-mono text-slate-600">${r.fecha}</td>
+                        <td class="p-3 font-semibold text-slate-700">${r.nombre} (${r.mes})</td>
+                        <td class="p-3 font-bold text-emerald-600">${count} socios presentes</td>
+                    </tr>
+                `;
+            });
         }
-function obtenerIdReunion() {
 
-    return meetingDateInput.value;
-
-}
-        function escapeHtml(unsafe) { return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-importRosterFile.addEventListener('change', function(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-
-        try {
-
-            const data = new Uint8Array(e.target.result);
-
-            const workbook = XLSX.read(data, {
-                type: 'array'
+        // --- ACCIONES ACCESIBLES ---
+        window.registrarAsistencia = function(nombre, documento) {
+            const idActual = obtenerIdReunion();
+            if (listAttendees.some(a => a.documento === documento && a.reunionId === idActual)) {
+                showToast("Este socio ya firmó la asistencia.");
+                return;
+            }
+            const ahora = new Date();
+            listAttendees.push({
+                nombre: nombre,
+                documento: documento,
+                reunionId: idActual,
+                hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                mes: meetingMonth,
+                fecha: meetingDateInput.value
             });
 
-            const sheetName = workbook.SheetNames[0];
+            if (!reuniones.some(r => r.id === idActual)) {
+                reuniones.push({ id: idActual, nombre: meetingName, fecha: meetingDateInput.value, mes: meetingMonth });
+            }
 
-            const worksheet = workbook.Sheets[sheetName];
+            saveConfig();
+            renderAttendees();
+            renderRosterPanel();
+            calculateQuorum();
+            renderHistorial();
+            showToast("Asistencia registrada.");
+        };
 
-           const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-    defval: "",
-    raw: false,
-    dateNF: 'dd/mm/yyyy'
-}); 
+        window.eliminarAsistencia = function(documento) {
+            const idActual = obtenerIdReunion();
+            listAttendees = listAttendees.filter(a => !(a.documento === documento && a.reunionId === idActual));
+            saveConfig();
+            renderAttendees();
+            renderRosterPanel();
+            calculateQuorum();
+            renderHistorial();
+            showToast("Registro eliminado de hoy.");
+        };
 
-            let nuevos = 0;
+        window.deleteRosterMember = function(documento) {
+            if (!confirm("¿Deseas remover de manera permanente este socio del directorio?")) return;
+            roster = roster.filter(m => m.documento !== documento);
+            saveConfig();
+            renderRosterManagement();
+            renderRosterPanel();
+            calculateQuorum();
+            showToast("Socio removido.");
+        };
 
-            jsonData.forEach(row => {
+        // --- ALTAS MANUALES POR FORMULARIOS ---
+        addRosterMemberBtn.addEventListener('click', () => {
+            const nombre = rosterNameInput.value.trim();
+            const documento = rosterIdInput.value.trim();
+            if (!nombre || !documento) { showToast("Completa los campos de Nombre y Documento."); return; }
+            if (roster.some(m => m.documento === documento)) { showToast("Este documento ya existe."); return; }
 
-                const documento =
-                    row["NUMERO DOCUMENTO"]
-                        ?.toString()
-                        .trim();
-
-                if (!documento) return;
-
-                const existe = roster.some(
-                    m => m.documento === documento
-                );
-
-                if (existe) return;
-
-                // calcular edad automática
-                let edad = "";
-
-                if (row["FECHA NACIMIENTO"]) {
-
-                    const hoy = new Date();
-
-                    const nacimiento = new Date(
-                        row["FECHA NACIMIENTO"]
-                    );
-
-                    edad =
-                        hoy.getFullYear() -
-                        nacimiento.getFullYear();
-
-                    const m =
-                        hoy.getMonth() -
-                        nacimiento.getMonth();
-
-                    if (
-                        m < 0 ||
-                        (
-                            m === 0 &&
-                            hoy.getDate() <
-                            nacimiento.getDate()
-                        )
-                    ) {
-                        edad--;
-                    }
-                }
-
-roster.push({
-    nombre: row["NOMBRES Y APELLIDOS"],
-    documento: row["NUMERO DOCUMENTO"],
-    tipoDocumento: row["TIPO DOCUMENTO"],
-    lugarExpedicion: row["LUGAR EXPEDICION"],
-    fechaNacimiento: row["FECHA NACIMIENTO"],
-    lugarNacimiento: row["LUGAR NACIMIENTO"],
-    genero: row["GENERO"],
-    rh: row["RH"],
-    cargo: row["CARGO"],
-    comision: row["COMISION"] || ""
-});
-                nuevos++;
-
+            roster.push({
+                nombre: nombre,
+                tipoDocumento: tipoDocumentoInput.value,
+                documento: documento,
+                lugarExpedicion: lugarExpedicionInput.value.trim(),
+                fechaNacimiento: fechaNacimientoInput.value,
+                lugarNacimiento: lugarNacimientoInput.value.trim(),
+                genero: generoInput.value,
+                rh: rhInput.value.trim(),
+                edad: edadInput.value,
+                cargo: cargoInput.value.trim() || "Socio",
+                comision: comisionInput.value.trim()
             });
 
             saveConfig();
-            
-            renderHistorial();
-            
             renderRosterManagement();
-
             renderRosterPanel();
-
             calculateQuorum();
 
-            showToast(
-                `${nuevos} socios cargados`
-            );
-
-        } catch(error) {
-
-            console.error(error);
-
-            showToast(
-                "Error leyendo Excel"
-            );
-
-        }
-
-    };
-
-    reader.readAsArrayBuffer(file);
-
-});
-        function downloadExcelTemplate() {
-
-    const datos = [
-
-        {
-            "NOMBRES Y APELLIDOS": "",
-            "TIPO DOCUMENTO": "C.C",
-            "NUMERO DOCUMENTO": "",
-            "LUGAR EXPEDICION": "",
-            "FECHA NACIMIENTO": "DD/MM/AAAA",
-            "LUGAR NACIMIENTO": "",
-            "GENERO": "Masculino",
-            "RH": "O+",
-            "CARGO": "Afiliado",
-            "COMISION": "Salud"
-        }
-
-    ];
-
-    const worksheet = XLSX.utils.json_to_sheet(datos);
-
-    // ancho columnas
-    worksheet['!cols'] = [
-
-        { wch: 35 },
-        { wch: 18 },
-        { wch: 22 },
-        { wch: 25 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 15 },
-        { wch: 10 },
-        { wch: 20 }
-
-    ];
-
-    // aplicar fuente
-    const range = XLSX.utils.decode_range(
-        worksheet['!ref']
-    );
-
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-
-            const cellAddress = XLSX.utils.encode_cell({
-                r: R,
-                c: C
-            });
-
-            if (!worksheet[cellAddress]) continue;
-
-            worksheet[cellAddress].s = {
-
-                font: {
-                    name: "Palatino Linotype",
-                    sz: 12,
-                    bold: R === 0
-                }
-
-            };
-
-        }
-
-    }
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "SOCIOS"
-    );
-
-    XLSX.writeFile(
-        workbook,
-        "FORMATO_SOCIOS_JAC.xlsx"
-    );
-
-    showToast(
-    "Formato Excel descargado"
-);
-
-}
-function convertirFechaExcel(fecha) {
-
-    if (!fecha) return "";
-
-    // Si viene como número de Excel
-    if (!isNaN(fecha)) {
-
-        const excelDate = Number(fecha);
-
-        const jsDate = new Date(
-            (excelDate - 25569) * 86400 * 1000
-        );
-
-        const year = jsDate.getFullYear();
-        const month = String(
-            jsDate.getMonth() + 1
-        ).padStart(2, '0');
-
-        const day = String(
-            jsDate.getDate()
-        ).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    // Si viene tipo 01/30/94
-    if (fecha.includes('/')) {
-
-        const partes = fecha.split('/');
-
-        let mes = partes[0];
-        let dia = partes[1];
-        let anio = partes[2];
-
-        // convertir 94 → 1994
-        if (anio.length === 2) {
-
-            anio = parseInt(anio) > 30
-                ? `19${anio}`
-                : `20${anio}`;
-        }
-
-        return `${anio}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
-    }
-
-    // Si ya viene YYYY-MM-DD
-    if (fecha.includes('-')) {
-        return fecha;
-    }
-
-    return fecha;
-}
-function formatearFecha(fecha) {
-
-    if (!fecha) return '';
-
-    // Si es número de Excel
-    if (!isNaN(fecha)) {
-
-        const excelDate = Number(fecha);
-
-        const jsDate = new Date(
-            (excelDate - 25569) * 86400 * 1000
-        );
-
-        return jsDate.toLocaleDateString('es-CO');
-    }
-
-    // Si viene YYYY-MM-DD
-    if (fecha.includes('-')) {
-
-        const partes = fecha.split('-');
-
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-    }
-
-    return fecha;
-}
-
-function tieneTresFaltasConsecutivas(documento) {
-
-    console.log("DOCUMENTO:", documento);
-    console.log("REUNIONES:", reuniones);
-    console.log("ASISTENCIAS:", listAttendees);
-
-    const reunionesOrdenadas = [...reuniones]
-        .sort((a, b) =>
-            new Date(a.fecha) - new Date(b.fecha)
-        );
-
-    let faltasConsecutivas = 0;
-
-    for (const reunion of reunionesOrdenadas) {
-
-        const asistio = listAttendees.some(a =>
-            a.documento === documento &&
-            a.reunionId === reunion.id
-        );
-        
-       console.log(
-            documento,
-            reunion.nombre,
-            reunion.id,
-            asistio
-        ); 
-
-        if (asistio) {
-            faltasConsecutivas = 0;
-        } else {
-            faltasConsecutivas++;
-        }
-
-        if (faltasConsecutivas >= 3) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-function renderHistorial() {
-  
-    const body =
-        document.getElementById(
-            'historialReunionesBody'
-        );
-
-    if (!body) return;
-
-    body.innerHTML = '';
-
-    reuniones
-        .sort((a,b)=>
-            new Date(b.fecha) -
-            new Date(a.fecha)
-        )
-        .forEach(reunion => {
-
-            const asistentes =
-                listAttendees.filter(
-                    a =>
-                    a.reunionId === reunion.id
-                ).length;
-
-            body.innerHTML += `
-
-            <tr>
-
-                <td class="p-2">
-                    ${reunion.fecha}
-                </td>
-
-                <td class="p-2">
-                    ${reunion.nombre}
-                </td>
-
-                <td class="p-2">
-                    ${asistentes}
-                </td>
-
-            </tr>
-
-            `;
+            // Limpiar formulario
+            rosterNameInput.value = ''; rosterIdInput.value = ''; lugarExpedicionInput.value = '';
+            fechaNacimientoInput.value = ''; lugarNacimientoInput.value = ''; rhInput.value = '';
+            edadInput.value = ''; cargoInput.value = ''; comisionInput.value = '';
+            showToast("Socio guardado en el directorio.");
         });
-}
-          window.onload = () => { 
+
+        // --- CONTROL MODAL REGISTRO RAPIDO ---
+        window.openQuickAddModal = function() {
+            document.getElementById('quickAddModal').classList.remove('opacity-0', 'pointer-events-none');
+        };
+        window.closeQuickAddModal = function() {
+            document.getElementById('quickAddModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('quickNameInput').value = '';
+            document.getElementById('quickIdInput').value = '';
+        };
+        window.submitQuickAdd = function() {
+            const nombre = document.getElementById('quickNameInput').value.trim();
+            const documento = document.getElementById('quickIdInput').value.trim();
+            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
+            registrarAsistencia(nombre, documento);
+            closeQuickAddModal();
+        };
+
+        // --- SISTEMAS EXCEL/CSV (IMPORTACIÓN/EXPORTACIÓN) ---
+        window.downloadExcelTemplate = function() {
+            const formato = [{ "Nombre Completo": "Ejemplo de Nombre", "Tipo Doc.": "C.C", "NUMERO DOCUMENTO": "12345678", "Cargo": "Socio" }];
+            const worksheet = XLSX.utils.json_to_sheet(formato);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla Socios");
+            XLSX.writeFile(workbook, "Plantilla_Directorio_JAC.xlsx");
+        };
+
+        importRosterFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const ws = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+                
+                let cont = 0;
+                json.forEach(row => {
+                    const nombre = row["Nombre Completo"] || row["Nombre"];
+                    const doc = row["NUMERO DOCUMENTO"] || row["Documento"];
+                    if (nombre && doc) {
+                        const dStr = doc.toString().trim();
+                        if (!roster.some(m => m.documento === dStr)) {
+                            roster.push({
+                                nombre: nombre.toString().trim(),
+                                tipoDocumento: row["Tipo Doc."] || "C.C",
+                                documento: dStr,
+                                cargo: row["Cargo"] || "Socio",
+                                comision: row["Comisión"] || ""
+                            });
+                            cont++;
+                        }
+                    }
+                });
+                if (cont > 0) {
+                    saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
+                    showToast(`Se importaron ${cont} socios.`);
+                } else {
+                    showToast("No se encontraron socios nuevos.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        exportCsvBtn.addEventListener('click', () => {
+            const idActual = obtenerIdReunion();
+            const actuales = listAttendees.filter(a => a.reunionId === idActual);
+            if (actuales.length === 0) { showToast("No hay registros hoy para exportar."); return; }
+
+            const mapeo = actuales.map(a => ({ "Nombre Socio": a.nombre, "Documento": a.documento, "Fecha": a.fecha, "Hora de Ingreso": a.hora, "Asamblea": meetingName }));
+            const ws = XLSX.utils.json_to_sheet(mapeo);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Reporte");
+            XLSX.writeFile(wb, `Asistencia_${meetingMonth}_JAC_San_Miguel.xlsx`);
+            showToast("Reporte descargado.");
+        });
+
+        // --- RESETEO DE TABLAS ---
+        resetMeetingBtn.addEventListener('click', () => {
+            if (!confirm(`¿Estás seguro de vaciar el listado de asistencia para este mes?`)) return;
+            const idActual = obtenerIdReunion();
+            listAttendees = listAttendees.filter(a => a.reunionId !== idActual);
+            reuniones = reuniones.filter(r => r.id !== idActual);
+            saveConfig(); renderAttendees(); renderRosterPanel(); calculateQuorum(); renderHistorial();
+            showToast("Asistencias limpias.");
+        });
+
+        window.hardResetSystem = function() {
+            if (confirm("⚠️ ALERTA: Esto eliminará de forma permanente todo el directorio y todos los meses guardados. ¿Proceder?")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        };
+
+        window.loadDefaultRoster = function() {
+            roster = [
+                { nombre: "Carlos Arturo Castro", tipoDocumento: "C.C", documento: "12145671", cargo: "Presidente", comision: "Directiva", edad: 45, genero: "Masculino", rh: "O+" },
+                { nombre: "María Helena Gómez", tipoDocumento: "C.C", documento: "36541258", cargo: "Tesorera", comision: "Finanzas", edad: 38, genero: "Femenino", rh: "A+" },
+                { nombre: "José Ignacio Ramos", tipoDocumento: "C.C", documento: "7718452", cargo: "Socio", comision: "Obras", edad: 52, genero: "Masculino", rh: "O-" },
+                { nombre: "Esperanza Perdomo León", tipoDocumento: "C.C", documento: "26485123", cargo: "Secretaria", comision: "Educación", edad: 29, genero: "Femenino", rh: "B+" }
+            ];
+            saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
+            showToast("Socios base cargados.");
+        };
+
+        // --- ESCUCHADORES DE AJUSTES EN TIEMPO REAL ---
+        meetingMonthInput.addEventListener('change', () => { meetingMonth = meetingMonthInput.value; badgeMonth.innerText = meetingMonth.toUpperCase(); saveConfig(); renderAttendees(); renderRosterPanel(); calculateQuorum(); });
+        meetingNameInput.addEventListener('change', () => { meetingName = meetingNameInput.value; currentMeetingLabel.innerText = meetingName; saveConfig(); calculateQuorum(); });
+        quorumPercentInput.addEventListener('input', () => { quorumPercent = parseInt(quorumPercentInput.value); quorumPercentLabel.innerText = `${quorumPercent}%`; saveConfig(); calculateQuorum(); });
+        plusOneCheck.addEventListener('change', () => { plusOne = plusOneCheck.checked; saveConfig(); calculateQuorum(); });
+        updateSociosBtn.addEventListener('click', () => { totalSocios = parseInt(totalSociosInput.value) || 1; saveConfig(); calculateQuorum(); showToast("Capacidad ajustada."); });
+        searchRosterInput.addEventListener('input', () => renderRosterPanel());
+        searchAttendee.addEventListener('input', () => renderAttendees());
+
+        // --- SISTEMA TOAST ---
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none'), 2500);
+        }
+
+        // --- ARRANQUE AL CARGAR WINDOWS ---
+        window.onload = () => { 
             loadSystemData(); 
-              renderHistorial();
             lucide.createIcons(); 
         };
     </script>
