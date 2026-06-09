@@ -649,46 +649,25 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                 meetingDateInput.value = localStorage.getItem('jac_date_offline');
             }
             if (localStorage.getItem('jac_attendees_offline')) {
-                listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
-            }
-           if (localStorage.getItem('jac_roster_offline')) {
-
-    roster = JSON.parse(
-        localStorage.getItem('jac_roster_offline')
-    );
-
+                  roster = JSON.parse( localStorage.getItem('jac_roster_offline') );
 } else {
-
     roster = [];
-
 }
 
 if (localStorage.getItem('jac_reuniones')) {
-
-    reuniones = JSON.parse(
-        localStorage.getItem('jac_reuniones')
-    );
-
+    reuniones = JSON.parse( localStorage.getItem('jac_reuniones') );
 } else {
-
     reuniones = [];
-
 }
 
 if (localStorage.getItem('jac_attendees_offline')) {
-
     listAttendees = JSON.parse(
-        localStorage.getItem('jac_attendees_offline')
-    );
-
+        localStorage.getItem('jac_attendees_offline')   );
 } else {
-
     listAttendees = [];
 }
 }
-
         function saveConfig() {
-
     localStorage.setItem('jac_total_offline', totalSocios);
     localStorage.setItem('jac_percent_offline', quorumPercent);
     localStorage.setItem('jac_plusone_offline', plusOne);
@@ -710,7 +689,6 @@ if (localStorage.getItem('jac_attendees_offline')) {
         'jac_reuniones',
         JSON.stringify(reuniones)
     );
-
 }
 
         window.switchTab = function(tabName) {
