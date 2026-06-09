@@ -651,40 +651,67 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
             if (localStorage.getItem('jac_attendees_offline')) {
                 listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
             }
-            if (localStorage.getItem('jac_roster_offline')) {
-                roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
-            } 
-            if (localStorage.getItem('jac_reuniones')) {
+           if (localStorage.getItem('jac_roster_offline')) {
+
+    roster = JSON.parse(
+        localStorage.getItem('jac_roster_offline')
+    );
+
+} else {
+
+    roster = [];
+
+}
+
+if (localStorage.getItem('jac_reuniones')) {
 
     reuniones = JSON.parse(
         localStorage.getItem('jac_reuniones')
     );
 
-}
-            else {
-                roster = [];
-            }
+} else {
 
-            calculateQuorum();
-            renderAttendees();
-            renderRosterPanel();
-            renderRosterManagement();
-        }
+    reuniones = [];
+
+}
+
+if (localStorage.getItem('jac_attendees_offline')) {
+
+    listAttendees = JSON.parse(
+        localStorage.getItem('jac_attendees_offline')
+    );
+
+} else {
+
+    listAttendees = [];
+
+}
 
         function saveConfig() {
-            localStorage.setItem('jac_total_offline', totalSocios);
-            localStorage.setItem('jac_percent_offline', quorumPercent);
-            localStorage.setItem('jac_plusone_offline', plusOne);
-            localStorage.setItem('jac_name_offline', meetingName);
-            localStorage.setItem('jac_month_offline', meetingMonth);
-            localStorage.setItem('jac_date_offline', meetingDateInput.value);
-            localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
-            localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
-        }
-        localStorage.setItem(
-    'jac_reuniones',
-    JSON.stringify(reuniones)
-);
+
+    localStorage.setItem('jac_total_offline', totalSocios);
+    localStorage.setItem('jac_percent_offline', quorumPercent);
+    localStorage.setItem('jac_plusone_offline', plusOne);
+    localStorage.setItem('jac_name_offline', meetingName);
+    localStorage.setItem('jac_month_offline', meetingMonth);
+    localStorage.setItem('jac_date_offline', meetingDateInput.value);
+
+    localStorage.setItem(
+        'jac_attendees_offline',
+        JSON.stringify(listAttendees)
+    );
+
+    localStorage.setItem(
+        'jac_roster_offline',
+        JSON.stringify(roster)
+    );
+
+    localStorage.setItem(
+        'jac_reuniones',
+        JSON.stringify(reuniones)
+    );
+
+}
 
         window.switchTab = function(tabName) {
             document.getElementById('section-asistencia').classList.add('hidden');
