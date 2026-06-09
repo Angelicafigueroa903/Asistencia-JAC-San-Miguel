@@ -836,7 +836,14 @@ if (
            sortedRoster.forEach(member => {
 console.log("SOCIO:", member);
                
-    const retirar = true;
+    const retirar =
+    tieneTresFaltasConsecutivas(member.documento);
+
+console.log(
+    member.nombre,
+    member.documento,
+    retirar
+);
     
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50 transition";
