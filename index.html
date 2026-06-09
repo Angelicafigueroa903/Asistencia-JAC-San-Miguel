@@ -833,25 +833,35 @@ if (
            const sortedRoster = [...roster].sort((a,b) =>
     (a.nombre || '').localeCompare(b.nombre || '')
 );
-            sortedRoster.forEach(member => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-               tr.innerHTML = `
-const retirar =
-tieneTresFaltasConsecutivas(
-    member.documento
-);
+           sortedRoster.forEach(member => {
+
+    const retirar =
+        tieneTresFaltasConsecutivas(
+            member.documento
+        );
+
+    const tr = document.createElement('tr');
+
+    tr.className = "hover:bg-slate-50 transition";
+
+    tr.innerHTML = `
 
 <td class="p-3 font-bold text-slate-800">
     ${escapeHtml(member.nombre || '')}
 
-${retirar ? `
-<div class="mt-1 text-[10px]
-font-bold text-red-600">
-⚠ Retiro por 3 faltas consecutivas
-</div>
-` : ''}
+    ${retirar ? `
+    <div class="mt-1 text-[10px] font-bold text-red-600">
+        ⚠ Retiro por 3 faltas consecutivas
+    </div>
+    ` : ''}
+
 </td>
+
+`;
+
+    rosterTableBody.appendChild(tr);
+
+});
 
 <td class="p-3">
     ${escapeHtml(member.tipoDocumento || '')}
