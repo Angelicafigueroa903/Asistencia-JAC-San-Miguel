@@ -1691,8 +1691,9 @@ function formatearFecha(fecha) {
 
 function tieneTresFaltasConsecutivas(documento) {
 
+    console.log("DOCUMENTO:", documento);
     console.log("REUNIONES:", reuniones);
-    console.log("TOTAL REUNIONES:", reuniones.length);
+    console.log("ASISTENCIAS:", listAttendees);
 
     const reunionesOrdenadas = [...reuniones]
         .sort((a, b) =>
@@ -1707,6 +1708,13 @@ function tieneTresFaltasConsecutivas(documento) {
             a.documento === documento &&
             a.reunionId === reunion.id
         );
+        
+       console.log(
+            documento,
+            reunion.nombre,
+            reunion.id,
+            asistio
+        ); 
 
         if (asistio) {
             faltasConsecutivas = 0;
