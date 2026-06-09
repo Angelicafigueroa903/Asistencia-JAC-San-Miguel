@@ -1368,8 +1368,7 @@ window.submitQuickAdd = function() {
 
             "Cargo": socio.cargo || "Socio",
             
-            "Comisión":
-            socio.comision || "",
+            "Comisión": socio.comision || "",
 
             "Hora Registro": att.hora,
 
@@ -1492,46 +1491,20 @@ importRosterFile.addEventListener('change', function(event) {
                     ) {
                         edad--;
                     }
-
                 }
 
-                roster.push({
-
-                    nombre:
-                        row["NOMBRES Y APELLIDOS"] || "",
-
-                    tipoDocumento:
-                        row["TIPO DOCUMENTO"] || "C.C",
-
-                    documento:
-                        documento,
-
-                    lugarExpedicion:
-                        row["LUGAR EXPEDICION"] || "",
-
-                    fechaNacimiento: convertirFechaExcel(
-    row["FECHA NACIMIENTO"]
-),
-
-                    lugarNacimiento:
-                        row["LUGAR NACIMIENTO"] || "",
-
-                    genero:
-                        row["GENERO"] || "",
-
-                    rh:
-                        row["RH"] || "",
-
-                    edad:
-                        edad,
-
-                    cargo:
-                        row["CARGO"] || "Afiliado",
-
-                       comision:
-                       row["COMISION"] || ""
-                });
-
+roster.push({
+    nombre: row["NOMBRES Y APELLIDOS"],
+    documento: row["NUMERO DOCUMENTO"],
+    tipoDocumento: row["TIPO DOCUMENTO"],
+    lugarExpedicion: row["LUGAR EXPEDICION"],
+    fechaNacimiento: row["FECHA NACIMIENTO"],
+    lugarNacimiento: row["LUGAR NACIMIENTO"],
+    genero: row["GENERO"],
+    rh: row["RH"],
+    cargo: row["CARGO"],
+    comision: row["COMISION"] || ""
+});
                 nuevos++;
 
             });
