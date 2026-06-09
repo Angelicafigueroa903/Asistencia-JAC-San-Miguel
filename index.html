@@ -836,8 +836,7 @@ if (
            sortedRoster.forEach(member => {
 console.log("SOCIO:", member);
                
-    const retirar =
-    tieneTresFaltasConsecutivas(member.documento);
+    const retirar = false;
 
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50 transition";
@@ -1725,43 +1724,6 @@ function tieneTresFaltasConsecutivas(documento) {
     return false;
 }
         function renderHistorial() {
-       function tieneTresFaltasConsecutivas(documento) {
-
-    const reunionesOrdenadas = [...reuniones]
-        .sort((a, b) =>
-            new Date(a.fecha) - new Date(b.fecha)
-        );
-
-    let faltasConsecutivas = 0;
-
-    for (const reunion of reunionesOrdenadas) {
-
-        const asistio = listAttendees.some(a =>
-            a.documento === documento &&
-            a.reunionId === reunion.id
-        );
-
-        if (asistio) {
-
-            faltasConsecutivas = 0;
-
-        } else {
-
-            faltasConsecutivas++;
-
-        }
-
-        if (faltasConsecutivas >= 3) {
-
-            return true;
-
-        }
-
-    }
-
-    return false;
-
-}     
 
     const body =
         document.getElementById(
