@@ -1217,44 +1217,53 @@ console.log(
             quickAddModal.classList.add('opacity-0', 'pointer-events-none');
         };
 
-        window.submitQuickAdd = function() {
-            const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
-            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
-            const yaExiste = listAttendees.some(att => {
+window.submitQuickAdd = function() {
 
-    return (
-        att.documento === documento &&
-        att.mes === meetingMonth
-    );
+    const nombre = quickNameInput.value.trim(); 
+    const documento = quickIdInput.value.trim();
 
-});
+    if (!nombre || !documento) { 
+        showToast("Ingresa nombre y documento."); 
+        return; 
+    }
 
-if (yaExiste) { showToast("Ya tiene asistencia."); return; }
-
-            const ahora = new Date();
-            listAttendees.push({ nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
-            if (!roster.some(m => m.documento === documento)) {
-
-    roster.push({
-        nombre: nombre,
-        documento: documento,
-        tipoDocumento: "C.C",
-        lugarExpedicion: "",
-        fechaNacimiento: "",
-        lugarNacimiento: "",
-        genero: "",
-        rh: "",
-        edad: "",
-        cargo: "Socio"
+    const yaExiste = listAttendees.some(att => {
+        return (
+            att.documento === documento &&
+            att.mes === meetingMonth
+        );
     });
 
-}
+    if (yaExiste) { 
+        showToast("Ya está registrado en esta reunión."); 
+        return; 
+    }
 
-            saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
-            closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
-        };
+    const ahora = new Date();
 
-        // Eventos
+    listAttendees.push({
+        nombre: nombre,
+        documento: documento,
+        reunionId: obtenerIdReunion(),
+        hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        mes: meetingMonth,
+        fecha: meetingDateInput.value
+    });
+
+    saveConfig();
+
+    renderHistorial();
+    renderAttendees();
+    renderRosterPanel();
+    calculateQuorum();
+
+    showToast("Asistencia agregada");
+
+    closeQuickAddModal();
+
+};
+
+            // Eventos
         meetingMonthInput.addEventListener('change', (e) => {
             meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
             saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
