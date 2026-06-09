@@ -649,47 +649,42 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
                 meetingDateInput.value = localStorage.getItem('jac_date_offline');
             }
             if (localStorage.getItem('jac_attendees_offline')) {
-                  roster = JSON.parse( localStorage.getItem('jac_roster_offline') );
-} else {
-    roster = [];
-}
+                listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
+            }
+            if (localStorage.getItem('jac_roster_offline')) {
+                roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
+            } 
+            if (localStorage.getItem('jac_reuniones')) {
 
-if (localStorage.getItem('jac_reuniones')) {
-    reuniones = JSON.parse( localStorage.getItem('jac_reuniones') );
-} else {
-    reuniones = [];
-}
+    reuniones = JSON.parse(
+        localStorage.getItem('jac_reuniones')
+    );
 
-if (localStorage.getItem('jac_attendees_offline')) {
-    listAttendees = JSON.parse(
-        localStorage.getItem('jac_attendees_offline')   );
-} else {
-    listAttendees = [];
 }
-}
+            else {
+                roster = [];
+            }
+
+            calculateQuorum();
+            renderAttendees();
+            renderRosterPanel();
+            renderRosterManagement();
+        }
+
         function saveConfig() {
-    localStorage.setItem('jac_total_offline', totalSocios);
-    localStorage.setItem('jac_percent_offline', quorumPercent);
-    localStorage.setItem('jac_plusone_offline', plusOne);
-    localStorage.setItem('jac_name_offline', meetingName);
-    localStorage.setItem('jac_month_offline', meetingMonth);
-    localStorage.setItem('jac_date_offline', meetingDateInput.value);
-
-    localStorage.setItem(
-        'jac_attendees_offline',
-        JSON.stringify(listAttendees)
-    );
-
-    localStorage.setItem(
-        'jac_roster_offline',
-        JSON.stringify(roster)
-    );
-
-    localStorage.setItem(
-        'jac_reuniones',
-        JSON.stringify(reuniones)
-    );
-}
+            localStorage.setItem('jac_total_offline', totalSocios);
+            localStorage.setItem('jac_percent_offline', quorumPercent);
+            localStorage.setItem('jac_plusone_offline', plusOne);
+            localStorage.setItem('jac_name_offline', meetingName);
+            localStorage.setItem('jac_month_offline', meetingMonth);
+            localStorage.setItem('jac_date_offline', meetingDateInput.value);
+            localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
+            localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
+        }
+        localStorage.setItem(
+    'jac_reuniones',
+    JSON.stringify(reuniones)
+);
 
         window.switchTab = function(tabName) {
             document.getElementById('section-asistencia').classList.add('hidden');
@@ -844,12 +839,6 @@ console.log("SOCIO:", member);
     const retirar =
     tieneTresFaltasConsecutivas(member.documento);
 
-console.log(
-    member.nombre,
-    member.documento,
-    retirar
-);
-    
     const tr = document.createElement('tr');
     tr.className = "hover:bg-slate-50 transition";
 
@@ -1195,53 +1184,44 @@ console.log(
             quickAddModal.classList.add('opacity-0', 'pointer-events-none');
         };
 
-window.submitQuickAdd = function() {
+        window.submitQuickAdd = function() {
+            const nombre = quickNameInput.value.trim(); const documento = quickIdInput.value.trim();
+            if (!nombre || !documento) { showToast("Ingresa nombre y documento."); return; }
+            const yaExiste = listAttendees.some(att => {
 
-    const nombre = quickNameInput.value.trim(); 
-    const documento = quickIdInput.value.trim();
+    return (
+        att.documento === documento &&
+        att.mes === meetingMonth
+    );
 
-    if (!nombre || !documento) { 
-        showToast("Ingresa nombre y documento."); 
-        return; 
-    }
+});
 
-    const yaExiste = listAttendees.some(att => {
-        return (
-            att.documento === documento &&
-            att.mes === meetingMonth
-        );
-    });
+if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
-    if (yaExiste) { 
-        showToast("Ya está registrado en esta reunión."); 
-        return; 
-    }
+            const ahora = new Date();
+            listAttendees.push({ nombre: nombre, documento: documento, hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), mes: meetingMonth, fecha: meetingDateInput.value });
+            if (!roster.some(m => m.documento === documento)) {
 
-    const ahora = new Date();
-
-    listAttendees.push({
+    roster.push({
         nombre: nombre,
         documento: documento,
-        reunionId: obtenerIdReunion(),
-        hora: ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        mes: meetingMonth,
-        fecha: meetingDateInput.value
+        tipoDocumento: "C.C",
+        lugarExpedicion: "",
+        fechaNacimiento: "",
+        lugarNacimiento: "",
+        genero: "",
+        rh: "",
+        edad: "",
+        cargo: "Socio"
     });
 
-    saveConfig();
+}
 
-    renderHistorial();
-    renderAttendees();
-    renderRosterPanel();
-    calculateQuorum();
+            saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
+            closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
+        };
 
-    showToast("Asistencia agregada");
-
-    closeQuickAddModal();
-
-};
-
-            // Eventos
+        // Eventos
         meetingMonthInput.addEventListener('change', (e) => {
             meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
             saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
@@ -1346,7 +1326,8 @@ window.submitQuickAdd = function() {
 
             "Cargo": socio.cargo || "Socio",
             
-            "Comisión": socio.comision || "",
+            "Comisión":
+            socio.comision || "",
 
             "Hora Registro": att.hora,
 
@@ -1469,20 +1450,47 @@ importRosterFile.addEventListener('change', function(event) {
                     ) {
                         edad--;
                     }
+
                 }
 
-roster.push({
-    nombre: row["NOMBRES Y APELLIDOS"],
-    documento: row["NUMERO DOCUMENTO"],
-    tipoDocumento: row["TIPO DOCUMENTO"],
-    lugarExpedicion: row["LUGAR EXPEDICION"],
-    fechaNacimiento: row["FECHA NACIMIENTO"],
-    lugarNacimiento: row["LUGAR NACIMIENTO"],
-    genero: row["GENERO"],
-    rh: row["RH"],
-    cargo: row["CARGO"],
-    comision: row["COMISION"] || ""
-});
+                roster.push({
+
+                    nombre:
+                        row["NOMBRES Y APELLIDOS"] || "",
+
+                    tipoDocumento:
+                        row["TIPO DOCUMENTO"] || "C.C",
+
+                    documento:
+                        documento,
+
+                    lugarExpedicion:
+                        row["LUGAR EXPEDICION"] || "",
+
+                    fechaNacimiento: convertirFechaExcel(
+    row["FECHA NACIMIENTO"]
+),
+
+                    lugarNacimiento:
+                        row["LUGAR NACIMIENTO"] || "",
+
+                    genero:
+                        row["GENERO"] || "",
+
+                    rh:
+                        row["RH"] || "",
+
+                    edad:
+                        edad,
+
+                    cargo:
+                        row["CARGO"] || "Afiliado",
+
+                       comision:
+                       row["COMISION"] || ""
+
+                });
+
                 nuevos++;
 
             });
@@ -1666,6 +1674,7 @@ function formatearFecha(fecha) {
         );
 
         return jsDate.toLocaleDateString('es-CO');
+
     }
 
     // Si viene YYYY-MM-DD
@@ -1678,13 +1687,45 @@ function formatearFecha(fecha) {
     }
 
     return fecha;
+
 }
 
 function tieneTresFaltasConsecutivas(documento) {
 
-    console.log("DOCUMENTO:", documento);
-    console.log("REUNIONES:", reuniones);
-    console.log("ASISTENCIAS:", listAttendees);
+    const reuniones = [...new Set(
+        listAttendees.map(a => a.mes)
+    )];
+
+    reuniones.sort();
+
+    let consecutivas = 0;
+
+    for (let reunion of reuniones) {
+
+        const asistio =
+            listAttendees.some(a =>
+                a.documento === documento &&
+                a.mes === reunion
+            );
+
+        if (asistio) {
+
+            consecutivas = 0;
+
+        } else {
+
+            consecutivas++;
+
+            if (consecutivas >= 3) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+        function renderHistorial() {
+       function tieneTresFaltasConsecutivas(documento) {
 
     const reunionesOrdenadas = [...reuniones]
         .sort((a, b) =>
@@ -1699,30 +1740,29 @@ function tieneTresFaltasConsecutivas(documento) {
             a.documento === documento &&
             a.reunionId === reunion.id
         );
-        
-       console.log(
-            documento,
-            reunion.nombre,
-            reunion.id,
-            asistio
-        ); 
 
         if (asistio) {
+
             faltasConsecutivas = 0;
+
         } else {
+
             faltasConsecutivas++;
+
         }
 
         if (faltasConsecutivas >= 3) {
+
             return true;
+
         }
+
     }
 
     return false;
-}
 
-function renderHistorial() {
-  
+}     
+
     const body =
         document.getElementById(
             'historialReunionesBody'
@@ -1764,7 +1804,9 @@ function renderHistorial() {
             </tr>
 
             `;
+
         });
+
 }
           window.onload = () => { 
             loadSystemData(); 
