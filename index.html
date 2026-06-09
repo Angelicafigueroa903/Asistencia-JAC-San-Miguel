@@ -42,6 +42,17 @@
                     <i data-lucide="contact-2" class="w-3.5 h-3.5"></i>
                     Directorio
                 </button>
+                <button
+onclick="switchTab('reuniones')"
+id="tab-reuniones"
+class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
+
+    <i data-lucide="history"
+       class="w-3.5 h-3.5"></i>
+
+    Historial
+
+</button>
                 <button onclick="switchTab('config')" id="tab-config" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5">
                     <i data-lucide="settings" class="w-3.5 h-3.5"></i>
                     Ajustes JAC
@@ -254,6 +265,13 @@
     <label>Cargo</label>
     <input type="text" id="cargoInput" class="w-full px-3 py-2 border rounded-lg">
 </div>
+         <div>
+    <label>Comisión</label>
+    <input
+        type="text"
+        id="comisionInput"
+        class="w-full px-3 py-2 border rounded-lg">
+</div>               
                         <button id="addRosterMemberBtn" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
                             <i data-lucide="user-plus-2" class="w-4 h-4"></i>
                             Guardar en Directorio
@@ -313,6 +331,7 @@
     <th class="p-3">Género</th>
     <th class="p-3">RH</th>
     <th class="p-3">Edad</th>
+    <th class="p-3">Comisión</th>                                    
     <th class="p-3">Cargo</th>
     <th class="p-3 text-right">Acción</th>
 </tr>
@@ -331,7 +350,49 @@
                 </div>
             </div>
         </div>
+<div id="section-reuniones" class="hidden space-y-6">
 
+    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+
+        <h2 class="text-lg font-bold mb-4">
+            Historial de Reuniones
+        </h2>
+
+        <div class="overflow-auto">
+
+            <table class="w-full text-xs">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="p-2">
+                            Fecha
+                        </th>
+
+                        <th class="p-2">
+                            Asamblea
+                        </th>
+
+                        <th class="p-2">
+                            Asistentes
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="historialReunionesBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
         <div id="section-config" class="hidden space-y-6">
             <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
                 <div>
@@ -467,6 +528,7 @@
         let meetingMonth = "Mayo";
         let listAttendees = []; 
         let roster = []; 
+        let reuniones = [];
 
         const meetingMonthInput = document.getElementById('meetingMonthInput');
         const meetingDateInput = document.getElementById('meetingDateInput');
@@ -499,6 +561,7 @@
         const rhInput = document.getElementById('rhInput');
         const edadInput = document.getElementById('edadInput');
         const cargoInput = document.getElementById('cargoInput');
+        const comisionInput = document.getElementById('comisionInput');
         fechaNacimientoInput.addEventListener('change', () => {
 
     if (!fechaNacimientoInput.value) {
@@ -590,7 +653,15 @@
             }
             if (localStorage.getItem('jac_roster_offline')) {
                 roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
-            } else {
+            } 
+            if (localStorage.getItem('jac_reuniones')) {
+
+    reuniones = JSON.parse(
+        localStorage.getItem('jac_reuniones')
+    );
+
+}
+            else {
                 roster = [];
             }
 
@@ -610,16 +681,20 @@
             localStorage.setItem('jac_attendees_offline', JSON.stringify(listAttendees));
             localStorage.setItem('jac_roster_offline', JSON.stringify(roster));
         }
+        localStorage.setItem(
+    'jac_reuniones',
+    JSON.stringify(reuniones)
+);
 
         window.switchTab = function(tabName) {
             document.getElementById('section-asistencia').classList.add('hidden');
             document.getElementById('section-directorio').classList.add('hidden');
             document.getElementById('section-config').classList.add('hidden');
-
+            document.getElementById('section-reuniones').classList.add('hidden');
             document.getElementById('tab-asistencia').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
             document.getElementById('tab-directorio').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
             document.getElementById('tab-config').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
-
+            document.getElementById('tab-reuniones').className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 hover:text-white flex items-center gap-1.5";
             document.getElementById(`section-${tabName}`).classList.remove('hidden');
             
             const activeTabButton = document.getElementById(`tab-${tabName}`);
@@ -667,7 +742,25 @@
         }
 
         window.markPresentOffline = function(nombre, documento) {
+            
+            const idReunion =
+    obtenerIdReunion();
 
+if (
+    !reuniones.some(
+        r => r.id === idReunion
+    )
+) {
+
+    reuniones.push({
+
+        id: idReunion,
+        fecha: meetingDateInput.value,
+        nombre: meetingName
+
+    });
+
+}
     const yaExiste = listAttendees.some(att => {
 
         return (
@@ -691,19 +784,27 @@
 
     listAttendees.push({
 
-        nombre: nombre,
-        documento: documento,
-        hora: ahora.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        }),
-        mes: meetingMonth,
-        fecha: meetingDateInput.value
+    nombre: nombre,
+    documento: documento,
 
-    });
+    reunionId:
+        obtenerIdReunion(),
+
+    hora: ahora.toLocaleTimeString([],
+    {
+        hour: '2-digit',
+        minute: '2-digit'
+    }),
+
+    mes: meetingMonth,
+    fecha: meetingDateInput.value
+
+});
 
     saveConfig();
-
+            
+    renderHistorial();
+            
     renderAttendees();
 
     renderRosterPanel();
@@ -736,9 +837,20 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition";
                tr.innerHTML = `
+const retirar =
+tieneTresFaltasConsecutivas(
+    member.documento
+);
 
 <td class="p-3 font-bold text-slate-800">
     ${escapeHtml(member.nombre || '')}
+
+${retirar ? `
+<div class="mt-1 text-[10px]
+font-bold text-red-600">
+⚠ Retiro por 3 faltas consecutivas
+</div>
+` : ''}
 </td>
 
 <td class="p-3">
@@ -775,6 +887,9 @@
 
 <td class="p-3">
     ${escapeHtml(member.cargo || '')}
+</td>
+<td class="p-3">
+    ${escapeHtml(member.comision || '')}
 </td>
 
 <td class="p-3 text-right">
@@ -847,12 +962,15 @@
         genero: generoInput.value,
         rh: rhInput.value,
         edad: edad,
-        cargo: cargoInput.value
+        cargo: cargoInput.value,
+        comision: comisionInput.value
 
     });
 
     saveConfig();
-
+            
+    renderHistorial();
+            
     renderRosterManagement();
 
     renderRosterPanel();
@@ -869,6 +987,7 @@
     rhInput.value = '';
     edadInput.value = '';
     cargoInput.value = '';
+    comisionInput.value = '';
 
     showToast("Socio agregado correctamente");
 
@@ -891,8 +1010,10 @@
     );
 
     saveConfig();
-
-    renderRosterManagement();
+            
+   renderHistorial();
+            
+   renderRosterManagement();
 
     renderRosterPanel();
 
@@ -949,7 +1070,7 @@
     }
 
 ];
-                saveConfig(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
+                saveConfig(); renderHistorial(); renderRosterManagement(); renderRosterPanel(); calculateQuorum();
                 showToast("Datos cargados.");
             }
         };
@@ -1041,7 +1162,9 @@
     });
 
     saveConfig();
-
+            
+    renderHistorial();
+            
     renderAttendees();
 
     renderRosterPanel();
@@ -1098,26 +1221,26 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
 
 }
 
-            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
+            saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(); renderRosterManagement();
             closeQuickAddModal(); showToast(`¡Socio ${nombre} registrado!`);
         };
 
         // Eventos
         meetingMonthInput.addEventListener('change', (e) => {
             meetingMonth = e.target.value; badgeMonth.textContent = meetingMonth.toUpperCase();
-            saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
+            saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(searchRosterInput.value); showToast(`Mes cambiado a: ${meetingMonth}`);
         });
 
         meetingDateInput.addEventListener('change', () => saveConfig());
-        meetingNameInput.addEventListener('input', (e) => { meetingName = e.target.value; currentMeetingLabel.textContent = meetingName; saveConfig(); });
+        meetingNameInput.addEventListener('input', (e) => { meetingName = e.target.value; currentMeetingLabel.textContent = meetingName; saveConfig(); renderHistorial();});
 
         updateSociosBtn.addEventListener('click', () => {
             const val = parseInt(totalSociosInput.value);
-            if (val > 0) { totalSocios = val; saveConfig(); calculateQuorum(); showToast(`Total de habilitados: ${totalSocios}.`); }
+            if (val > 0) { totalSocios = val; saveConfig(); renderHistorial(); calculateQuorum(); showToast(`Total de habilitados: ${totalSocios}.`); }
         });
 
-        quorumPercentInput.addEventListener('input', (e) => { quorumPercent = parseInt(e.target.value); quorumPercentLabel.textContent = `${quorumPercent}%`; saveConfig(); calculateQuorum(); });
-        plusOneCheck.addEventListener('change', (e) => { plusOne = e.target.checked; saveConfig(); calculateQuorum(); });
+        quorumPercentInput.addEventListener('input', (e) => { quorumPercent = parseInt(e.target.value); quorumPercentLabel.textContent = `${quorumPercent}%`; saveConfig(); renderHistorial(); calculateQuorum(); });
+        plusOneCheck.addEventListener('change', (e) => { plusOne = e.target.checked; saveConfig(); renderHistorial(); calculateQuorum(); });
 
         searchRosterInput.addEventListener('input', (e) => renderRosterPanel(e.target.value));
         searchAttendee.addEventListener('input', (e) => renderAttendees(e.target.value));
@@ -1125,7 +1248,7 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
         resetMeetingBtn.addEventListener('click', () => {
             if (confirm(`¿Borrar TODOS los registros del mes de ${meetingMonth}?`)) {
                 listAttendees = listAttendees.filter(att => att.mes !== meetingMonth);
-                saveConfig(); calculateQuorum(); renderAttendees(); renderRosterPanel(); showToast(`Listado borrado.`);
+                saveConfig(); renderHistorial(); calculateQuorum(); renderAttendees(); renderRosterPanel(); showToast(`Listado borrado.`);
             }
         });
 
@@ -1206,6 +1329,9 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
             "Edad": socio.edad || "",
 
             "Cargo": socio.cargo || "Socio",
+            
+            "Comisión":
+            socio.comision || "",
 
             "Hora Registro": att.hora,
 
@@ -1248,7 +1374,11 @@ if (yaExiste) { showToast("Ya tiene asistencia."); return; }
             toast.className = "fixed bottom-5 right-5 transform translate-y-0 opacity-100 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50 transition-all duration-300";
             setTimeout(() => { toast.className = "fixed bottom-5 right-5 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 text-white text-xs font-semibold py-3 px-5 rounded-xl shadow-lg flex items-center gap-2 z-50"; }, 3000);
         }
+function obtenerIdReunion() {
 
+    return meetingDateInput.value;
+
+}
         function escapeHtml(unsafe) { return (unsafe||'').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 importRosterFile.addEventListener('change', function(event) {
 
@@ -1358,7 +1488,11 @@ importRosterFile.addEventListener('change', function(event) {
                         edad,
 
                     cargo:
-                        row["CARGO"] || "Afiliado"
+                        cargo:
+                        row["CARGO"] || "Afiliado",
+
+                       comision:
+                       row["COMISION"] || ""
 
                 });
 
@@ -1367,7 +1501,9 @@ importRosterFile.addEventListener('change', function(event) {
             });
 
             saveConfig();
-
+            
+            renderHistorial();
+            
             renderRosterManagement();
 
             renderRosterPanel();
@@ -1406,7 +1542,8 @@ importRosterFile.addEventListener('change', function(event) {
             "LUGAR NACIMIENTO": "",
             "GENERO": "Masculino",
             "RH": "O+",
-            "CARGO": "Afiliado"
+            "CARGO": "Afiliado",
+            "COMISION": "Salud"
         }
 
     ];
@@ -1558,8 +1695,90 @@ function formatearFecha(fecha) {
 
 }
 
+function tieneTresFaltasConsecutivas(documento) {
+
+    const reuniones = [...new Set(
+        listAttendees.map(a => a.mes)
+    )];
+
+    reuniones.sort();
+
+    let consecutivas = 0;
+
+    for (let reunion of reuniones) {
+
+        const asistio =
+            listAttendees.some(a =>
+                a.documento === documento &&
+                a.mes === reunion
+            );
+
+        if (asistio) {
+
+            consecutivas = 0;
+
+        } else {
+
+            consecutivas++;
+
+            if (consecutivas >= 3) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+        function renderHistorial() {
+
+    const body =
+        document.getElementById(
+            'historialReunionesBody'
+        );
+
+    if (!body) return;
+
+    body.innerHTML = '';
+
+    reuniones
+        .sort((a,b)=>
+            new Date(b.fecha) -
+            new Date(a.fecha)
+        )
+        .forEach(reunion => {
+
+            const asistentes =
+                listAttendees.filter(
+                    a =>
+                    a.reunionId === reunion.id
+                ).length;
+
+            body.innerHTML += `
+
+            <tr>
+
+                <td class="p-2">
+                    ${reunion.fecha}
+                </td>
+
+                <td class="p-2">
+                    ${reunion.nombre}
+                </td>
+
+                <td class="p-2">
+                    ${asistentes}
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+}
           window.onload = () => { 
             loadSystemData(); 
+              renderHistorial();
             lucide.createIcons(); 
         };
     </script>
