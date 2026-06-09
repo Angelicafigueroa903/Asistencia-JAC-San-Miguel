@@ -1690,44 +1690,12 @@ function formatearFecha(fecha) {
 
 }
 
-function tieneTresFaltasConsecutivas(documento) {
+     function tieneTresFaltasConsecutivas(documento) {
 
-    const reuniones = [...new Set(
-        listAttendees.map(a => a.mes)
-    )];
-
-    reuniones.sort();
-
-    let consecutivas = 0;
-
-    for (let reunion of reuniones) {
-
-        const asistio =
-            listAttendees.some(a =>
-                a.documento === documento &&
-                a.mes === reunion
-            );
-
-        if (asistio) {
-
-            consecutivas = 0;
-
-        } else {
-
-            consecutivas++;
-
-            if (consecutivas >= 3) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-        function renderHistorial() {
-       function tieneTresFaltasConsecutivas(documento) {
-
-    const reunionesOrdenadas = [...reuniones]
+         console.log("REUNIONES:", reuniones);
+         console.log("SOCIO:", documento);
+   
+         const reunionesOrdenadas = [...reuniones]
         .sort((a, b) =>
             new Date(a.fecha) - new Date(b.fecha)
         );
@@ -1742,27 +1710,23 @@ function tieneTresFaltasConsecutivas(documento) {
         );
 
         if (asistio) {
-
             faltasConsecutivas = 0;
-
         } else {
-
             faltasConsecutivas++;
-
         }
 
         if (faltasConsecutivas >= 3) {
-
             return true;
-
         }
 
     }
 
     return false;
 
-}     
+}
 
+function renderHistorial() {
+  
     const body =
         document.getElementById(
             'historialReunionesBody'
