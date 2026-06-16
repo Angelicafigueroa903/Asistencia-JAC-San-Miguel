@@ -1968,6 +1968,39 @@ const datos = asistentes.map(
         `Asistencia_${idReunion}.xlsx`
     );
 }
+        function calcularEdad(fechaNacimiento){
+
+    if(!fechaNacimiento) return "";
+
+    const nacimiento =
+        new Date(fechaNacimiento);
+
+    if(isNaN(nacimiento))
+        return "";
+
+    const hoy = new Date();
+
+    let edad =
+        hoy.getFullYear() -
+        nacimiento.getFullYear();
+
+    const mes =
+        hoy.getMonth() -
+        nacimiento.getMonth();
+
+    if(
+        mes < 0 ||
+        (
+            mes === 0 &&
+            hoy.getDate() <
+            nacimiento.getDate()
+        )
+    ){
+        edad--;
+    }
+
+    return edad;
+}
         function descargarSociosConFallas() {
 
     const sociosConFallas = roster.filter(
@@ -1994,9 +2027,14 @@ const datos = asistentes.map(
             "Tipo Documento": socio.tipoDocumento || "",
             "Número Documento": socio.documento || "",
             "Lugar Expedición": socio.lugarExpedicion || "",
-            "Fecha Nacimiento": socio.fechaNacimiento || "",
+"Fecha Nacimiento":
+    socio.fechaNacimiento
+    ? new Date(socio.fechaNacimiento)
+        .toLocaleDateString('es-CO')
+    : "",
             "Lugar Nacimiento": socio.lugarNacimiento || "",
-            "Edad": socio.edad,
+"Edad":
+    calcularEdad(socio.fechaNacimiento),
             "Genero": socio.genero,
             "RH": socio.rh,
             "Cargo": socio.cargo || "",
