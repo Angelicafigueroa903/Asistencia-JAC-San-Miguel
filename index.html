@@ -1768,6 +1768,31 @@ function tieneTresFaltasConsecutivas(documento) {
 
     return consecutivas;
 }
+        function obtenerMesesFaltados(documento) {
+
+    const reuniones = [...new Set(
+        listAttendees.map(a => a.mes)
+    )];
+
+    reuniones.sort();
+
+    const mesesFaltados = [];
+
+    for (let reunion of reuniones) {
+
+        const asistio =
+        listAttendees.some(a =>
+            a.documento === documento &&
+            a.mes === reunion
+        );
+
+        if (!asistio) {
+            mesesFaltados.push(reunion);
+        }
+    }
+
+    return mesesFaltados.join(", ");
+}
         function renderHistorial() {
 
     const body =
@@ -1895,12 +1920,20 @@ class="text-blue-600 hover:text-blue-800">
             "N°": index + 1,
             "Nombre Completo": socio.nombre,
             "Documento": socio.documento,
+            "Edad": socio.edad,
+            "Genero": socio.genero,
+            "RH": socio.rh,
             "Cargo": socio.cargo || "",
             "Comisión": socio.comision || "",
-            "Fallas Consecutivas":
-                contarFallasConsecutivas(
-                    socio.documento
-                )
+           "Fallas Consecutivas":
+contarFallasConsecutivas(
+    socio.documento
+),
+
+"Meses Sin Asistencia":
+obtenerMesesFaltados(
+    socio.documento
+)
 
         })
     );
