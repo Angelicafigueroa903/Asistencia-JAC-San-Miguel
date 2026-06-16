@@ -1990,8 +1990,12 @@ const datos = asistentes.map(
         (socio, index) => ({
 
             "N°": index + 1,
-            "Nombre Completo": socio.nombre,
-            "Documento": socio.documento,
+            "Nombre Completo": socio.nombre || "",
+            "Tipo Documento": socio.tipoDocumento || "",
+            "Número Documento": socio.documento || "",
+            "Lugar Expedición": socio.lugarExpedicion || "",
+            "Fecha Nacimiento": socio.fechaNacimiento || "",
+            "Lugar Nacimiento": socio.lugarNacimiento || "",
             "Edad": socio.edad,
             "Genero": socio.genero,
             "RH": socio.rh,
