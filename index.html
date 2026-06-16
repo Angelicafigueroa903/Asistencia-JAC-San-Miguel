@@ -309,6 +309,15 @@ class="w-full mt-2 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs
 
 <i data-lucide="alert-triangle" class="w-4 h-4"></i>
 Descargar Socios con 3 Fallas
+    
+</button>
+
+<button
+onclick="descargarReporteAnual()"
+class="w-full mt-2 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
+
+<i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+Reporte Anual de Asistencia
 
 </button>
     <p class="text-[10px] text-slate-400 mt-2 text-center">
@@ -340,13 +349,14 @@ Descargar Socios con 3 Fallas
     <th class="p-3">RH</th>
     <th class="p-3">Edad</th>
     <th class="p-3">Cargo</th>                                     
-    <th class="p-3">Comisión</th>                                    
+    <th class="p-3">Comisión</th> 
+    <th class="p-3">Estado</th>
     <th class="p-3 text-right">Acción</th>
 </tr>
                                 </thead>
                                 <tbody id="rosterTableBody" class="divide-y divide-slate-100">
                                     <tr id="emptyRosterRow">
-                                        <td colspan="11" class="p-8 text-center text-slate-400">
+                                        <td colspan="12" class="p-8 text-center text-slate-400">
                                             <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
                                             Aún no has agregado socios a la lista general.
                                         </td>
@@ -835,6 +845,26 @@ totalSocios = roster.length;
 
 };
 
+      function obtenerEstadoSemaforo(documento){
+
+    const fallas =
+    contarFallasConsecutivas(documento);
+
+    if(fallas >= 3){
+
+        return "🔴 3 o más faltas";
+
+    }
+
+    if(fallas >= 1){
+
+        return "🟡 En Riesgo";
+
+    }
+
+    return "🟢 Al Día";
+
+}
         function renderRosterManagement() {
             const rows = Array.from(rosterTableBody.querySelectorAll('tr:not(#emptyRosterRow)'));
             console.log(roster);
@@ -912,6 +942,11 @@ ${contarFallasConsecutivas(member.documento)}
 </td>
 <td class="p-3">
     ${escapeHtml(member.comision || '')}
+</td>
+<td class="p-3 font-bold">
+    ${obtenerEstadoSemaforo(
+        member.documento
+    )}
 </td>
 
 <td class="p-3 text-right">
@@ -2071,6 +2106,59 @@ obtenerMesesFaltados(
 
     showToast(
         "Reporte descargado"
+    );
+}
+        function descargarReporteAnual() {
+
+    const totalReuniones = reuniones.length;
+
+    const datos = roster.map((socio,index)=>{
+
+        const asistencias =
+        listAttendees.filter(
+            a=>a.documento===socio.documento
+        ).length;
+
+        const fallas =
+        totalReuniones - asistencias;
+
+        const porcentaje =
+        totalReuniones > 0
+        ? Math.round(
+            (asistencias/totalReuniones)*100
+          )
+        : 0;
+
+        return {
+
+            "N°": index + 1,
+            "Nombre": socio.nombre,
+            "Documento": socio.documento,
+            "Cargo": socio.cargo || "",
+            "Comisión": socio.comision || "",
+            "Asistencias": asistencias,
+            "Fallas": fallas,
+            "% Asistencia": porcentaje + "%"
+
+        };
+
+    });
+
+    const ws =
+    XLSX.utils.json_to_sheet(datos);
+
+    const wb =
+    XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Reporte Anual"
+    );
+
+    XLSX.writeFile(
+        wb,
+        "REPORTE_ANUAL_ASISTENCIA.xlsx"
     );
 }
         window.onload = () => { 
