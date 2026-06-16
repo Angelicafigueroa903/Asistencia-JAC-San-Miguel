@@ -533,7 +533,7 @@ Descargar Socios con 3 Fallas
 
     <script>
         // --- AQUÍ SE CAMBIA EN JAVASCRIPT SI SE QUIERE MODIFICAR EL CÓDIGO BASE ---
-        let totalSocios = 300; 
+        let totalSocios = 0; 
         let quorumPercent = 50;
         let plusOne = true;
         let meetingName = "Asamblea General Ordinaria";
@@ -666,6 +666,9 @@ Descargar Socios con 3 Fallas
             if (localStorage.getItem('jac_roster_offline')) {
                 roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
             } 
+            
+            totalSocios = roster.length;
+            
             if (localStorage.getItem('jac_reuniones')) {
 
     reuniones = JSON.parse(
@@ -813,7 +816,9 @@ if (
     fecha: meetingDateInput.value
 
 });
-
+            
+totalSocios = roster.length;
+            
     saveConfig();
             
     renderHistorial();
@@ -979,7 +984,9 @@ ${contarFallasConsecutivas(member.documento)}
         cargo: cargoInput.value,
         comision: comisionInput.value
     });
-
+            
+totalSocios = roster.length;
+            
     saveConfig();
             
     renderHistorial();
@@ -1017,7 +1024,11 @@ ${contarFallasConsecutivas(member.documento)}
     roster = roster.filter(
         member => member.documento !== documento
     );
-
+            
+totalSocios = roster.length;
+saveConfig();
+calculateQuorum();
+            
     listAttendees = listAttendees.filter(
         att => att.documento !== documento
     );
