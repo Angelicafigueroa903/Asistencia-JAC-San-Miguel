@@ -301,8 +301,16 @@ class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-emerald-100 
     <i data-lucide="download" class="w-4 h-4"></i>
     Descargar Formato Excel
 
-</button>                     
+</button>  
+                            
+<button
+onclick="descargarSociosConFallas()"
+class="w-full mt-2 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1 shadow-sm">
 
+<i data-lucide="alert-triangle" class="w-4 h-4"></i>
+Descargar Socios con 3 Fallas
+
+</button>
     <p class="text-[10px] text-slate-400 mt-2 text-center">
         Formato: Nombre Completo | Documento
     </p>
@@ -1861,6 +1869,61 @@ class="text-blue-600 hover:text-blue-800">
     XLSX.writeFile(
         wb,
         `Asistencia_${idReunion}.xlsx`
+    );
+}
+        function descargarSociosConFallas() {
+
+    const sociosConFallas = roster.filter(
+        socio =>
+        tieneTresFaltasConsecutivas(
+            socio.documento
+        )
+    );
+
+    if (sociosConFallas.length === 0) {
+
+        showToast(
+            "No hay socios con 3 faltas consecutivas"
+        );
+
+        return;
+    }
+
+    const datos = sociosConFallas.map(
+        (socio, index) => ({
+
+            "N°": index + 1,
+            "Nombre Completo": socio.nombre,
+            "Documento": socio.documento,
+            "Cargo": socio.cargo || "",
+            "Comisión": socio.comision || "",
+            "Fallas Consecutivas":
+                contarFallasConsecutivas(
+                    socio.documento
+                )
+
+        })
+    );
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(datos);
+
+    const workbook =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Socios con Fallas"
+    );
+
+    XLSX.writeFile(
+        workbook,
+        "SOCIOS_CON_3_FALLAS.xlsx"
+    );
+
+    showToast(
+        "Reporte descargado"
     );
 }
         window.onload = () => { 
