@@ -636,7 +636,6 @@ Descargar Socios con 3 Fallas
 
             if (localStorage.getItem('jac_total_offline')) {
                 totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
-                totalSociosInput.value = totalSocios;
             }
             if (localStorage.getItem('jac_percent_offline')) {
                 quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
@@ -668,6 +667,7 @@ Descargar Socios con 3 Fallas
             } 
             
             totalSocios = roster.length;
+            totalSociosInput.value = totalSocios;
             
             if (localStorage.getItem('jac_reuniones')) {
 
@@ -1099,8 +1099,16 @@ calculateQuorum();
             }
         };
 
-        function calculateQuorum() {
-            const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
+       function calculateQuorum() {
+
+    totalSocios = roster.length;
+
+    if(totalSociosInput){
+        totalSociosInput.value = totalSocios;
+    }
+
+    const asistenciasMes = listAttendees.filter(att => att.mes === meetingMonth);
+           
             const presentCount = asistenciasMes.length;
 
             let baseRequired = (totalSocios * (quorumPercent / 100));
