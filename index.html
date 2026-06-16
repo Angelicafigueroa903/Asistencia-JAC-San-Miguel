@@ -1886,17 +1886,70 @@ class="text-blue-600 hover:text-blue-800">
         return;
     }
 
-    const datos = asistentes.map(
-        (a,index)=>({
+const datos = asistentes.map(
+    (a,index)=>{
+
+        const socio = roster.find(
+            r => r.documento === a.documento
+        ) || {};
+
+        return {
 
             "N°": index + 1,
-            "Nombre": a.nombre,
-            "Documento": a.documento,
-            "Fecha": a.fecha,
-            "Hora": a.hora
 
-        })
-    );
+            "Nombre Completo":
+                socio.nombre || a.nombre,
+
+            "Tipo Documento":
+                socio.tipoDocumento || "",
+
+            "Número Documento":
+                socio.documento || a.documento,
+
+            "Lugar Expedición":
+                socio.lugarExpedicion || "",
+
+            "Fecha Nacimiento":
+                socio.fechaNacimiento || "",
+
+            "Lugar Nacimiento":
+                socio.lugarNacimiento || "",
+
+            "Edad":
+                socio.edad || "",
+
+            "Género":
+                socio.genero || "",
+
+            "RH":
+                socio.rh || "",
+
+            "Cargo":
+                socio.cargo || "Socio",
+
+            "Comisión":
+                socio.comision || "",
+
+            "Fecha Reunión":
+                a.fecha,
+
+            "Hora Registro":
+                a.hora,
+
+            "Fallas Consecutivas":
+                contarFallasConsecutivas(
+                    a.documento
+                ),
+
+            "Meses Sin Asistencia":
+                obtenerMesesFaltados(
+                    a.documento
+                )
+
+        };
+
+    }
+);
 
     const ws =
     XLSX.utils.json_to_sheet(datos);
