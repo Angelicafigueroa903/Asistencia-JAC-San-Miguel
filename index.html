@@ -951,6 +951,11 @@ ${contarFallasConsecutivas(member.documento)}
 </td>
 
 <td class="p-3 text-right">
+<button
+    onclick="editRosterMember('${member.documento}')"
+    class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition mr-1">
+    <i data-lucide="edit" class="w-4 h-4"></i>
+</button>
     <button
         onclick="deleteRosterMember('${member.documento}')"
         class="text-rose-600 hover:text-rose-800 p-1.5 rounded-lg hover:bg-rose-50 transition">
@@ -974,11 +979,13 @@ ${contarFallasConsecutivas(member.documento)}
         return;
     }
 
+    // Si es nuevo socio, verificar que no exista el documento
     if (editIndex === -1 && roster.some(m => m.documento === documento)) {
         showToast("Ya existe este socio");
         return;
     }
 
+    // Calcular edad automática
     let edad = "";
     if (fechaNacimientoInput.value) {
         const hoy = new Date();
@@ -1005,9 +1012,11 @@ ${contarFallasConsecutivas(member.documento)}
     };
 
     if (editIndex > -1) {
+        // ACTUALIZAR SOCIO EXISTENTE
         roster[editIndex] = memberData;
         showToast("Socio actualizado correctamente");
     } else {
+        // AGREGAR SOCIO NUEVO
         roster.push(memberData);
         showToast("Socio agregado correctamente");
     }
@@ -1019,7 +1028,7 @@ ${contarFallasConsecutivas(member.documento)}
     renderRosterPanel();
     calculateQuorum();
 
-    // Limpiar formulario
+    // LIMPIAR FORMULARIO Y RESETEAR ESTADO
     rosterNameInput.value = '';
     rosterIdInput.value = '';
     tipoDocumentoInput.value = 'C.C';
@@ -1037,33 +1046,7 @@ ${contarFallasConsecutivas(member.documento)}
     document.getElementById('addRosterMemberBtn').innerHTML = '<i data-lucide="user-plus-2" class="w-4 h-4"></i> Guardar en Directorio';
     lucide.createIcons();
 });
-        window.editRosterMember = function(documento) {
-            const member = roster.find(m => m.documento === documento);
-            if (!member) return;
-
-            // Llenar el formulario con los datos del socio
-            document.getElementById('rosterNameInput').value = member.nombre || '';
-            document.getElementById('rosterIdInput').value = member.documento || '';
-            document.getElementById('tipoDocumentoInput').value = member.tipoDocumento || 'C.C';
-            document.getElementById('lugarExpedicionInput').value = member.lugarExpedicion || '';
-            document.getElementById('fechaNacimientoInput').value = member.fechaNacimiento || '';
-            document.getElementById('lugarNacimientoInput').value = member.lugarNacimiento || '';
-            document.getElementById('generoInput').value = member.genero || 'Masculino';
-            document.getElementById('rhInput').value = member.rh || '';
-            document.getElementById('edadInput').value = member.edad || '';
-            document.getElementById('cargoInput').value = member.cargo || '';
-            document.getElementById('comisionInput').value = member.comision || '';
-
-            // Cambiar el título del formulario y el botón
-            document.getElementById('formTitle').textContent = 'Editar Socio';
-            document.getElementById('addRosterMemberBtn').innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Actualizar Socio';
-            document.getElementById('editIndex').value = roster.indexOf(member);
-            
-            // Scroll al formulario
-            document.getElementById('section-directorio').scrollIntoView({ behavior: 'smooth' });
-            lucide.createIcons();
-        };
-
+        
         window.deleteRosterMember = function(documento) {
 
     const confirmar = confirm(
@@ -1729,7 +1712,7 @@ function convertirFechaExcel(fecha) {
         let dia = partes[1];
         let anio = partes[2];
 
-        // convertir 94 --> 1994
+        // convertir 94 → 1994
         if (anio.length === 2) {
 
             anio = parseInt(anio) > 30
