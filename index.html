@@ -1046,6 +1046,55 @@ ${contarFallasConsecutivas(member.documento)}
     document.getElementById('addRosterMemberBtn').innerHTML = '<i data-lucide="user-plus-2" class="w-4 h-4"></i> Guardar en Directorio';
     lucide.createIcons();
 });
+
+        window.editRosterMember = function(documento) {
+
+            alert("Entró a editar");
+    console.log("Documento:", documento);
+   
+    const socio = roster.find(
+        s => s.documento === documento
+    );
+
+    if (!socio) {
+        showToast("Socio no encontrado");
+        return;
+    }
+
+    const indice = roster.findIndex(
+        s => s.documento === documento
+    );
+
+    document.getElementById("editIndex").value = indice;
+
+    rosterNameInput.value = socio.nombre || "";
+    rosterIdInput.value = socio.documento || "";
+    tipoDocumentoInput.value = socio.tipoDocumento || "";
+    lugarExpedicionInput.value = socio.lugarExpedicion || "";
+    fechaNacimientoInput.value = socio.fechaNacimiento || "";
+    lugarNacimientoInput.value = socio.lugarNacimiento || "";
+    generoInput.value = socio.genero || "";
+    rhInput.value = socio.rh || "";
+    edadInput.value = socio.edad || "";
+    cargoInput.value = socio.cargo || "";
+    comisionInput.value = socio.comision || "";
+
+    document.getElementById("formTitle").textContent =
+        "Editar Socio";
+
+    document.getElementById("addRosterMemberBtn").innerHTML =
+        '<i data-lucide="save" class="w-4 h-4"></i> Actualizar Socio';
+
+    lucide.createIcons();
+
+    rosterNameInput.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    rosterNameInput.focus();
+};
+
         
         window.deleteRosterMember = function(documento) {
 
