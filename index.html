@@ -2109,37 +2109,86 @@ const datos = asistentes.map(
 
  window.verReunion = function(idReunion){
 
-    const asistentes = listAttendees.filter(
-        a => a.reunionId === idReunion
-    );
+    const reunion =
+        reuniones.find(r=>r.id===idReunion);
 
-    if(asistentes.length === 0){
+    document.getElementById(
+        "tituloReunionModal"
+    ).textContent =
+        reunion.fecha + " - " + reunion.nombre;
 
-        showToast("No hay asistentes registrados");
+    const body =
+        document.getElementById(
+            "tablaModalReunion"
+        );
 
-        return;
+    body.innerHTML="";
 
-    }
-
-    let mensaje = "LISTA DE ASISTENTES\n\n";
+    const asistentes =
+        listAttendees.filter(
+            a=>a.reunionId===idReunion
+        );
 
     asistentes.forEach((a,index)=>{
 
-        const socio = roster.find(
-            r => r.documento === a.documento
-        ) || {};
+        const socio =
+            roster.find(
+                r=>r.documento===a.documento
+            ) || {};
 
-        mensaje +=
-`${index + 1}. ${socio.nombre || a.nombre}
-Documento: ${a.documento}
-Cargo: ${socio.cargo || "Socio"}
-Hora: ${a.hora}
+        body.innerHTML += `
 
-`;
+        <tr class="border-b">
+
+            <td class="p-2">
+                ${index+1}
+            </td>
+
+            <td class="p-2">
+                ${socio.nombre || a.nombre}
+            </td>
+
+            <td class="p-2">
+                ${a.documento}
+            </td>
+
+            <td class="p-2">
+                ${socio.cargo || ""}
+            </td>
+
+            <td class="p-2">
+                ${socio.comision || ""}
+            </td>
+
+            <td class="p-2">
+                ${a.hora}
+            </td>
+
+        </tr>
+
+        `;
 
     });
 
-    alert(mensaje);
+    document
+        .getElementById("modalVerReunion")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("modalVerReunion")
+        .classList.add("flex");
+
+}
+
+window.cerrarModalReunion = function(){
+
+    document
+        .getElementById("modalVerReunion")
+        .classList.add("hidden");
+
+    document
+        .getElementById("modalVerReunion")
+        .classList.remove("flex");
 
 }
         
@@ -2350,6 +2399,93 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 </script>
-    
+  <!-- ================= MODAL VER REUNIÓN ================= -->
+
+<div id="modalVerReunion"
+class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-xl w-11/12 max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
+
+        <div class="flex justify-between items-center p-4 border-b">
+
+            <h2 class="text-xl font-bold">
+                Lista de Asistentes
+            </h2>
+
+            <button
+                onclick="cerrarModalReunion()"
+                class="text-red-600 text-2xl font-bold">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <div class="px-5 py-2">
+
+            <p id="tituloReunionModal"
+               class="text-slate-500 text-sm">
+            </p>
+
+        </div>
+
+        <div class="overflow-y-auto flex-1 p-4">
+
+            <table class="w-full text-sm border">
+
+                <thead class="bg-slate-100">
+
+                    <tr>
+
+                        <th class="p-2">#</th>
+
+                        <th class="p-2">Nombre</th>
+
+                        <th class="p-2">Documento</th>
+
+                        <th class="p-2">Cargo</th>
+
+                        <th class="p-2">Comisión</th>
+
+                        <th class="p-2">Hora</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaModalReunion">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="p-4 border-t flex justify-end gap-3">
+
+            <button
+                onclick="window.print()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+
+                Imprimir
+
+            </button>
+
+            <button
+                onclick="cerrarModalReunion()"
+                class="bg-red-600 text-white px-4 py-2 rounded-lg">
+
+                Cerrar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================= FIN MODAL ================= -->  
 </body>
 </html>
