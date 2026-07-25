@@ -696,7 +696,39 @@ Reporte Anual de Asistencia
             renderRosterPanel();
             renderRosterManagement();
         }
+async function guardarFirebase() {
 
+    try {
+
+        await db.collection("configuracion")
+            .doc("general")
+            .set({
+
+                totalSocios,
+                quorumPercent,
+                plusOne,
+                meetingName,
+                meetingMonth,
+                meetingDate: meetingDateInput.value,
+
+                roster,
+
+                listAttendees,
+
+                reuniones
+
+            });
+
+        console.log("Datos guardados en Firebase");
+
+    } catch (error) {
+
+        console.error("Error Firebase:", error);
+
+    }
+
+}
+     
         function saveConfig() {
             localStorage.setItem('jac_total_offline', totalSocios);
             localStorage.setItem('jac_percent_offline', quorumPercent);
@@ -711,6 +743,7 @@ Reporte Anual de Asistencia
     'jac_reuniones',
     JSON.stringify(reuniones)
 );
+  guardarFirebase();
 }
 
         window.switchTab = function(tabName) {
