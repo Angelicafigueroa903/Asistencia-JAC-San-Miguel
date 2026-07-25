@@ -397,7 +397,7 @@ Reporte Anual de Asistencia
                             Asistentes
 
                        <th class="p-2">
-                           Acciones
+                           Descargar
                            
                         </th>
 
@@ -1971,39 +1971,22 @@ ${asistentes}
 
 <td class="p-2">
 
-   <div class="flex justify-center gap-2">
+<button
+onclick="descargarReunion('${reunion.id}')"
+class="text-blue-600 hover:text-blue-800">
 
-            <button
-                onclick="verReunion('${reunion.id}')"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg text-xs">
+<i data-lucide="download"></i>
 
-                👁 Ver
+</button>
 
-            </button>
-
-            <button
-                onclick="descargarReunion('${reunion.id}')"
-                class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg text-xs">
-
-                📥 Descargar
-
-            </button>
-
-            <button
-                onclick="eliminarReunion('${reunion.id}')"
-                class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg text-xs">
-
-                🗑 Eliminar
-
-            </button>
-
-        </div>
-
-    </td>
+</td>
 
 </tr>
-
 `;
+
+        });
+
+}
         
  function descargarReunion(idReunion){
 
@@ -2103,115 +2086,7 @@ const datos = asistentes.map(
         `Asistencia_${idReunion}.xlsx`
     );
 }
-        
-            window.verReunion = function(idReunion){
-
-    const reunion =
-        reuniones.find(r=>r.id===idReunion);
-
-    document.getElementById(
-        "tituloReunionModal"
-    ).textContent =
-        reunion.fecha + " - " + reunion.nombre;
-
-    const body =
-        document.getElementById(
-            "tablaModalReunion"
-        );
-
-    body.innerHTML="";
-
-    const asistentes =
-        listAttendees.filter(
-            a=>a.reunionId===idReunion
-        );
-
-    asistentes.forEach((a,index)=>{
-
-        const socio =
-            roster.find(
-                r=>r.documento===a.documento
-            ) || {};
-
-        body.innerHTML += `
-
-        <tr class="border-b">
-
-            <td class="p-2">
-                ${index+1}
-            </td>
-
-            <td class="p-2">
-                ${socio.nombre || a.nombre}
-            </td>
-
-            <td class="p-2">
-                ${a.documento}
-            </td>
-
-            <td class="p-2">
-                ${socio.cargo || ""}
-            </td>
-
-            <td class="p-2">
-                ${socio.comision || ""}
-            </td>
-
-            <td class="p-2">
-                ${a.hora}
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.add("flex");
-
-}
-      window.cerrarModalReunion = function(){
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.add("hidden");
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.remove("flex");
-
-}      
-         window.eliminarReunion = function(idReunion){
-
-    if(!confirm("¿Desea eliminar esta reunión?\n\nTambién se eliminarán todas las asistencias registradas.")){
-        return;
-    }
-
-    reuniones = reuniones.filter(
-        r => r.id !== idReunion
-    );
-
-    listAttendees = listAttendees.filter(
-        a => a.reunionId !== idReunion
-    );
-
-    saveConfig();
-
-    renderHistorial();
-    renderAttendees();
-    renderRosterPanel();
-    calculateQuorum();
-
-    showToast("Reunión eliminada correctamente");
-
-}
-            function calcularEdad(fechaNacimiento){
+        function calcularEdad(fechaNacimiento){
 
     if(!fechaNacimiento) return "";
 
@@ -2393,28 +2268,6 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 </script>
-
-      <button
-                onclick="window.print()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-
-                🖨 Imprimir
-
-            </button>
-
-            <button
-                onclick="cerrarModalReunion()"
-                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
-
-                Cerrar
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
     
 </body>
 </html>
