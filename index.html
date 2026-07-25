@@ -636,7 +636,7 @@ Reporte Anual de Asistencia
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const importRosterFile = document.getElementById('importRosterFile');
 
-        function loadSystemData() {
+        async function loadSystemData() {
             const hoy = new Date();
             meetingDateInput.value = hoy.toISOString().split('T')[0];
 
@@ -644,6 +644,62 @@ Reporte Anual de Asistencia
             meetingMonth = meses[hoy.getMonth()];
             meetingMonthInput.value = meetingMonth;
             badgeMonth.textContent = meetingMonth.toUpperCase();
+
+            // ===== CARGAR DATOS DESDE FIREBASE =====
+
+try {
+
+    const doc = await db
+        .collection("configuracion")
+        .doc("general")
+        .get();
+
+    if(doc.exists){
+
+        const data = doc.data();
+
+        totalSocios     = data.totalSocios || 0;
+        quorumPercent   = data.quorumPercent || 50;
+        plusOne         = data.plusOne || false;
+        meetingName     = data.meetingName || "";
+        meetingMonth    = data.meetingMonth || meetingMonth;
+
+        roster          = data.roster || [];
+        listAttendees   = data.listAttendees || [];
+        reuniones       = data.reuniones || [];
+
+        if(data.meetingDate){
+            meetingDateInput.value = data.meetingDate;
+        }
+
+        totalSociosInput.value = totalSocios;
+        quorumPercentInput.value = quorumPercent;
+        quorumPercentLabel.textContent = quorumPercent + "%";
+
+        plusOneCheck.checked = plusOne;
+
+        meetingNameInput.value = meetingName;
+        currentMeetingLabel.textContent = meetingName;
+
+        meetingMonthInput.value = meetingMonth;
+        badgeMonth.textContent = meetingMonth.toUpperCase();
+
+        calculateQuorum();
+        renderAttendees();
+        renderRosterPanel();
+        renderRosterManagement();
+
+        console.log("Datos cargados desde Firebase");
+
+        return;
+
+    }
+
+}catch(error){
+
+    console.log("No existen datos en Firebase");
+
+}
 
             if (localStorage.getItem('jac_total_offline')) {
                 totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
@@ -689,6 +745,7 @@ Reporte Anual de Asistencia
 }
             else {
                 roster = [];
+                reuniones = [];
             }
 
             calculateQuorum();
