@@ -2106,6 +2106,68 @@ const datos = asistentes.map(
         `Asistencia_${idReunion}.xlsx`
     );
 }
+
+ window.verReunion = function(idReunion){
+
+    const asistentes = listAttendees.filter(
+        a => a.reunionId === idReunion
+    );
+
+    if(asistentes.length === 0){
+
+        showToast("No hay asistentes registrados");
+
+        return;
+
+    }
+
+    let mensaje = "LISTA DE ASISTENTES\n\n";
+
+    asistentes.forEach((a,index)=>{
+
+        const socio = roster.find(
+            r => r.documento === a.documento
+        ) || {};
+
+        mensaje +=
+`${index + 1}. ${socio.nombre || a.nombre}
+Documento: ${a.documento}
+Cargo: ${socio.cargo || "Socio"}
+Hora: ${a.hora}
+
+`;
+
+    });
+
+    alert(mensaje);
+
+}
+        
+ window.eliminarReunion = function(idReunion){
+
+    if(!confirm("¿Desea eliminar esta reunión?\n\nTambién se eliminarán todas las asistencias registradas.")){
+        return;
+    }
+
+    reuniones = reuniones.filter(
+        r => r.id !== idReunion
+    );
+
+    listAttendees = listAttendees.filter(
+        a => a.reunionId !== idReunion
+    );
+
+    saveConfig();
+
+    renderHistorial();
+    renderAttendees();
+    renderRosterPanel();
+    calculateQuorum();
+
+    showToast("Reunión eliminada correctamente");
+
+}
+        
         function calcularEdad(fechaNacimiento){
 
     if(!fechaNacimiento) return "";
