@@ -755,9 +755,7 @@ try {
         }
 async function guardarFirebase() {
 
-    try {
-
-        await db.collection("configuracion")
+    await db.collection("configuracion")
             .doc("general")
             .set({
 
