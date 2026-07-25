@@ -649,10 +649,9 @@ Reporte Anual de Asistencia
 
 try {
 
-    const doc = await db
-        .collection("configuracion")
-        .doc("general")
-        .get();
+    db.collection("configuracion")
+    .doc("general")
+    .onSnapshot((doc)=>{
 
     if(doc.exists){
 
@@ -689,17 +688,18 @@ try {
         renderRosterPanel();
         renderRosterManagement();
 
-        console.log("Datos cargados desde Firebase");
+       console.log("Datos cargados desde Firebase");
+        } else {
 
-        return;
+            console.log("No existen datos en Firebase");
 
-    }
+        }
 
-}catch(error){
+    }, (error) => {
 
-    console.log("No existen datos en Firebase");
+        console.error("Error al leer Firebase:", error);
 
-}
+    });
 
             if (localStorage.getItem('jac_total_offline')) {
                 totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
