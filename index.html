@@ -647,8 +647,6 @@ Reporte Anual de Asistencia
 
             // ===== CARGAR DATOS DESDE FIREBASE =====
 
-try {
-
     db.collection("configuracion")
     .doc("general")
     .onSnapshot((doc)=>{
@@ -701,61 +699,12 @@ try {
 
     });
 
-            if (localStorage.getItem('jac_total_offline')) {
-                totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
-            }
-            if (localStorage.getItem('jac_percent_offline')) {
-                quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
-                quorumPercentInput.value = quorumPercent;
-                quorumPercentLabel.textContent = `${quorumPercent}%`;
-            }
-            if (localStorage.getItem('jac_plusone_offline')) {
-                plusOne = localStorage.getItem('jac_plusone_offline') === 'true';
-                plusOneCheck.checked = plusOne;
-            }
-            if (localStorage.getItem('jac_name_offline')) {
-                meetingName = localStorage.getItem('jac_name_offline');
-                meetingNameInput.value = meetingName;
-                currentMeetingLabel.textContent = meetingName;
-            }
-            if (localStorage.getItem('jac_month_offline')) {
-                meetingMonth = localStorage.getItem('jac_month_offline');
-                meetingMonthInput.value = meetingMonth;
-                badgeMonth.textContent = meetingMonth.toUpperCase();
-            }
-            if (localStorage.getItem('jac_date_offline')) {
-                meetingDateInput.value = localStorage.getItem('jac_date_offline');
-            }
-            if (localStorage.getItem('jac_attendees_offline')) {
-                listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
-            }
-            if (localStorage.getItem('jac_roster_offline')) {
-                roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
-            } 
-            
-            totalSocios = roster.length;
-            totalSociosInput.value = totalSocios;
-            
-            if (localStorage.getItem('jac_reuniones')) {
-
-    reuniones = JSON.parse(
-        localStorage.getItem('jac_reuniones')
-    );
-
-}
-            else {
-                roster = [];
-                reuniones = [];
-            }
-
-            calculateQuorum();
-            renderAttendees();
-            renderRosterPanel();
-            renderRosterManagement();
-        }
+             
 async function guardarFirebase() {
 
-    await db.collection("configuracion")
+    try {
+
+        await db.collection("configuracion")
             .doc("general")
             .set({
 
@@ -767,9 +716,7 @@ async function guardarFirebase() {
                 meetingDate: meetingDateInput.value,
 
                 roster,
-
                 listAttendees,
-
                 reuniones
 
             });
