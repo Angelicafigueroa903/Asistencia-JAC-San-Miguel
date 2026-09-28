@@ -397,7 +397,7 @@ Reporte Anual de Asistencia
                             Asistentes
 
                        <th class="p-2">
-                           Acciones
+                           Descargar
                            
                         </th>
 
@@ -636,7 +636,7 @@ Reporte Anual de Asistencia
         const exportCsvBtn = document.getElementById('exportCsvBtn');
         const importRosterFile = document.getElementById('importRosterFile');
 
-        async function loadSystemData() {
+        function loadSystemData() {
             const hoy = new Date();
             meetingDateInput.value = hoy.toISOString().split('T')[0];
 
@@ -645,92 +645,58 @@ Reporte Anual de Asistencia
             meetingMonthInput.value = meetingMonth;
             badgeMonth.textContent = meetingMonth.toUpperCase();
 
-            // ===== CARGAR DATOS DESDE FIREBASE =====
+            if (localStorage.getItem('jac_total_offline')) {
+                totalSocios = parseInt(localStorage.getItem('jac_total_offline'));
+            }
+            if (localStorage.getItem('jac_percent_offline')) {
+                quorumPercent = parseInt(localStorage.getItem('jac_percent_offline'));
+                quorumPercentInput.value = quorumPercent;
+                quorumPercentLabel.textContent = `${quorumPercent}%`;
+            }
+            if (localStorage.getItem('jac_plusone_offline')) {
+                plusOne = localStorage.getItem('jac_plusone_offline') === 'true';
+                plusOneCheck.checked = plusOne;
+            }
+            if (localStorage.getItem('jac_name_offline')) {
+                meetingName = localStorage.getItem('jac_name_offline');
+                meetingNameInput.value = meetingName;
+                currentMeetingLabel.textContent = meetingName;
+            }
+            if (localStorage.getItem('jac_month_offline')) {
+                meetingMonth = localStorage.getItem('jac_month_offline');
+                meetingMonthInput.value = meetingMonth;
+                badgeMonth.textContent = meetingMonth.toUpperCase();
+            }
+            if (localStorage.getItem('jac_date_offline')) {
+                meetingDateInput.value = localStorage.getItem('jac_date_offline');
+            }
+            if (localStorage.getItem('jac_attendees_offline')) {
+                listAttendees = JSON.parse(localStorage.getItem('jac_attendees_offline'));
+            }
+            if (localStorage.getItem('jac_roster_offline')) {
+                roster = JSON.parse(localStorage.getItem('jac_roster_offline'));
+            } 
+            
+            totalSocios = roster.length;
+            totalSociosInput.value = totalSocios;
+            
+            if (localStorage.getItem('jac_reuniones')) {
 
-    db.collection("configuracion")
-    .doc("general")
-    .onSnapshot((doc)=>{
-
-    if(doc.exists){
-
-        const data = doc.data();
-
-        totalSocios     = data.totalSocios || 0;
-        quorumPercent   = data.quorumPercent || 50;
-        plusOne         = data.plusOne || false;
-        meetingName     = data.meetingName || "";
-        meetingMonth    = data.meetingMonth || meetingMonth;
-
-        roster          = data.roster || [];
-        listAttendees   = data.listAttendees || [];
-        reuniones       = data.reuniones || [];
-
-        if(data.meetingDate){
-            meetingDateInput.value = data.meetingDate;
-        }
-
-        totalSociosInput.value = totalSocios;
-        quorumPercentInput.value = quorumPercent;
-        quorumPercentLabel.textContent = quorumPercent + "%";
-
-        plusOneCheck.checked = plusOne;
-
-        meetingNameInput.value = meetingName;
-        currentMeetingLabel.textContent = meetingName;
-
-        meetingMonthInput.value = meetingMonth;
-        badgeMonth.textContent = meetingMonth.toUpperCase();
-
-        calculateQuorum();
-        renderAttendees();
-        renderRosterPanel();
-        renderRosterManagement();
-
-       console.log("Datos cargados desde Firebase");
-        } else {
-
-            console.log("No existen datos en Firebase");
-
-        }
-
-    }, (error) => {
-
-        console.error("Error al leer Firebase:", error);
-
-    });
-}
-             
-async function guardarFirebase() {
-
-    try {
-
-        await db.collection("configuracion")
-            .doc("general")
-            .set({
-
-                totalSocios,
-                quorumPercent,
-                plusOne,
-                meetingName,
-                meetingMonth,
-                meetingDate: meetingDateInput.value,
-
-                roster,
-                listAttendees,
-                reuniones
-
-            });
-
-        console.log("Datos guardados en Firebase");
-
-    } catch (error) {
-
-        console.error("Error Firebase:", error);
-
-    }
+    reuniones = JSON.parse(
+        localStorage.getItem('jac_reuniones')
+    );
 
 }
-     
+            else {
+                roster = [];
+            }
+
+            calculateQuorum();
+            renderAttendees();
+            renderRosterPanel();
+            renderRosterManagement();
+        }
+
         function saveConfig() {
             localStorage.setItem('jac_total_offline', totalSocios);
             localStorage.setItem('jac_percent_offline', quorumPercent);
@@ -745,7 +711,6 @@ async function guardarFirebase() {
     'jac_reuniones',
     JSON.stringify(reuniones)
 );
-  guardarFirebase();
 }
 
         window.switchTab = function(tabName) {
@@ -1971,39 +1936,19 @@ ${asistentes}
 
 <td class="p-2">
 
- <div class="flex justify-center gap-2">
+<button
+onclick="descargarReunion('${reunion.id}')"
+class="text-blue-600 hover:text-blue-800">
 
-            <button
-                onclick="verReunion('${reunion.id}')"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-lg text-xs">
+<i data-lucide="download"></i>
 
-                👁 Ver
+</button>
 
-            </button>
-
-            <button
-                onclick="descargarReunion('${reunion.id}')"
-                class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg text-xs">
-
-                📥 Descargar
-
-            </button>
-
-            <button
-                onclick="eliminarReunion('${reunion.id}')"
-                class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-lg text-xs">
-
-                🗑 Eliminar
-
-            </button>
-
-        </div>
-
-    </td>
+</td>
 
 </tr>
-
 `;
+
         });
 
 }
@@ -2106,117 +2051,6 @@ const datos = asistentes.map(
         `Asistencia_${idReunion}.xlsx`
     );
 }
-
- window.verReunion = function(idReunion){
-
-    const reunion =
-        reuniones.find(r=>r.id===idReunion);
-
-    document.getElementById(
-        "tituloReunionModal"
-    ).textContent =
-        reunion.fecha + " - " + reunion.nombre;
-
-    const body =
-        document.getElementById(
-            "tablaModalReunion"
-        );
-
-    body.innerHTML="";
-
-    const asistentes =
-        listAttendees.filter(
-            a=>a.reunionId===idReunion
-        );
-
-    asistentes.forEach((a,index)=>{
-
-        const socio =
-            roster.find(
-                r=>r.documento===a.documento
-            ) || {};
-
-        body.innerHTML += `
-
-        <tr class="border-b">
-
-            <td class="p-2">
-                ${index+1}
-            </td>
-
-            <td class="p-2">
-                ${socio.nombre || a.nombre}
-            </td>
-
-            <td class="p-2">
-                ${a.documento}
-            </td>
-
-            <td class="p-2">
-                ${socio.cargo || ""}
-            </td>
-
-            <td class="p-2">
-                ${socio.comision || ""}
-            </td>
-
-            <td class="p-2">
-                ${a.hora}
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.add("flex");
-
-}
-
-window.cerrarModalReunion = function(){
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.add("hidden");
-
-    document
-        .getElementById("modalVerReunion")
-        .classList.remove("flex");
-
-}
-        
- window.eliminarReunion = function(idReunion){
-
-    if(!confirm("¿Desea eliminar esta reunión?\n\nTambién se eliminarán todas las asistencias registradas.")){
-        return;
-    }
-
-    reuniones = reuniones.filter(
-        r => r.id !== idReunion
-    );
-
-    listAttendees = listAttendees.filter(
-        a => a.reunionId !== idReunion
-    );
-
-    saveConfig();
-
-    renderHistorial();
-    renderAttendees();
-    renderRosterPanel();
-    calculateQuorum();
-
-    showToast("Reunión eliminada correctamente");
-
-}
-        
         function calcularEdad(fechaNacimiento){
 
     if(!fechaNacimiento) return "";
@@ -2381,111 +2215,5 @@ obtenerMesesFaltados(
             lucide.createIcons(); 
         };
     </script>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyBebhvJSynRObpVvdFWJIPSC-YlkO8AuKU",
-    authDomain: "asistencia-jac-san-migu3l.firebaseapp.com",
-    projectId: "asistencia-jac-san-migu3l",
-    storageBucket: "asistencia-jac-san-migu3l.firebasestorage.app",
-    messagingSenderId: "407685921241",
-    appId: "1:407685921241:web:544afe12507b91e1ebc1c8"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-</script>
-  <!-- ================= MODAL VER REUNIÓN ================= -->
-
-<div id="modalVerReunion"
-class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-
-    <div class="bg-white rounded-2xl shadow-xl w-11/12 max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
-
-        <div class="flex justify-between items-center p-4 border-b">
-
-            <h2 class="text-xl font-bold">
-                Lista de Asistentes
-            </h2>
-
-            <button
-                onclick="cerrarModalReunion()"
-                class="text-red-600 text-2xl font-bold">
-
-                ×
-
-            </button>
-
-        </div>
-
-        <div class="px-5 py-2">
-
-            <p id="tituloReunionModal"
-               class="text-slate-500 text-sm">
-            </p>
-
-        </div>
-
-        <div class="overflow-y-auto flex-1 p-4">
-
-            <table class="w-full text-sm border">
-
-                <thead class="bg-slate-100">
-
-                    <tr>
-
-                        <th class="p-2">#</th>
-
-                        <th class="p-2">Nombre</th>
-
-                        <th class="p-2">Documento</th>
-
-                        <th class="p-2">Cargo</th>
-
-                        <th class="p-2">Comisión</th>
-
-                        <th class="p-2">Hora</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody id="tablaModalReunion">
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <div class="p-4 border-t flex justify-end gap-3">
-
-            <button
-                onclick="window.print()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-
-                Imprimir
-
-            </button>
-
-            <button
-                onclick="cerrarModalReunion()"
-                class="bg-red-600 text-white px-4 py-2 rounded-lg">
-
-                Cerrar
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ================= FIN MODAL ================= -->  
 </body>
 </html>
